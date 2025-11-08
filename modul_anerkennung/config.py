@@ -1,61 +1,68 @@
 """Globale Konfigurationen für das Modulanerkennungs-Tool (Colab-kompatibel)."""
-
-import os
 from pathlib import Path
 from dotenv import load_dotenv
+import os
+
 
 # ----------------------------------------------------------------------
-# 1. Basisverzeichnis (funktioniert sowohl lokal als auch in Colab)
+# 1. Umgebungserkennung
 # ----------------------------------------------------------------------
+def is_colab() -> bool:
+    """Erkennt, ob das Skript in Google Colab ausgeführt wird."""
+    try:
+        import google.colab  # type: ignore
+        return True
+    except ImportError:
+        return False
 
-try:
-    # Wenn Datei innerhalb des Pakets liegt (normaler Betrieb)
+
+IN_COLAB = is_colab()
+
+# ----------------------------------------------------------------------
+# 2. Basisverzeichnis
+# ----------------------------------------------------------------------
+if IN_COLAB:
+    # Colab: nutze das Arbeitsverzeichnis in /content
+    BASE_DIR: Path = Path("/content")
+else:
+    # Lokal oder Entwicklungsumgebung
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
-except NameError:
-    # In Colab: __file__ ist nicht definiert, daher fallback auf /content
-    BASE_DIR: Path = Path("/content/modul_anerkennung")
 
-# In Colab sicherstellen, dass Verzeichnisse existieren
+# Verzeichnisse anlegen
 RAG_STORAGE_DIR: Path = BASE_DIR / "rag_storage"
 OUTPUT_DIR: Path = BASE_DIR / "output"
 RAG_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ----------------------------------------------------------------------
-# 2. Environment laden (lokal oder Colab)
+# 3. Umgebungsvariablen laden (.env + Colab userdata)
 # ----------------------------------------------------------------------
-
-# Standardpfad zur secrets.env-Datei
 dotenv_path = BASE_DIR / "secrets.env"
-
-# .env nur laden, wenn sie existiert
 if dotenv_path.exists():
     load_dotenv(dotenv_path=dotenv_path)
 
-# In Colab kann man zusätzlich Variablen über `userdata` laden (optional)
-try:
-    from google.colab import userdata  # type: ignore
-
-    # Übernimm Keys aus Colab-Umgebung, falls vorhanden
-    for key in ["GROQ_API_KEY", "LLM_BASE_URL"]:
-        if userdata.get(key):
-            os.environ[key] = userdata.get(key)
-except Exception:
-    # Kein Colab, ignoriere einfach
-    pass
+# Wenn Colab: versuche Keys aus google.colab.userdata zu holen
+if IN_COLAB:
+    try:
+        from google.colab import userdata  # type: ignore
+        for key in ["GROQ_API_KEY", "LLM_BASE_URL"]:
+            value = userdata.get(key)
+            if value:
+                os.environ[key] = value
+    except Exception:
+        pass
 
 # ----------------------------------------------------------------------
-# 3. API Keys und URLs
+# 4. API Keys und Basis-URLs
 # ----------------------------------------------------------------------
-
 API_KEY: str = os.getenv("GROQ_API_KEY", "")
 BASE_URL: str | None = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1")
 
 # ----------------------------------------------------------------------
-# 4. Debug-Ausgabe (optional, im Notebook sichtbar)
+# 5. Debug-Ausgabe (optional aktivierbar)
 # ----------------------------------------------------------------------
-
 if os.getenv("DEBUG_CONFIG", "false").lower() == "true":
+    print(f"[Config] Running in Colab: {IN_COLAB}")
     print(f"[Config] BASE_DIR: {BASE_DIR}")
     print(f"[Config] RAG_STORAGE_DIR: {RAG_STORAGE_DIR}")
     print(f"[Config] OUTPUT_DIR: {OUTPUT_DIR}")
