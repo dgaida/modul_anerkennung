@@ -12,5 +12,5 @@ RAG_STORAGE_DIR: Path = BASE_DIR / "rag_storage"
 OUTPUT_DIR: Path = BASE_DIR / "output"
 
 # API Keys aus .env
-API_KEY: str = os.getenv("LLM_API_KEY", "")
+API_KEY: str = os.getenv("GROQ_API_KEY", "")
 BASE_URL: str | None = os.getenv("LLM_BASE_URL")

@@ -1,12 +1,13 @@
 """Vergleich von Modulbeschreibungen mittels RAG und LLM."""
 from typing import List, Dict
-from .rag_manager import RAGManager
+from .rag_manager_light import LightRAGManager
 from .llm_interface import LLMInterface
+
 
 class SimilarityChecker:
     """Führt semantische Ähnlichkeitsprüfungen zwischen Modulen durch."""
 
-    def __init__(self, rag: RAGManager, llm: LLMInterface):
+    def __init__(self, rag: LightRAGManager, llm: LLMInterface):
         """Initialisiert den Ähnlichkeitsprüfer."""
         self.rag = rag
         self.llm = llm

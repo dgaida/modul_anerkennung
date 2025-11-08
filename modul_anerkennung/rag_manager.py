@@ -6,6 +6,7 @@ from lightrag.llm.openai import openai_complete_if_cache, openai_embed
 from lightrag.utils import EmbeddingFunc
 from .config import API_KEY, BASE_URL, RAG_STORAGE_DIR
 
+
 class RAGManager:
     """Kapselt die Verwendung von RAG-Anything."""
 
@@ -22,7 +23,7 @@ class RAGManager:
 
         def llm_model_func(prompt, **kwargs):
             return openai_complete_if_cache(
-                "gpt-4o-mini",
+                "gemini-2.0-flash-exp",
                 prompt,
                 api_key=API_KEY,
                 base_url=BASE_URL,
