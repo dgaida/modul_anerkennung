@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modul_anerkennung"
+version = "0.1.0"
+description = "Ein RAG-basiertes Python-Tool zur Unterstützung von Prüfungsausschüssen bei der Anerkennung externer Studienmodule."
+readme = "README.md"
+authors = [
+    { name = "Daniel Gaida", email = "daniel.gaida@th-koeln.de" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "raganything[all]",
+    "llm_client @ git+https://github.com/dgaida/llm_client.git",
+    "lightrag",
+    "gradio",
+    "openai",
+    "python-dotenv",
+]
+
+[project.urls]
+Homepage = "https://github.com/dgaida/modul_anerkennung"
+Issues = "https://github.com/dgaida/modul_anerkennung/issues"
+
+[tool.setuptools.packages.find]
+where = ["modul_anerkennung"]
+include = ["modul_anerkennung*"]
