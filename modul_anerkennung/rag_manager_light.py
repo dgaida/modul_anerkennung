@@ -10,7 +10,7 @@ from lightrag import LightRAG, QueryParam
 from lightrag.kg.shared_storage import initialize_pipeline_status
 from lightrag.utils import setup_logger, EmbeddingFunc
 from transformers import AutoTokenizer, AutoModel
-from lightrag.llm.huggingface import hf_embed
+from lightrag.llm.hf import hf_embed
 from openai import OpenAI
 from .config import API_KEY, BASE_URL, RAG_STORAGE_DIR
 
