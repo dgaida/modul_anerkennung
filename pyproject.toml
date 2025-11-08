@@ -26,5 +26,5 @@ Homepage = "https://github.com/dgaida/modul_anerkennung"
 Issues = "https://github.com/dgaida/modul_anerkennung/issues"
 
 [tool.setuptools.packages.find]
-where = ["modul_anerkennung"]
+where = ["."]
 include = ["modul_anerkennung*"]
