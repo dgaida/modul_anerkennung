@@ -17,8 +17,6 @@ from .config import API_KEY, BASE_URL, RAG_STORAGE_DIR
 # Logging aktivieren
 setup_logger("lightrag", level="INFO")
 
-os.makedirs(RAG_STORAGE_DIR, exist_ok=True)
-
 
 # ----------------------------------------------------------
 #  LLM- und Embedding-Funktionen
