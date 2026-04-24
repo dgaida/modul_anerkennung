@@ -1,5 +1,5 @@
 """Vergleich von Modulbeschreibungen mittels RAG und LLM."""
-from typing import List, Dict, Any
+from typing import Dict, Any
 from .rag_manager import RAGManager
 from .llm_interface import LLMInterface
 

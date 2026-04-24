@@ -18,6 +18,8 @@ dependencies = [
     "lightrag-hku[api]",
     "gradio",
     "openai",
+    "fastmcp",
+    "httpx",
     "python-dotenv",
 ]
 

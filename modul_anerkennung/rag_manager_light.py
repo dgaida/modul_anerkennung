@@ -1,6 +1,5 @@
 """Verwaltung von RAG-Prozessen mit LightRAG und Groq LLM."""
 
-import os
 import asyncio
 from typing import Any
 import torch

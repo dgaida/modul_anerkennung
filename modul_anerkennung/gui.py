@@ -1,7 +1,6 @@
 """GUI für das Anerkennungstool mithilfe von Gradio."""
 import gradio as gr
 import asyncio
-import os
 from .rag_manager import RAGManager
 from .llm_interface import LLMInterface
 from .similarity_checker import SimilarityChecker

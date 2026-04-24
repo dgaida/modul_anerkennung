@@ -1,5 +1,4 @@
 """Verwaltung von RAG-Prozessen und Dokumenten mit RAG-Anything."""
-import asyncio
 from typing import Any, List, Dict
 import numpy as np
 from raganything import RAGAnything, RAGAnythingConfig

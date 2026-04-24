@@ -12,4 +12,6 @@ dependencies:
       - lightrag
       - openai
       - python-dotenv
+      - fastmcp
+      - httpx
       - pytest

@@ -10,7 +10,7 @@ import os
 def is_colab() -> bool:
     """Erkennt, ob das Skript in Google Colab ausgeführt wird."""
     try:
-        import google.colab  # type: ignore
+        import google.colab  # noqa: F401
         return True
     except ImportError:
         return False
