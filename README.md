@@ -60,7 +60,7 @@ Du kannst die Demo-Notebooks direkt in Google Colab ausprobieren:
 | Haupt-Demo (RAG) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/colab_demo.ipynb) |
 | MCP Server Demo | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/mcp_demo.ipynb) |
 | MCP Client Demo | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/mcp_client_demo.ipynb) |
-![Version](https://img.shields.io/badge/version-0.1.1-blue)
+[![Version](https://img.shields.io/github/v/tag/dgaida/modul_anerkennung?label=version)](https://github.com/dgaida/modul_anerkennung/tags)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Quality](https://github.com/dgaida/modul_anerkennung/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/modul_anerkennung/actions/workflows/lint.yml)
