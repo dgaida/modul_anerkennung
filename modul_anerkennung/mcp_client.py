@@ -1,9 +1,13 @@
 import sys
 import io
 import json
+import logging
 from fastmcp import Client
 from fastmcp.client.transports.stdio import StdioTransport
 from typing import List, Dict, Any
+
+# Logger konfigurieren
+logger = logging.getLogger(__name__)
 
 class MocogiClient:
     """Ein Client für den Mocogi MCP Server, der die Kommunikation über stdio ermöglicht.
@@ -25,6 +29,7 @@ class MocogiClient:
             use_stdio = False
 
         if use_stdio:
+            logger.info("Initialisiere MocogiClient mit StdioTransport")
             # Der Server wird als Subprozess gestartet
             transport = StdioTransport(
                 command=sys.executable,
@@ -32,6 +37,7 @@ class MocogiClient:
             )
             self.client = Client(transport)
         else:
+            logger.info("Initialisiere MocogiClient mit In-Memory-Client (Fallback)")
             # Fallback: In-Memory Client für Umgebungen ohne fileno (Jupyter/Colab)
             try:
                 from modul_anerkennung.mocogi_mcp import mcp as server
@@ -70,8 +76,7 @@ class MocogiClient:
         Returns:
             List[Dict[str, Any]]: Eine Liste von Studiengängen als Dictionaries.
         """
-        result = await self.client.call_tool("list_study_programs", {"filter": filter})
-        return result
+        return await self.call_tool("list_study_programs", {"filter": filter})
 
     async def get_modules_by_po(self, po_id: str) -> List[Dict[str, Any]]:
         """Gibt alle aktiven Module für eine bestimmte Prüfungsordnung (PO) zurück.
@@ -82,8 +87,7 @@ class MocogiClient:
         Returns:
             List[Dict[str, Any]]: Eine Liste von Modulen als Dictionaries.
         """
-        result = await self.client.call_tool("get_modules_by_po", {"po_id": po_id})
-        return result
+        return await self.call_tool("get_modules_by_po", {"po_id": po_id})
 
     async def get_all_active_modules(self) -> List[Dict[str, Any]]:
         """Gibt eine Liste aller aktiven Module zurück.
@@ -91,8 +95,7 @@ class MocogiClient:
         Returns:
             List[Dict[str, Any]]: Eine Liste aller aktiven Module.
         """
-        result = await self.client.call_tool("get_all_active_modules")
-        return result
+        return await self.call_tool("get_all_active_modules")
 
     async def call_tool(self, name: str, arguments: Dict[str, Any] = None) -> Any:
         """Führt einen generischen Aufruf eines MCP-Tools aus.
@@ -105,7 +108,14 @@ class MocogiClient:
         Returns:
             Any: Das Ergebnis des Tool-Aufrufs.
         """
-        return await self.client.call_tool(name, arguments or {})
+        logger.debug(f"Rufe Tool auf: {name} mit Argumenten: {arguments}")
+        result = await self.client.call_tool(name, arguments or {})
+
+        # FastMCP 3.x liefert ein CallToolResult Objekt zurück.
+        # Wir extrahieren die Daten für die JSON-Serialisierung.
+        if hasattr(result, "data"):
+            return result.data
+        return result
 
     async def list_tools(self) -> List[Any]:
         """Listet alle verfügbaren Tools des MCP Servers auf.
@@ -148,7 +158,8 @@ class MocogiClient:
         """
         tools = await self.get_tools_for_llm()
 
-        for _ in range(max_iterations):
+        for i in range(max_iterations):
+            logger.info(f"Chat-Iteration {i+1}/{max_iterations}")
             response = await llm_client.achat_completion_with_tools(
                 messages=messages,
                 tools=tools
@@ -156,9 +167,11 @@ class MocogiClient:
 
             # Falls das LLM direkt antwortet ohne Tool-Call
             if not response.get("tool_calls"):
+                logger.info("LLM hat direkt geantwortet.")
                 return response.get("content", "")
 
             # Falls Tool-Calls vorhanden sind, führen wir sie aus
+            logger.info(f"LLM fordert {len(response['tool_calls'])} Tool-Calls an.")
             messages.append({
                 "role": "assistant",
                 "content": response.get("content"),
@@ -170,6 +183,7 @@ class MocogiClient:
                 tool_args = json.loads(tool_call["function"]["arguments"])
 
                 # Tool über den MCP Client aufrufen
+                logger.info(f"Führe Tool aus: {tool_name}")
                 result = await self.call_tool(tool_name, tool_args)
 
                 # Ergebnis zurück an den Chat-Verlauf übergeben
@@ -180,4 +194,5 @@ class MocogiClient:
                     "content": json.dumps(result)
                 })
 
+        logger.warning("Maximale Anzahl an Tool-Calls erreicht.")
         return "Maximale Anzahl an Tool-Calls erreicht."
