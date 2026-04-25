@@ -21,6 +21,9 @@ dependencies = [
     "fastmcp",
     "httpx",
     "python-dotenv",
+    "numpy",
+    "sentence-transformers",
+    "torch",
 ]
 
 [project.optional-dependencies]
