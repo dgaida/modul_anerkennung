@@ -1,5 +1,6 @@
 import sys
 from fastmcp import Client
+from fastmcp.client.transports.stdio import StdioTransport
 from typing import List, Dict, Any
 
 class MocogiClient:
@@ -11,8 +12,11 @@ class MocogiClient:
     def __init__(self):
         """Initialisiert den MocogiClient und konfiguriert den Server-Befehl."""
         # Der Server wird als Subprozess gestartet
-        cmd = f"{sys.executable} -m modul_anerkennung.mocogi_mcp"
-        self.client = Client(cmd)
+        transport = StdioTransport(
+            command=sys.executable,
+            args=["-m", "modul_anerkennung.mocogi_mcp"]
+        )
+        self.client = Client(transport)
 
     async def __aenter__(self):
         """Ermöglicht die Nutzung des Clients als asynchroner Kontextmanager.
@@ -79,3 +83,11 @@ class MocogiClient:
             Any: Das Ergebnis des Tool-Aufrufs.
         """
         return await self.client.call_tool(name, arguments or {})
+
+    async def list_tools(self) -> List[Any]:
+        """Listet alle verfügbaren Tools des MCP Servers auf.
+
+        Returns:
+            List[Any]: Eine Liste der verfügbaren Tools.
+        """
+        return await self.client.list_tools()

@@ -23,6 +23,12 @@ dependencies = [
     "python-dotenv",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+]
+
 [project.urls]
 Homepage = "https://github.com/dgaida/modul_anerkennung"
 Issues = "https://github.com/dgaida/modul_anerkennung/issues"
