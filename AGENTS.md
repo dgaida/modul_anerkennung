@@ -2,16 +2,16 @@
 
 This repository is a module recognition tool that uses RAG and LLMs to help academic advisors evaluate external course modules for equivalence.
 
-## Project Structure
-- `modul_anerkennung/`: Main package containing the logic for RAG, LLM interface, and GUI.
-- `notebooks/`: Demonstration notebooks for Google Colab.
-- `tests/`: Pytest test suite.
+## Project Structure  
+- `modul_anerkennung/`: Main package containing the logic for RAG, LLM interface, and GUI.  
+- `notebooks/`: Demonstration notebooks for Google Colab.  
+- `tests/`: Pytest test suite.  
 
-## Development Guidelines
-- Follow PEP 8 coding standards.
-- Use `llm_client` for all LLM interactions.
-- Ensure Colab compatibility by checking for the environment and adjusting paths accordingly (see `modul_anerkennung/config.py`).
-- Use `secrets.env` or `.env` for local development secrets.
+## Development Guidelines  
+- Follow PEP 8 coding standards.  
+- Use `llm_client` for all LLM interactions.  
+- Ensure Colab compatibility by checking for the environment and adjusting paths accordingly (see `modul_anerkennung/config.py`).  
+- Use `secrets.env` or `.env` for local development secrets.  
 
 ## Skills
 

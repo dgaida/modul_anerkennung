@@ -5,15 +5,15 @@ Das Tool verwendet **RAG (Retrieval-Augmented Generation)** und ein **LLM**, um 
 
 ---
 
-## 🚀 Funktionen
-- Model Context Protocol (MCP) Integration (Server & Client)
+## 🚀 Funktionen  
+- Model Context Protocol (MCP) Integration (Server & Client)  
 
-- Upload des eigenen Modulhandbuchs (PDF/Text)
-- Upload externer Modulbeschreibungen
-- Automatischer Vergleich mit RAG + Embeddings
-- Anzeige ähnlicher Module in einer Gradio-GUI
-- Begründungstexte für Anerkennung oder Ablehnung durch das LLM
-- Nutzung eines `.env`-basierten Secrets-Systems für API-Keys
+- Upload des eigenen Modulhandbuchs (PDF/Text)  
+- Upload externer Modulbeschreibungen  
+- Automatischer Vergleich mit RAG + Embeddings  
+- Anzeige ähnlicher Module in einer Gradio-GUI  
+- Begründungstexte für Anerkennung oder Ablehnung durch das LLM  
+- Nutzung eines `.env`-basierten Secrets-Systems für API-Keys  
 
 ---
 
@@ -60,13 +60,21 @@ Du kannst die Demo-Notebooks direkt in Google Colab ausprobieren:
 | Haupt-Demo (RAG) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/colab_demo.ipynb) |
 | MCP Server Demo | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/mcp_demo.ipynb) |
 | MCP Client Demo | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dgaida/modul_anerkennung/blob/master/notebooks/mcp_client_demo.ipynb) |
+![Version](https://img.shields.io/badge/version-0.1.1-blue)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code Quality](https://github.com/dgaida/modul_anerkennung/actions/workflows/lint.yml/badge.svg)](https://github.com/dgaida/modul_anerkennung/actions/workflows/lint.yml)
+[![Tests](https://github.com/dgaida/modul_anerkennung/actions/workflows/tests.yml/badge.svg)](https://github.com/dgaida/modul_anerkennung/actions/workflows/tests.yml)
+[![CodeQL](https://github.com/dgaida/modul_anerkennung/actions/workflows/codeql.yml/badge.svg)](https://github.com/dgaida/modul_anerkennung/actions/workflows/codeql.yml)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/dgaida/modul_anerkennung/graphs/commit-activity)
+![Last commit](https://img.shields.io/github/last-commit/dgaida/modul_anerkennung)
 
 ## 🔌 Model Context Protocol (MCP)
 
 Das Projekt beinhaltet einen **MCP Server** und einen **MCP Client**, um Daten der TH Köln (Mocogi API) direkt in LLM-Workflows zu integrieren.
 
-- **MCP Server**: `modul_anerkennung/mocogi_mcp.py` (basiert auf FastMCP)
-- **MCP Client**: `modul_anerkennung/mcp_client.py`
+- **MCP Server**: `modul_anerkennung/mocogi_mcp.py` (basiert auf FastMCP)  
+- **MCP Client**: `modul_anerkennung/mcp_client.py`  
 
 ### Nutzung des MCP Clients
 ```python
