@@ -172,11 +172,13 @@ class MocogiClient:
 
             # Falls Tool-Calls vorhanden sind, führen wir sie aus
             logger.info(f"LLM fordert {len(response['tool_calls'])} Tool-Calls an.")
-            messages.append({
-                "role": "assistant",
-                "content": response.get("content"),
-                "tool_calls": response["tool_calls"]
-            })
+
+            # WICHTIG: Den gesamten Response kopieren und als Assistant-Nachricht hinzufügen.
+            # Dies stellt sicher, dass Felder wie 'thought' oder 'thought_signature' (Gemini)
+            # erhalten bleiben, was für nachfolgende API-Aufrufe erforderlich ist.
+            assistant_msg = response.copy()
+            assistant_msg["role"] = "assistant"
+            messages.append(assistant_msg)
 
             for tool_call in response["tool_calls"]:
                 tool_name = tool_call["function"]["name"]
