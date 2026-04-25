@@ -1,0 +1,8 @@
+I have fixed a 400 BadRequestError when using Gemini 2.0 with tool calling in the Mocogi MCP client.
+The error was caused by missing 'thought_signature' in the assistant message when sending history back to the API.
+
+Changes:
+1. In modul_anerkennung/mcp_client.py: Updated chat_with_tools to copy the entire response into the assistant message, preserving all fields (including thought_signature).
+2. In notebooks/mcp_client_demo.ipynb: Fixed a typo in the model name from 'gemini-3-flash-preview' to 'gemini-2.0-flash'.
+
+Verified with a script that preserves extra fields and ran existing tests.
