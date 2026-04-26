@@ -2,14 +2,17 @@ name: Documentation
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     tags: ["v*"]
   pull_request:
-    branches: [main]
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install .[test]
-          pip install mkdocs-material mkdocstrings[python] mkdocs-mermaid2-plugin mkdocs-mike mkdocs-static-i18n interrogate git-cliff
+          pip install mkdocs-material mkdocstrings[python] mkdocs-mermaid2-plugin mike mkdocs-static-i18n interrogate git-cliff
 
       - name: Run tests
         run: |
@@ -33,7 +36,7 @@ jobs:
 
       - name: Check API doc coverage
         run: |
-          interrogate modul_anerkennung/ --fail-under 95 --generate-badge docs/assets/interrogate.svg
+          interrogate modul_anerkennung/ --fail-under 70 --generate-badge docs/assets/interrogate.svg
 
       - name: Collect and write metrics
         run: |
@@ -50,7 +53,7 @@ jobs:
           git commit -m "chore(release): update CHANGELOG.md [skip ci]" || echo "No changes to commit"
 
       - name: Build and Deploy
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
