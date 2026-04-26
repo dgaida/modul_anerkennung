@@ -1,14 +1,19 @@
 import gradio as gr
-import asyncio
 import json
 import logging
-from typing import List, Dict, Any, Tuple
+from typing import Dict, Any
 from .llm_interface import LLMInterface
 from .mcp_client import MocogiClient
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+CSS = """
+.green { color: green !important; font-weight: bold; }
+.red { color: red !important; font-weight: bold; }
+.yellow { color: orange !important; font-weight: bold; }
+"""
 
 def launch_gui():
     llm = LLMInterface()
@@ -132,11 +137,6 @@ Antworte im JSON-Format:
 
         return new_state, "\n".join(new_state["requests"]), "\n".join(new_state["reports"])
 
-    css = """
-    .green { color: green !important; font-weight: bold; }
-    .red { color: red !important; font-weight: bold; }
-    .yellow { color: orange !important; font-weight: bold; }
-    """
     with gr.Blocks(title="Modul-Anerkennungs-Tool (PAV Assistant)") as demo:
         gr.Markdown("# 🎓 Modul-Anerkennungs-Tool (PAV Assistant)")
 
@@ -166,7 +166,7 @@ Antworte im JSON-Format:
                         gr.Markdown("Noch keine Ergebnisse. Bitte Suche starten.")
                         return
 
-                    with gr.Tabs() as tabs:
+                    with gr.Tabs():
                         for i, (module, comp) in enumerate(comps):
                             decision = comp.get("decision", "Vielleicht")
                             m_meta = module.get("metadata", {})
@@ -223,4 +223,4 @@ Antworte im JSON-Format:
 
 if __name__ == "__main__":
     demo = launch_gui()
-    demo.launch(css=css)
+    demo.launch(css=CSS)
