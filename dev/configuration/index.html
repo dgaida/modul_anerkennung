@@ -1301,9 +1301,14 @@
 </thead>
 <tbody>
 <tr>
+<td><code>API_KEY</code></td>
+<td>Universeller API-Key (Provider wird automatisch erkannt)</td>
+<td>-</td>
+</tr>
+<tr>
 <td><code>LLM_PROVIDER</code></td>
-<td>Der zu verwendende Provider (<code>openai</code>, <code>groq</code>, <code>gemini</code>)</td>
-<td><code>openai</code></td>
+<td>(Optional) Expliziter Provider (<code>openai</code>, <code>groq</code>, <code>gemini</code>)</td>
+<td>-</td>
 </tr>
 <tr>
 <td><code>OPENAI_API_KEY</code></td>
@@ -1333,9 +1338,13 @@
 </tbody>
 </table>
 <h2 id="beispiel-env-datei">Beispiel .env Datei</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>LLM_PROVIDER=openai
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>OPENAI_API_KEY=sk-proj-xxxx...
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>MOCOGI_API_TOKEN=your_bearer_token
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Entweder API_KEY (Provider-Auto-Erkennung)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>API_KEY=sk-proj-xxxx...
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a># ODER provider-spezifisch
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a># OPENAI_API_KEY=sk-proj-xxxx...
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a># LLM_PROVIDER=openai
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>MOCOGI_API_TOKEN=your_bearer_token
 </span></code></pre></div>
 <h2 id="google-colab">Google Colab</h2>
 <p>In Google Colab werden die Geheimnisse über <code>google.colab.userdata</code> bezogen. Stellen Sie sicher, dass die entsprechenden Schlüssel in Ihrem Google-Konto hinterlegt sind.</p>

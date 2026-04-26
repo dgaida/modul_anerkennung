@@ -622,10 +622,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation-via-pip-empfohlen" class="md-nav__link">
+  <a href="#installation-via-pip-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation via Pip (Empfohlen)
+        Installation via Pip (Recommended)
       
     </span>
   </a>
@@ -633,10 +633,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation-fur-entwickler" class="md-nav__link">
+  <a href="#installation-for-developers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation für Entwickler
+        Installation for Developers
       
     </span>
   </a>
@@ -644,10 +644,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#abhangigkeiten" class="md-nav__link">
+  <a href="#dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Abhängigkeiten
+        Dependencies
       
     </span>
   </a>
@@ -655,10 +655,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#docker-geplant" class="md-nav__link">
+  <a href="#docker-planned" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Docker (Geplant)
+        Docker (Planned)
       
     </span>
   </a>
@@ -1249,10 +1249,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation-via-pip-empfohlen" class="md-nav__link">
+  <a href="#installation-via-pip-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation via Pip (Empfohlen)
+        Installation via Pip (Recommended)
       
     </span>
   </a>
@@ -1260,10 +1260,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#installation-fur-entwickler" class="md-nav__link">
+  <a href="#installation-for-developers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Installation für Entwickler
+        Installation for Developers
       
     </span>
   </a>
@@ -1271,10 +1271,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#abhangigkeiten" class="md-nav__link">
+  <a href="#dependencies" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Abhängigkeiten
+        Dependencies
       
     </span>
   </a>
@@ -1282,10 +1282,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#docker-geplant" class="md-nav__link">
+  <a href="#docker-planned" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Docker (Geplant)
+        Docker (Planned)
       
     </span>
   </a>
@@ -1313,27 +1313,27 @@
 
 
 <h1 id="installation">Installation</h1>
-<p>Das Modul-Anerkennungstool kann auf verschiedene Arten installiert werden.</p>
-<h2 id="installation-via-pip-empfohlen">Installation via Pip (Empfohlen)</h2>
-<p>Sie können das Paket direkt von GitHub installieren:</p>
+<p>The module recognition tool can be installed in several ways.</p>
+<h2 id="installation-via-pip-recommended">Installation via Pip (Recommended)</h2>
+<p>You can install the package directly from GitHub:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/dgaida/modul_anerkennung.git
 </span></code></pre></div>
-<h2 id="installation-fur-entwickler">Installation für Entwickler</h2>
-<p>Wenn Sie am Tool mitarbeiten möchten, klonen Sie das Repository und installieren es im Editier-Modus:</p>
+<h2 id="installation-for-developers">Installation for Developers</h2>
+<p>If you want to contribute to the tool, clone the repository and install it in editable mode:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/dgaida/modul_anerkennung.git
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>modul_anerkennung
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>test<span class="o">]</span>
 </span></code></pre></div>
-<h2 id="abhangigkeiten">Abhängigkeiten</h2>
-<p>Die wichtigsten Abhängigkeiten sind:</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>The most important dependencies are:</p>
 <ul>
-<li><code>llm_client</code>: Schnittstelle zu LLM-Providern.  </li>
-<li><code>fastmcp</code>: Framework für das Model Context Protocol.  </li>
-<li><code>gradio</code>: Framework für die Benutzeroberfläche.  </li>
-<li><code>raganything</code>: (Optional) Für RAG-Funktionalitäten.  </li>
+<li><a href="https://github.com/dgaida/llm_client"><code>llm_client</code></a>: Interface to LLM providers.</li>
+<li><a href="https://github.com/jlowin/fastmcp"><code>fastmcp</code></a>: Framework for the Model Context Protocol.</li>
+<li><a href="https://gradio.app"><code>gradio</code></a>: Framework for the user interface.</li>
+<li><a href="https://github.com/HKUDS/RAG-Anything"><code>raganything</code></a>: (Optional) For RAG functionalities.</li>
 </ul>
-<h2 id="docker-geplant">Docker (Geplant)</h2>
-<p>Eine Docker-Installation ist für zukünftige Versionen geplant.</p>
+<h2 id="docker-planned">Docker (Planned)</h2>
+<p>A Docker installation is planned for future versions.</p>
 
 
 

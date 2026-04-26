@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#konfiguration" class="md-skip">
+        <a href="#configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -649,10 +649,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#umgebungsvariablen" class="md-nav__link">
+  <a href="#environment-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Umgebungsvariablen
+        Environment Variables
       
     </span>
   </a>
@@ -660,10 +660,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beispiel-env-datei" class="md-nav__link">
+  <a href="#example-env-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Beispiel .env Datei
+        Example .env File
       
     </span>
   </a>
@@ -1238,10 +1238,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#umgebungsvariablen" class="md-nav__link">
+  <a href="#environment-variables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Umgebungsvariablen
+        Environment Variables
       
     </span>
   </a>
@@ -1249,10 +1249,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#beispiel-env-datei" class="md-nav__link">
+  <a href="#example-env-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Beispiel .env Datei
+        Example .env File
       
     </span>
   </a>
@@ -1290,57 +1290,66 @@
   
 
 
-<h1 id="konfiguration">Konfiguration</h1>
-<p>Die Konfiguration erfolgt primär über Umgebungsvariablen oder eine <code>.env</code> / <code>secrets.env</code> Datei.</p>
-<h2 id="umgebungsvariablen">Umgebungsvariablen</h2>
+<h1 id="configuration">Configuration</h1>
+<p>Configuration is primarily done via environment variables or a <code>.env</code> / <code>secrets.env</code> file.</p>
+<h2 id="environment-variables">Environment Variables</h2>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
-<th>Beschreibung</th>
-<th>Standardwert</th>
+<th>Description</th>
+<th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>API_KEY</code></td>
+<td>Universal API key (provider is automatically detected)</td>
+<td>-</td>
+</tr>
+<tr>
 <td><code>LLM_PROVIDER</code></td>
-<td>Der zu verwendende Provider (<code>openai</code>, <code>groq</code>, <code>gemini</code>)</td>
-<td><code>openai</code></td>
+<td>(Optional) Explicit provider (<code>openai</code>, <code>groq</code>, <code>gemini</code>)</td>
+<td>-</td>
 </tr>
 <tr>
 <td><code>OPENAI_API_KEY</code></td>
-<td>API-Key für OpenAI</td>
+<td>API key for OpenAI</td>
 <td>-</td>
 </tr>
 <tr>
 <td><code>GROQ_API_KEY</code></td>
-<td>API-Key für Groq</td>
+<td>API key for Groq</td>
 <td>-</td>
 </tr>
 <tr>
 <td><code>GEMINI_API_KEY</code></td>
-<td>API-Key für Google Gemini</td>
+<td>API key for Google Gemini</td>
 <td>-</td>
 </tr>
 <tr>
 <td><code>MOCOGI_API_TOKEN</code></td>
-<td>Bearer Token für die Mocogi API (TH Köln)</td>
+<td>Bearer Token for the Mocogi API (TH Köln)</td>
 <td>-</td>
 </tr>
 <tr>
 <td><code>LOG_LEVEL</code></td>
-<td>Logging-Stufe (<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>)</td>
+<td>Logging level (<code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>)</td>
 <td><code>INFO</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="beispiel-env-datei">Beispiel .env Datei</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>LLM_PROVIDER=openai
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>OPENAI_API_KEY=sk-proj-xxxx...
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>MOCOGI_API_TOKEN=your_bearer_token
+<h2 id="example-env-file">Example .env File</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Either API_KEY (provider auto-detection)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>API_KEY=sk-proj-xxxx...
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a># OR provider-specific
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a># OPENAI_API_KEY=sk-proj-xxxx...
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a># LLM_PROVIDER=openai
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>MOCOGI_API_TOKEN=your_bearer_token
 </span></code></pre></div>
 <h2 id="google-colab">Google Colab</h2>
-<p>In Google Colab werden die Geheimnisse über <code>google.colab.userdata</code> bezogen. Stellen Sie sicher, dass die entsprechenden Schlüssel in Ihrem Google-Konto hinterlegt sind.</p>
+<p>In Google Colab, secrets are retrieved via <code>google.colab.userdata</code>. Make sure the corresponding keys are stored in your Google account.</p>
 
 
 
