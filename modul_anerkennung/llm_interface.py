@@ -1,7 +1,12 @@
 """Schnittstelle zum LLM über llm_client."""
 
+import json
+import re
+from typing import List, Dict, Any, Type, TypeVar
 from llm_client import LLMClient
-from typing import List, Dict, Any
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class LLMInterface:
@@ -25,7 +30,7 @@ class LLMInterface:
 
         Args:
             messages (List[Dict[str, str]]): Nachrichtenverlauf für die LLM-Kommunikation.
-            **kwargs: Zusätzliche Argumente für die Completion.
+            **kwargs: Zusätzliche Argumente for die Completion.
         Returns:
             str: Antwort des LLM.
         """
@@ -41,9 +46,31 @@ class LLMInterface:
         Returns:
             str: Antwort des LLM.
         """
-        # Stelle sicher, dass der Client asynchron arbeiten kann
         if not self.client.use_async:
             self.client.use_async = True
-            # Wir müssen den Provider neu initialisieren, wenn wir auf async umstellen
-            # In llm_client v0.3.0 wird dies intern gehandhabt, wenn achat_completion aufgerufen wird
         return await self.client.achat_completion(messages, **kwargs)
+
+    def extract_json(self, text: str, model_class: Type[T]) -> T:
+        """
+        Extrahiert JSON aus einem Text und validiert es gegen eine Pydantic-Klasse.
+
+        Args:
+            text (str): Der Text, der JSON enthält.
+            model_class (Type[T]): Die Pydantic-Klasse zur Validierung.
+
+        Returns:
+            T: Die validierte Instanz der model_class.
+        """
+        # Suche nach dem ersten { und dem letzten }
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if not match:
+            raise ValueError(f"Kein JSON im LLM-Output gefunden: {text}")
+
+        json_str = match.group(0)
+        try:
+            data = json.loads(json_str)
+            return model_class.model_validate(data)
+        except (json.JSONDecodeError, Exception) as e:
+            raise ValueError(
+                f"Fehler beim Parsen oder Validieren des JSON: {e}\nRaw JSON: {json_str}"
+            )
