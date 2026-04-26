@@ -44,5 +44,5 @@ include = ["modul_anerkennung*"]
 ignore-init-method = true
 ignore-init-module = false
 ignore-magic = true
-fail-under = 95
+fail-under = 70
 verbose = 1

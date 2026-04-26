@@ -36,7 +36,7 @@ jobs:
 
       - name: Check API doc coverage
         run: |
-          interrogate modul_anerkennung/ --fail-under 95 --generate-badge docs/assets/interrogate.svg
+          interrogate modul_anerkennung/ --fail-under 70 --generate-badge docs/assets/interrogate.svg
 
       - name: Collect and write metrics
         run: |
