@@ -1,88 +1,226 @@
-"""GUI für das Anerkennungstool mithilfe von Gradio."""
 import gradio as gr
 import asyncio
-from .rag_manager import RAGManager
+import json
+import logging
+from typing import List, Dict, Any, Tuple
 from .llm_interface import LLMInterface
-from .similarity_checker import SimilarityChecker
+from .mcp_client import MocogiClient
 
-def launch_gui() -> None:
-    """Startet die Gradio-Benutzeroberfläche."""
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    # Lazy initialization to avoid starting everything at import
-    rag = None
-    llm = None
-    checker = None
+def launch_gui():
+    llm = LLMInterface()
 
-    async def get_checker():
-        nonlocal rag, llm, checker
-        if checker is None:
-            rag = RAGManager()
-            llm = LLMInterface()
-            checker = SimilarityChecker(rag, llm)
-        return checker
+    # State to store cumulative application data
+    # format: {"requests": [], "reports": []}
+    app_state = gr.State({"requests": [], "reports": []})
 
-    async def process_files(own_file, external_file):
-        c = await get_checker()
-
-        # Index internal handbook if provided
-        if own_file:
-            await rag.process_document(own_file.name)
-
-        # Read external module description
-        if external_file.name.lower().endswith(".pdf"):
-            # If it's a PDF, we could also process it via RAG or extract text
-            # For simplicity, if RAGAnything is working, we can just use the path
-            # But compare_modules expects text currently.
-            # Let's use a simple text extraction for external_file if it's text-based
-            # or just use its content if it's already indexed?
-            # Actually, let's just support text files for the 'external' part for now,
-            # or extract text if it's PDF.
-            try:
-                from pypdf import PdfReader
-                reader = PdfReader(external_file.name)
-                external_text = ""
-                for page in reader.pages:
-                    external_text += page.extract_text()
-            except Exception as e:
-                return f"Fehler beim Lesen der externen PDF: {e}"
-        else:
-            with open(external_file.name, "r", encoding="utf-8", errors="ignore") as f:
-                external_text = f.read()
-
-        results = await c.compare_modules(external_text)
-
-        if "explanation" in results:
-            return results["explanation"]
-        elif "explanations" in results:
-            return "\n\n---\n\n".join(results["explanations"])
-        else:
-            return str(results)
-
-    def sync_process(own_file, external_file):
+    async def get_study_programs():
         try:
-            # We need a new event loop or use the existing one
-            return asyncio.run(process_files(own_file, external_file))
+            async with MocogiClient() as client:
+                programs = await client.list_study_programs()
+                choices = []
+                for p in programs:
+                    po_id = p.get("id")
+                    name = p.get("name", po_id)
+                    choices.append((name, po_id))
+                return gr.update(choices=choices)
         except Exception as e:
-            return f"Fehler: {e}"
+            logger.error(f"Error fetching programs: {e}")
+            return gr.update(choices=[("Fehler beim Laden", "error")])
 
-    with gr.Blocks() as demo:
+    async def analyze_module(text: str):
+        if not text:
+            return "Bitte Modulbeschreibung eingeben.", "", "", ""
+
+        prompt = f"""Analysiere die folgende Modulbeschreibung und extrahiere:
+1. Modulname
+2. Anzahl ECTS (nur die Zahl)
+3. 3-4 prägnante Suchbegriffe für eine semantische Suche.
+
+Antworte ausschließlich im JSON-Format:
+{{
+  "name": "...",
+  "ects": 5,
+  "keywords": ["...", "...", "..."]
+}}
+
+Modulbeschreibung:
+{text}"""
+
+        try:
+            response = await llm.achat([{"role": "user", "content": prompt}])
+            # Basic JSON extraction
+            start = response.find('{')
+            end = response.rfind('}') + 1
+            data = json.loads(response[start:end])
+
+            name = data.get("name", "")
+            ects = str(data.get("ects", ""))
+            keywords = ", ".join(data.get("keywords", []))
+
+            return f"Analyse abgeschlossen für: {name}", name, ects, keywords
+        except Exception as e:
+            logger.error(f"Error parsing LLM response: {e}")
+            return f"Fehler bei der Analyse: {e}", "", "", ""
+
+    async def search_similar_modules(po_id: str, keywords: str, max_ects: str, external_text: str):
+        if not po_id:
+            return []
+
+        try:
+            ects_val = float(max_ects) if max_ects else None
+        except ValueError:
+            ects_val = None
+
+        try:
+            async with MocogiClient() as client:
+                modules = await client.call_tool("search_modules", {
+                    "po_id": po_id,
+                    "search_term": keywords,
+                    "max_ects": ects_val
+                })
+
+            # For each module, perform a comparison
+            comparisons = []
+            for m in modules[:5]: # Top 5
+                comp = await perform_comparison(external_text, m)
+                comparisons.append((m, comp))
+
+            return comparisons
+        except Exception as e:
+            logger.error(f"Error during search/comparison: {e}")
+            return []
+
+    async def perform_comparison(external_text: str, internal_module: Dict[str, Any]):
+        internal_text = json.dumps(internal_module, indent=2)
+
+        prompt = f"""Vergleiche die folgende externe Modulbeschreibung mit unserem internen Modul.
+
+Externe Beschreibung:
+{external_text}
+
+Internes Modul:
+{internal_text}
+
+Erstelle einen detaillierten Vergleichsbericht.
+Bestimme, ob das Modul anerkannt werden kann (Ja, Nein, Vielleicht).
+Antworte im JSON-Format:
+{{
+  "decision": "Ja" | "Nein" | "Vielleicht",
+  "reasoning": "Kurze Begründung",
+  "report": "Ausführlicher Bericht"
+}}
+"""
+        try:
+            response = await llm.achat([{"role": "user", "content": prompt}])
+            start = response.find('{')
+            end = response.rfind('}') + 1
+            return json.loads(response[start:end])
+        except Exception as e:
+            return {"decision": "Vielleicht", "reasoning": f"Fehler: {e}", "report": response}
+
+    def add_to_application(state, ext_name, internal_module, report):
+        m_title = internal_module.get('metadata', {}).get('title', 'Unbekanntes Modul')
+        req = f"- {ext_name} soll als {m_title} anerkannt werden."
+
+        new_state = state.copy()
+        new_state["requests"].append(req)
+        new_state["reports"].append(f"Begründung für {ext_name} -> {m_title}:\n{report}\n\n---\n")
+
+        return new_state, "\n".join(new_state["requests"]), "\n".join(new_state["reports"])
+
+    css = """
+    .green { color: green !important; font-weight: bold; }
+    .red { color: red !important; font-weight: bold; }
+    .yellow { color: orange !important; font-weight: bold; }
+    """
+    with gr.Blocks(title="Modul-Anerkennungs-Tool (PAV Assistant)") as demo:
         gr.Markdown("# 🎓 Modul-Anerkennungs-Tool (PAV Assistant)")
-        gr.Markdown("Lade dein Modulhandbuch hoch und vergleiche es mit einer externen Modulbeschreibung.")
+
+        state = app_state # Use the state defined above
 
         with gr.Row():
-            own_handbook = gr.File(label="Eigenes Modulhandbuch (PDF)")
-            external_module = gr.File(label="Externes Modul (PDF/Text)")
+            with gr.Column(scale=2):
+                external_desc = gr.Textbox(label="Externe Modulbeschreibung hier reinkopieren", lines=10)
+                analyze_btn = gr.Button("Analysiere Modulbeschreibung", variant="primary")
 
-        submit_btn = gr.Button("Vergleichen")
-        output = gr.Textbox(label="Ergebnis / Begründung", lines=10)
+                with gr.Row():
+                    ext_name = gr.Textbox(label="Extrahierter Name")
+                    ext_ects = gr.Textbox(label="Extrahierte ECTS")
+                ext_keywords = gr.Textbox(label="Suchbegriffe (kommagetrennt)")
 
-        submit_btn.click(
-            fn=sync_process,
-            inputs=[own_handbook, external_module],
-            outputs=output
+                po_dropdown = gr.Dropdown(label="Dein Studiengang bei uns", choices=[])
+                search_btn = gr.Button("Suche nach ähnlichen Modulen")
+                status_msg = gr.Textbox(label="Status", interactive=False)
+
+            with gr.Column(scale=3):
+                gr.Markdown("### Suchergebnisse und Vergleich")
+                results_output = gr.State([])
+
+                @gr.render(inputs=[results_output, ext_name])
+                def render_results(comps, name_val):
+                    if not comps:
+                        gr.Markdown("Noch keine Ergebnisse. Bitte Suche starten.")
+                        return
+
+                    with gr.Tabs() as tabs:
+                        for i, (module, comp) in enumerate(comps):
+                            decision = comp.get("decision", "Vielleicht")
+                            m_meta = module.get("metadata", {})
+                            m_title = m_meta.get("title", "Modul")
+
+                            # Emoji indicators for tabs
+                            icon = "✅" if decision == "Ja" else ("❌" if decision == "Nein" else "⚠️")
+                            tab_title = f"{icon} {m_title}"
+
+                            with gr.Tab(tab_title):
+                                color_class = "green" if decision == "Ja" else ("red" if decision == "Nein" else "yellow")
+                                gr.Markdown(f"**Vorschlag:** {m_title} ({m_meta.get('ects', '?')} ECTS)")
+                                gr.HTML(f"<b>Entscheidung:</b> <span class='{color_class}'>{decision}</span>")
+                                gr.Markdown(f"**Kurzbegründung:** {comp.get('reasoning', '')}")
+                                gr.Markdown(f"**Vergleichsbericht:**\n{comp.get('report', '')}")
+
+                                add_btn = gr.Button(f"Antrag für {m_title} vormerken")
+
+                                add_btn.click(
+                                    fn=add_to_application,
+                                    inputs=[state, ext_name, gr.State(module), gr.State(comp.get('report', ''))],
+                                    outputs=[state, final_list, final_reports]
+                                )
+
+        with gr.Row():
+            with gr.Column():
+                gr.Markdown("### Zusammenfassung der Anträge")
+                with gr.Row():
+                    final_list = gr.Textbox(label="Geplante Anerkennungen", lines=5, interactive=False)
+                    final_reports = gr.Textbox(label="Zugehörige Begründungen", lines=10, interactive=False)
+
+        # Event handlers
+        analyze_btn.click(
+            analyze_module,
+            inputs=[external_desc],
+            outputs=[status_msg, ext_name, ext_ects, ext_keywords]
         )
 
-    demo.launch()
+        search_btn.click(
+            lambda: "Suche läuft und Vergleiche werden erstellt...",
+            outputs=[status_msg]
+        ).then(
+            search_similar_modules,
+            inputs=[po_dropdown, ext_keywords, ext_ects, external_desc],
+            outputs=[results_output]
+        ).then(
+            lambda: "Suche abgeschlossen.",
+            outputs=[status_msg]
+        )
+
+        demo.load(get_study_programs, outputs=[po_dropdown])
+
+    return demo
 
 if __name__ == "__main__":
-    launch_gui()
+    demo = launch_gui()
+    demo.launch(css=css)
