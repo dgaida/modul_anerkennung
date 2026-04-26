@@ -1,4 +1,5 @@
 """Verwaltung von RAG-Prozessen und Dokumenten mit RAG-Anything."""
+
 from typing import Any, List, Dict
 import numpy as np
 from raganything import RAGAnything, RAGAnythingConfig
@@ -27,7 +28,7 @@ class RAGManager:
             prompt: str,
             system_prompt: str | None = None,
             history_messages: List[Dict[str, str]] = [],
-            **kwargs
+            **kwargs,
         ) -> str:
             messages = []
             if system_prompt:
@@ -54,9 +55,7 @@ class RAGManager:
             api_key = os.getenv("OPENAI_API_KEY")
             if api_key:
                 return await openai_embed(
-                    texts,
-                    model="text-embedding-3-large",
-                    api_key=api_key
+                    texts, model="text-embedding-3-large", api_key=api_key
                 )
             else:
                 # Use a local model via sentence-transformers if available
@@ -65,8 +64,12 @@ class RAGManager:
                     import torch
                     from lightrag.llm.hf import hf_embed
 
-                    tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-                    model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+                    tokenizer = AutoTokenizer.from_pretrained(
+                        "sentence-transformers/all-MiniLM-L6-v2"
+                    )
+                    model = AutoModel.from_pretrained(
+                        "sentence-transformers/all-MiniLM-L6-v2"
+                    )
                     device = "cuda" if torch.cuda.is_available() else "cpu"
                     model.to(device)
 
@@ -89,13 +92,15 @@ class RAGManager:
         self.rag = RAGAnything(
             config=config,
             llm_model_func=llm_model_func,
-            vision_model_func=llm_model_func, # Use same for vision for now
+            vision_model_func=llm_model_func,  # Use same for vision for now
             embedding_func=self.embedding_wrapper,
         )
 
     async def process_document(self, file_path: str) -> None:
         """Indexiert ein Dokument in der RAG-Datenbank."""
-        await self.rag.process_document_complete(file_path=file_path, parse_method="auto")
+        await self.rag.process_document_complete(
+            file_path=file_path, parse_method="auto"
+        )
 
     async def query(self, query_text: str, mode: str = "hybrid") -> Any:
         """Führt eine Abfrage gegen die Wissensbasis aus."""

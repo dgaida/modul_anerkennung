@@ -5,6 +5,7 @@ from typing import Any
 import torch
 import numpy as np
 from lightrag import LightRAG, QueryParam
+
 # from lightrag.llm.openai import openai_embed
 from lightrag.kg.shared_storage import initialize_pipeline_status
 from lightrag.utils import setup_logger, EmbeddingFunc
@@ -21,12 +22,13 @@ setup_logger("lightrag", level="INFO")
 #  LLM- und Embedding-Funktionen
 # ----------------------------------------------------------
 
+
 async def llm_model_func(
     prompt: str,
     system_prompt: str | None = None,
     history_messages: list[dict] = [],
     keyword_extraction: bool = False,
-    **kwargs
+    **kwargs,
 ) -> str:
     """
     Asynchrone LLM-Abfrage über die Groq API.
@@ -46,7 +48,10 @@ async def llm_model_func(
         base_url=BASE_URL,
     )
 
-    system_content = system_prompt or "You are an expert in module recognition and academic equivalence evaluation."
+    system_content = (
+        system_prompt
+        or "You are an expert in module recognition and academic equivalence evaluation."
+    )
 
     # Groq-kompatible Promptstruktur
     messages = [
@@ -86,10 +91,7 @@ async def embedding_func(texts: list[str]) -> np.ndarray:
 
     # Verwende hf_embed (bereitgestellt durch LightRAG)
     embeddings = await hf_embed(
-        texts,
-        tokenizer=tokenizer,
-        embed_model=model,
-        device=device
+        texts, tokenizer=tokenizer, embed_model=model, device=device
     )
 
     # Rückgabe als NumPy-Array für LightRAG-Kompatibilität
@@ -99,6 +101,7 @@ async def embedding_func(texts: list[str]) -> np.ndarray:
 # ----------------------------------------------------------
 #  LightRAG Manager-Klasse
 # ----------------------------------------------------------
+
 
 class LightRAGManager:
     """Kapselt die Verwendung von LightRAG mit Groq LLM."""
@@ -164,11 +167,14 @@ class LightRAGManager:
 # ----------------------------------------------------------
 
 if __name__ == "__main__":
+
     async def main():
         manager = LightRAGManager()
         await manager.initialize()
 
-        await manager.insert_text("Grundlagen der Informatik: Einführung in Programmierung und Datenstrukturen.")
+        await manager.insert_text(
+            "Grundlagen der Informatik: Einführung in Programmierung und Datenstrukturen."
+        )
         result = await manager.query("Was sind die zentralen Themen des Moduls?")
         print(result)
 

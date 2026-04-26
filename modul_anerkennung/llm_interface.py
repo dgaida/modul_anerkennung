@@ -1,4 +1,5 @@
 """Schnittstelle zum LLM über llm_client."""
+
 from llm_client import LLMClient
 from typing import List, Dict, Any
 
