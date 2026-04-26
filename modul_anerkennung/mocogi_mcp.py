@@ -1,3 +1,5 @@
+"""MCP-Server-Implementierung für den Zugriff auf die Mocogi-API der TH Köln."""
+
 import os
 import httpx
 import numpy as np
@@ -15,6 +17,7 @@ _model = None
 
 
 def get_model():
+    """Lädt das Embedding-Modell verzögert (Lazy Loading)."""
     global _model
     if _model is None:
         _model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
@@ -22,6 +25,7 @@ def get_model():
 
 
 def get_headers():
+    """Erstellt die HTTP-Header für die API-Anfragen, inkl. Bearer Token."""
     headers = {}
     token = os.getenv("MOCOGI_API_TOKEN")
     if token:

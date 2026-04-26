@@ -1,44 +1,43 @@
-# Erste Schritte
+# Getting Started
 
-Diese Anleitung führt Sie durch die ersten Schritte mit dem Modul-Anerkennungstool.
+This guide will walk you through the first steps with the module recognition tool.
 
-## Voraussetzungen
+## Prerequisites
 
 *   Python 3.10 oder höher  
-*   Ein API-Key für einen unterstützten LLM-Provider (OpenAI, Groq oder Gemini)  
+*   An API key for a supported LLM provider (OpenAI, Groq oder Gemini)
 *   (Optional) Ein Mocogi API-Token der TH Köln  
 
 ## Installation
 
-Installieren Sie das Tool direkt von GitHub:
+Install the tool directly from GitHub:
 
 ```bash
 pip install git+https://github.com/dgaida/modul_anerkennung.git
 ```
 
-## Konfiguration
+## Configuration
 
-Erstellen Sie eine `secrets.env` Datei im Projektverzeichnis:
+Create a `secrets.env` file in the project directory:
 
 ```env
-LLM_PROVIDER=openai
-OPENAI_API_KEY=ihr_api_key
+API_KEY=ihr_api_key
 MOCOGI_API_TOKEN=ihr_token
 ```
 
-## Starten der Anwendung
+## Starting the Application
 
-Führen Sie die Hauptdatei aus, um die Gradio-GUI zu starten:
+Run the main file to start the Gradio GUI:
 
 ```bash
 python main.py
 ```
 
-Die Anwendung ist dann standardmäßig unter `http://127.0.0.1:7860` erreichbar.
+The application is then reachable by default at `http://127.0.0.1:7860`.
 
-## Beispiel-Workflow
+## Example Workflow
 
-1.  **Externe Beschreibung kopieren**: Fügen Sie den Text eines externen Moduls in das Analyse-Feld ein.  
-2.  **Analyse starten**: Klicken Sie auf "Modul analysieren". Das LLM extrahiert ECTS und Suchbegriffe.  
-3.  **Suche & Vergleich**: Das Tool sucht in der Mocogi-Datenbank nach Treffern und vergleicht diese automatisch.  
-4.  **Ergebnis prüfen**: Sehen Sie sich die generierte Begründung an und entscheiden Sie über die Anerkennung.  
+1.  **Copy external description**: Paste the text of an external module into the analysis field.
+2.  **Start analysis**: Click on "Analyze Module". The LLM extracts ECTS and search terms.
+3.  **Search & Comparison**: The tool searches the Mocogi database for matches and compares them automatically.
+4.  **Check result**: Look at the generated reasoning and decide on the recognition.

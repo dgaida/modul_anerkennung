@@ -169,6 +169,7 @@ class LightRAGManager:
 if __name__ == "__main__":
 
     async def main():
+        """Demo-Funktion für LightRAGManager."""
         manager = LightRAGManager()
         await manager.initialize()
 

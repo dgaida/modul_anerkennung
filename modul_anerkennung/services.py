@@ -1,3 +1,5 @@
+"""Service-Layer für die Modul-Anerkennungs-Logik."""
+
 import json
 import logging
 from typing import List, Dict, Any, Tuple
@@ -12,6 +14,12 @@ class RecognitionService:
     """Service layer for module recognition logic."""
 
     def __init__(self, llm: LLMInterface = None):
+        """Initialisiert den RecognitionService.
+
+        Args:
+            llm (LLMInterface, optional): Die Schnittstelle zum LLM. Falls None, wird
+                eine neue Instanz von LLMInterface erstellt.
+        """
         self.llm = llm or LLMInterface()
 
     async def analyze_module(self, text: str) -> ModuleAnalysis:

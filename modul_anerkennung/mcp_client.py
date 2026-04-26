@@ -1,3 +1,5 @@
+"""Client für die Kommunikation mit dem Mocogi MCP Server."""
+
 import sys
 import io
 import json

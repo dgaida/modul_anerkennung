@@ -36,9 +36,13 @@ pip install git+https://github.com/dgaida/modul_anerkennung.git
 Erstelle eine Datei `secrets.env` im Projektverzeichnis:
 
 ```bash
-# Provider: openai, groq, oder gemini
-LLM_PROVIDER=openai
-OPENAI_API_KEY=dein_api_key
+# API Key (llm_client erkennt den Provider automatisch)
+# Alternativ: OPENAI_API_KEY, GROQ_API_KEY oder GEMINI_API_KEY
+API_KEY=dein_api_key
+
+# Optional: Provider explizit angeben (openai, groq, gemini)
+# LLM_PROVIDER=openai
+
 # Optional für TH Köln API
 MOCOGI_API_TOKEN=dein_token
 ```

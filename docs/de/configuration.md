@@ -6,7 +6,8 @@ Die Konfiguration erfolgt primär über Umgebungsvariablen oder eine `.env` / `s
 
 | Variable | Beschreibung | Standardwert |
 |----------|--------------|--------------|
-| `LLM_PROVIDER` | Der zu verwendende Provider (`openai`, `groq`, `gemini`) | `openai` |
+| `API_KEY` | Universeller API-Key (Provider wird automatisch erkannt) | - |
+| `LLM_PROVIDER` | (Optional) Expliziter Provider (`openai`, `groq`, `gemini`) | - |
 | `OPENAI_API_KEY` | API-Key für OpenAI | - |
 | `GROQ_API_KEY` | API-Key für Groq | - |
 | `GEMINI_API_KEY` | API-Key für Google Gemini | - |
@@ -16,8 +17,12 @@ Die Konfiguration erfolgt primär über Umgebungsvariablen oder eine `.env` / `s
 ## Beispiel .env Datei
 
 ```env
-LLM_PROVIDER=openai
-OPENAI_API_KEY=sk-proj-xxxx...
+# Entweder API_KEY (Provider-Auto-Erkennung)
+API_KEY=sk-proj-xxxx...
+
+# ODER provider-spezifisch
+# OPENAI_API_KEY=sk-proj-xxxx...
+# LLM_PROVIDER=openai
 MOCOGI_API_TOKEN=your_bearer_token
 ```
 
