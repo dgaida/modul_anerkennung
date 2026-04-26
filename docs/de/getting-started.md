@@ -21,8 +21,7 @@ pip install git+https://github.com/dgaida/modul_anerkennung.git
 Erstellen Sie eine `secrets.env` Datei im Projektverzeichnis:
 
 ```env
-LLM_PROVIDER=openai
-OPENAI_API_KEY=ihr_api_key
+API_KEY=ihr_api_key
 MOCOGI_API_TOKEN=ihr_token
 ```
 

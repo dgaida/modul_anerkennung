@@ -1,18 +1,18 @@
 # Installation
 
-Das Modul-Anerkennungstool kann auf verschiedene Arten installiert werden.
+The module recognition tool can be installed in several ways.
 
-## Installation via Pip (Empfohlen)
+## Installation via Pip (Recommended)
 
-Sie können das Paket direkt von GitHub installieren:
+You can install the package directly from GitHub:
 
 ```bash
 pip install git+https://github.com/dgaida/modul_anerkennung.git
 ```
 
-## Installation für Entwickler
+## Installation for Developers
 
-Wenn Sie am Tool mitarbeiten möchten, klonen Sie das Repository und installieren es im Editier-Modus:
+If you want to contribute to the tool, clone the repository and install it in editable mode:
 
 ```bash
 git clone https://github.com/dgaida/modul_anerkennung.git
@@ -20,15 +20,15 @@ cd modul_anerkennung
 pip install -e .[test]
 ```
 
-## Abhängigkeiten
+## Dependencies
 
-Die wichtigsten Abhängigkeiten sind:
+The most important dependencies are:
 
-*   `llm_client`: Schnittstelle zu LLM-Providern.  
-*   `fastmcp`: Framework für das Model Context Protocol.  
-*   `gradio`: Framework für die Benutzeroberfläche.  
-*   `raganything`: (Optional) Für RAG-Funktionalitäten.  
+*   [`llm_client`](https://github.com/dgaida/llm_client): Interface to LLM providers.
+*   [`fastmcp`](https://github.com/jlowin/fastmcp): Framework for the Model Context Protocol.
+*   [`gradio`](https://gradio.app): Framework for the user interface.
+*   [`raganything`](https://github.com/HKUDS/RAG-Anything): (Optional) For RAG functionalities.
 
-## Docker (Geplant)
+## Docker (Planned)
 
-Eine Docker-Installation ist für zukünftige Versionen geplant.
+A Docker installation is planned for future versions.

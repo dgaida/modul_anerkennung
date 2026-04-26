@@ -1,26 +1,31 @@
-# Konfiguration
+# Configuration
 
-Die Konfiguration erfolgt primär über Umgebungsvariablen oder eine `.env` / `secrets.env` Datei.
+Configuration is primarily done via environment variables or a `.env` / `secrets.env` file.
 
-## Umgebungsvariablen
+## Environment Variables
 
-| Variable | Beschreibung | Standardwert |
+| Variable | Description | Default |
 |----------|--------------|--------------|
-| `LLM_PROVIDER` | Der zu verwendende Provider (`openai`, `groq`, `gemini`) | `openai` |
-| `OPENAI_API_KEY` | API-Key für OpenAI | - |
-| `GROQ_API_KEY` | API-Key für Groq | - |
-| `GEMINI_API_KEY` | API-Key für Google Gemini | - |
-| `MOCOGI_API_TOKEN` | Bearer Token für die Mocogi API (TH Köln) | - |
-| `LOG_LEVEL` | Logging-Stufe (`DEBUG`, `INFO`, `WARNING`) | `INFO` |
+| `API_KEY` | Universal API key (provider is automatically detected) | - |
+| `LLM_PROVIDER` | (Optional) Explicit provider (`openai`, `groq`, `gemini`) | - |
+| `OPENAI_API_KEY` | API key for OpenAI | - |
+| `GROQ_API_KEY` | API key for Groq | - |
+| `GEMINI_API_KEY` | API key for Google Gemini | - |
+| `MOCOGI_API_TOKEN` | Bearer Token for the Mocogi API (TH Köln) | - |
+| `LOG_LEVEL` | Logging level (`DEBUG`, `INFO`, `WARNING`) | `INFO` |
 
-## Beispiel .env Datei
+## Example .env File
 
 ```env
-LLM_PROVIDER=openai
-OPENAI_API_KEY=sk-proj-xxxx...
+# Either API_KEY (provider auto-detection)
+API_KEY=sk-proj-xxxx...
+
+# OR provider-specific
+# OPENAI_API_KEY=sk-proj-xxxx...
+# LLM_PROVIDER=openai
 MOCOGI_API_TOKEN=your_bearer_token
 ```
 
 ## Google Colab
 
-In Google Colab werden die Geheimnisse über `google.colab.userdata` bezogen. Stellen Sie sicher, dass die entsprechenden Schlüssel in Ihrem Google-Konto hinterlegt sind.
+In Google Colab, secrets are retrieved via `google.colab.userdata`. Make sure the corresponding keys are stored in your Google account.

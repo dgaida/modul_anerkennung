@@ -68,9 +68,13 @@ GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 LLM_BASE_URL: str | None = os.getenv("LLM_BASE_URL")
 
-# Backward compatibility
+# Backward compatibility and auto-detection for llm_client
 API_KEY: str = GROQ_API_KEY or OPENAI_API_KEY or GEMINI_API_KEY
 BASE_URL: str | None = LLM_BASE_URL
+
+# Ensure API_KEY is set in environment for llm_client auto-detection
+if not os.getenv("API_KEY") and API_KEY:
+    os.environ["API_KEY"] = API_KEY
 
 # ----------------------------------------------------------------------
 # 5. Debug-Ausgabe (optional aktivierbar)

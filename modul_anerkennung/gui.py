@@ -1,3 +1,5 @@
+"""Gradio-Benutzeroberfläche für das Modul-Anerkennungstool."""
+
 import gradio as gr
 import logging
 
@@ -15,6 +17,11 @@ CSS = """
 """
 
 def launch_gui():
+    """Startet die Gradio-Weboberfläche für das Modul-Anerkennungstool.
+
+    Konfiguriert die UI-Komponenten, definiert Event-Handler und startet
+    den lokalen Webserver.
+    """
     service = RecognitionService()
 
     # State to store cumulative application data
@@ -22,6 +29,7 @@ def launch_gui():
     app_state = gr.State({"requests": [], "reports": []})
 
     async def get_study_programs():
+        """Ruft die Liste der verfügbaren Studiengänge vom MCP-Server ab."""
         try:
             async with MocogiClient() as client:
                 programs = await client.list_study_programs()
@@ -36,6 +44,7 @@ def launch_gui():
             return gr.update(choices=[("Fehler beim Laden", "error")])
 
     async def analyze_module_ui(text: str):
+        """Analysiert eine Modulbeschreibung über die UI."""
         try:
             analysis = await service.analyze_module(text)
             name = analysis.name
@@ -49,6 +58,7 @@ def launch_gui():
     async def search_similar_modules_ui(
         po_id: str, keywords: str, max_ects: str, external_text: str
     ):
+        """Sucht nach ähnlichen Modulen und vergleicht sie."""
         try:
             results = await service.search_and_compare(
                 po_id, keywords, max_ects, external_text
@@ -61,6 +71,7 @@ def launch_gui():
             return []
 
     def add_to_application(state, ext_name, internal_module, report):
+        """Fügt einen Anerkennungsvorschlag zur Zusammenfassung hinzu."""
         m_title = internal_module.get("metadata", {}).get("title", "Unbekanntes Modul")
         req = f"- {ext_name} soll als {m_title} anerkannt werden."
 
@@ -105,6 +116,7 @@ def launch_gui():
 
                 @gr.render(inputs=[results_output, ext_name])
                 def render_results(comps, name_val):
+                    """Rendert die Suchergebnisse und Vergleichsberichte in der UI."""
                     if not comps:
                         gr.Markdown("Noch keine Ergebnisse. Bitte Suche starten.")
                         return

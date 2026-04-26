@@ -1,3 +1,5 @@
+"""Pydantic-Modelle für die Datenvalidierung und den Austausch zwischen Komponenten."""
+
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
