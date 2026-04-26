@@ -2,10 +2,10 @@
 
 Dieser Bericht listet Symbole auf, die derzeit nicht den Docstring-Standards entsprechen.
 
-## Zusammenfassung
-- **Aktuelle Abdeckung**: 72.7%
-- **Ziel**: 95.0%
-- **Fehlende Docstrings**: 18
+## Zusammenfassung  
+- **Aktuelle Abdeckung**: 72.7%  
+- **Ziel**: 95.0%  
+- **Fehlende Docstrings**: 18  
 
 ## Fehlende Symbole & Empfohlene Fixes
 

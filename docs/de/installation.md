@@ -24,10 +24,10 @@ pip install -e .[test]
 
 Die wichtigsten Abhängigkeiten sind:
 
-*   `llm_client`: Schnittstelle zu LLM-Providern.
-*   `fastmcp`: Framework für das Model Context Protocol.
-*   `gradio`: Framework für die Benutzeroberfläche.
-*   `raganything`: (Optional) Für RAG-Funktionalitäten.
+*   `llm_client`: Schnittstelle zu LLM-Providern.  
+*   `fastmcp`: Framework für das Model Context Protocol.  
+*   `gradio`: Framework für die Benutzeroberfläche.  
+*   `raganything`: (Optional) Für RAG-Funktionalitäten.  
 
 ## Docker (Geplant)
 

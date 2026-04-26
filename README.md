@@ -11,6 +11,7 @@ Das Tool verwendet ein **LLM**, um Ähnlichkeiten zwischen externen Modulbeschre
 [![CodeQL](https://github.com/dgaida/modul_anerkennung/actions/workflows/codeql.yml/badge.svg)](https://github.com/dgaida/modul_anerkennung/actions/workflows/codeql.yml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/dgaida/modul_anerkennung/graphs/commit-activity)
 ![Last commit](https://img.shields.io/github/last-commit/dgaida/modul_anerkennung)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://dgaida.github.io/modul_anerkennung/)
 
 
 ---
