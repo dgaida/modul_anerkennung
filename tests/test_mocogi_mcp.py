@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from modul_anerkennung.mocogi_mcp import search_modules
 
+
 @pytest.mark.asyncio
 async def test_search_modules_filtering():
     mock_modules = [
@@ -19,6 +20,7 @@ async def test_search_modules_filtering():
         results = await search_modules("po123", max_ects=6)
         assert len(results) == 1
         assert results[0]["metadata"]["ects"] == 5
+
 
 @pytest.mark.asyncio
 async def test_search_modules_similarity():

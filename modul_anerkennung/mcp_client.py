@@ -9,12 +9,14 @@ from typing import List, Dict, Any
 # Logger konfigurieren
 logger = logging.getLogger(__name__)
 
+
 class MocogiClient:
     """Ein Client für den Mocogi MCP Server, der die Kommunikation über stdio ermöglicht.
 
     Dieser Client startet den Mocogi MCP Server als Subprozess und ermöglicht
     den Zugriff auf dessen Tools über eine asynchrone Schnittstelle.
     """
+
     def __init__(self):
         """Initialisiert den MocogiClient und konfiguriert den Server-Befehl.
 
@@ -32,8 +34,7 @@ class MocogiClient:
             logger.info("Initialisiere MocogiClient mit StdioTransport")
             # Der Server wird als Subprozess gestartet
             transport = StdioTransport(
-                command=sys.executable,
-                args=["-m", "modul_anerkennung.mocogi_mcp"]
+                command=sys.executable, args=["-m", "modul_anerkennung.mocogi_mcp"]
             )
             self.client = Client(transport)
         else:
@@ -41,6 +42,7 @@ class MocogiClient:
             # Fallback: In-Memory Client für Umgebungen ohne fileno (Jupyter/Colab)
             try:
                 from modul_anerkennung.mocogi_mcp import mcp as server
+
                 self.client = Client(server)
             except ImportError:
                 # Falls Import fehlschlägt (z.B. bei Installation als Package)
@@ -66,7 +68,9 @@ class MocogiClient:
         """
         await self.client.__aexit__(exc_type, exc_val, exc_tb)
 
-    async def list_study_programs(self, filter: str = "currently-active") -> List[Dict[str, Any]]:
+    async def list_study_programs(
+        self, filter: str = "currently-active"
+    ) -> List[Dict[str, Any]]:
         """Listet alle Studiengänge der TH Köln auf.
 
         Args:
@@ -134,17 +138,21 @@ class MocogiClient:
         mcp_tools = await self.list_tools()
         tools = []
         for tool in mcp_tools:
-            tools.append({
-                "type": "function",
-                "function": {
-                    "name": tool.name,
-                    "description": tool.description,
-                    "parameters": tool.inputSchema
+            tools.append(
+                {
+                    "type": "function",
+                    "function": {
+                        "name": tool.name,
+                        "description": tool.description,
+                        "parameters": tool.inputSchema,
+                    },
                 }
-            })
+            )
         return tools
 
-    async def chat_with_tools(self, llm_client: Any, messages: List[Dict[str, Any]], max_iterations: int = 5) -> str:
+    async def chat_with_tools(
+        self, llm_client: Any, messages: List[Dict[str, Any]], max_iterations: int = 5
+    ) -> str:
         """Führt einen Chat mit Tool-Unterstützung durch.
 
         Args:
@@ -159,10 +167,9 @@ class MocogiClient:
         tools = await self.get_tools_for_llm()
 
         for i in range(max_iterations):
-            logger.info(f"Chat-Iteration {i+1}/{max_iterations}")
+            logger.info(f"Chat-Iteration {i + 1}/{max_iterations}")
             response = await llm_client.achat_completion_with_tools(
-                messages=messages,
-                tools=tools
+                messages=messages, tools=tools
             )
 
             # Falls das LLM direkt antwortet ohne Tool-Call
@@ -189,12 +196,14 @@ class MocogiClient:
                 result = await self.call_tool(tool_name, tool_args)
 
                 # Ergebnis zurück an den Chat-Verlauf übergeben
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": tool_call["id"],
-                    "name": tool_name,
-                    "content": json.dumps(result)
-                })
+                messages.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": tool_call["id"],
+                        "name": tool_name,
+                        "content": json.dumps(result),
+                    }
+                )
 
         logger.warning("Maximale Anzahl an Tool-Calls erreicht.")
         return "Maximale Anzahl an Tool-Calls erreicht."

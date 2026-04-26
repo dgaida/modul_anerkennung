@@ -1,4 +1,5 @@
 """Vergleich von Modulbeschreibungen mittels RAG und LLM."""
+
 from typing import Dict, Any
 from .rag_manager import RAGManager
 from .llm_interface import LLMInterface
@@ -41,8 +42,14 @@ class SimilarityChecker:
 
         for match in top_matches:
             messages = [
-                {"role": "system", "content": "Du bist ein Fachprüfer für Modulbeschreibungen."},
-                {"role": "user", "content": f"Erkläre die Unterschiede zwischen:\nExtern:\n{external_text}\n\nIntern:\n{match}"}
+                {
+                    "role": "system",
+                    "content": "Du bist ein Fachprüfer für Modulbeschreibungen.",
+                },
+                {
+                    "role": "user",
+                    "content": f"Erkläre die Unterschiede zwischen:\nExtern:\n{external_text}\n\nIntern:\n{match}",
+                },
             ]
             explanation = self.llm.chat(messages)
             explanations.append(explanation)

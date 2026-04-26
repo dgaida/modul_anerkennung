@@ -1,4 +1,5 @@
 """Globale Konfigurationen für das Modulanerkennungs-Tool (Colab-kompatibel)."""
+
 from pathlib import Path
 from dotenv import load_dotenv
 import os
@@ -11,6 +12,7 @@ def is_colab() -> bool:
     """Erkennt, ob das Skript in Google Colab ausgeführt wird."""
     try:
         import google.colab  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -47,6 +49,7 @@ for env_name in ["secrets.env", ".env"]:
 if IN_COLAB:
     try:
         from google.colab import userdata  # type: ignore
+
         for key in ["OPENAI_API_KEY", "GROQ_API_KEY", "GEMINI_API_KEY", "LLM_BASE_URL"]:
             try:
                 value = userdata.get(key)
