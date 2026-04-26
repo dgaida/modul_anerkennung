@@ -1,0 +1,108 @@
+site_name: Modul-Anerkennungstool
+site_url: https://dgaida.github.io/modul_anerkennung/
+repo_url: https://github.com/dgaida/modul_anerkennung
+repo_name: dgaida/modul_anerkennung
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: de
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: de
+          name: Deutsch
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_category_heading: true
+            allow_lookup: true
+  - mermaid2:
+      arguments:
+        theme: light
+  - mike:
+      alias_type: symlink
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+
+extra:
+  version:
+    provider: mike
+
+nav:
+  - Home: index.md
+  - Erste Schritte: getting-started.md
+  - Installation: installation.md
+  - Konfiguration: configuration.md
+  - Nutzung:
+    - Übersicht: usage/index.md
+  - API Referenz:
+    - Übersicht: api/index.md
+  - Architektur:
+    - Übersicht: architecture/index.md
+  - Entwicklung:
+    - Übersicht: development/index.md
+    - Docstring Guide: development/docstring-guide.md
+    - Compliance Report: development/compliance-report.md
+    - Versionierung: development/versioning.md
+    - Changelog: development/changelog.md
+  - Troubleshooting: troubleshooting.md
+  - Metriken: metrics.md

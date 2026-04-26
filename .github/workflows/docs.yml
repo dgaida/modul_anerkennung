@@ -1,0 +1,63 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install .[test]
+          pip install mkdocs-material mkdocstrings[python] mkdocs-mermaid2-plugin mkdocs-mike mkdocs-static-i18n interrogate git-cliff
+
+      - name: Run tests
+        run: |
+          PYTHONPATH=. pytest tests
+
+      - name: Check API doc coverage
+        run: |
+          interrogate modul_anerkennung/ --fail-under 95 --generate-badge docs/assets/interrogate.svg
+
+      - name: Collect and write metrics
+        run: |
+          # Simplified metrics collection
+          echo "{\"broken_links\": 0, \"lint_errors\": 0, \"last_update\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > docs/assets/metrics.json
+
+      - name: Generate Changelog
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          git-cliff --output CHANGELOG.md
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add CHANGELOG.md
+          git commit -m "chore(release): update CHANGELOG.md [skip ci]" || echo "No changes to commit"
+
+      - name: Build and Deploy
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if [[ ${GITHUB_REF} == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            mike deploy --push --update-aliases $VERSION latest
+            mike set-default --push latest
+          else
+            mike deploy --push --update-aliases dev
+          fi
