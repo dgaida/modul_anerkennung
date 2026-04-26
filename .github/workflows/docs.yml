@@ -63,4 +63,9 @@ jobs:
             mike set-default --push latest
           else
             mike deploy --push --update-aliases dev
+            if mike list | grep -q "latest"; then
+              mike set-default --push latest
+            else
+              mike set-default --push dev
+            fi
           fi
