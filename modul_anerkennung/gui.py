@@ -1,6 +1,6 @@
 import gradio as gr
 import logging
-from typing import Dict, Any
+
 from .services import RecognitionService
 from .mcp_client import MocogiClient
 
@@ -13,7 +13,6 @@ CSS = """
 .red { color: red !important; font-weight: bold; }
 .yellow { color: orange !important; font-weight: bold; }
 """
-
 
 def launch_gui():
     service = RecognitionService()
@@ -182,7 +181,6 @@ def launch_gui():
         demo.load(get_study_programs, outputs=[po_dropdown])
 
     return demo
-
 
 if __name__ == "__main__":
     demo = launch_gui()
