@@ -3,9 +3,9 @@
 Dieser Bericht listet den Status der Docstring-Abdeckung im Projekt auf.
 
 ## Zusammenfassung  
-- **Aktuelle Abdeckung**: 100.0%
+- **Aktuelle Abdeckung**: 100.0%  
 - **Ziel**: 95.0%  
-- **Fehlende Docstrings**: 0
+- **Fehlende Docstrings**: 0  
 
 ## Status
 
