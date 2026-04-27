@@ -7,7 +7,6 @@ from .services import RecognitionService
 from .mcp_client import MocogiClient
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 CSS = """
