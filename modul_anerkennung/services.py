@@ -27,6 +27,7 @@ class RecognitionService:
         if not text:
             raise ValueError("Keine Modulbeschreibung angegeben.")
 
+        logger.debug(f"Analysiere Modultext (Länge: {len(text)})")
         prompt = f"""Analysiere die folgende Modulbeschreibung und extrahiere:
 1. Modulname
 2. Anzahl ECTS (nur die Zahl)
@@ -43,13 +44,16 @@ Modulbeschreibung:
 {text}"""
 
         response = await self.llm.achat([{"role": "user", "content": prompt}])
-        return self.llm.extract_json(response, ModuleAnalysis)
+        analysis = self.llm.extract_json(response, ModuleAnalysis)
+        logger.debug(f"Extrahiertes Modul: {analysis.name} ({analysis.ects} ECTS)")
+        return analysis
 
     async def search_and_compare(
         self, po_id: str, keywords: str, max_ects: str, external_text: str
     ) -> List[Tuple[Dict[str, Any], ComparisonReport]]:
         """Searches for similar internal modules and compares them to the external module."""
         if not po_id:
+            logger.warning("Keine PO-ID angegeben für die Suche.")
             return []
 
         try:
@@ -57,12 +61,14 @@ Modulbeschreibung:
         except ValueError:
             ects_val = None
 
+        logger.debug(f"Suche nach Modulen für PO {po_id} mit Keywords: {keywords}")
         async with MocogiClient() as client:
             modules = await client.call_tool(
                 "search_modules",
                 {"po_id": po_id, "search_term": keywords, "max_ects": ects_val},
             )
 
+        logger.debug(f"Gefundene Module: {len(modules)}")
         # Process top 5 modules
         results = []
         for m in modules[:5]:
@@ -75,6 +81,9 @@ Modulbeschreibung:
         self, external_text: str, internal_module: Dict[str, Any]
     ) -> ComparisonReport:
         """Performs a detailed comparison between an external and an internal module."""
+        m_title = internal_module.get("metadata", {}).get("title", "Unbekannt")
+        logger.debug(f"Vergleiche mit internem Modul: {m_title}")
+
         internal_text = json.dumps(internal_module, indent=2)
 
         prompt = f"""Vergleiche die folgende externe Modulbeschreibung mit unserem internen Modul.
@@ -95,4 +104,6 @@ Antworte im JSON-Format:
 }}
 """
         response = await self.llm.achat([{"role": "user", "content": prompt}])
-        return self.llm.extract_json(response, ComparisonReport)
+        comparison = self.llm.extract_json(response, ComparisonReport)
+        logger.debug(f"Ergebnis für {m_title}: {comparison.decision}")
+        return comparison
