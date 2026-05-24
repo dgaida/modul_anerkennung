@@ -7,8 +7,7 @@ Basierend auf einer Äquivalenzliste in einer Markdown-Datei.
 import asyncio
 import argparse
 import logging
-import re
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from modul_anerkennung.mcp_client import MocogiClient
 
 # Logging konfigurieren

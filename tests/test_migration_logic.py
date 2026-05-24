@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from scripts.migrate_po_content import parse_markdown_table, migrate_content
 
 def test_parse_markdown_table(tmp_path):
