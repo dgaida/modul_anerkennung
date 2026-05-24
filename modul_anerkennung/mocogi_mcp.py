@@ -125,5 +125,31 @@ async def search_modules(
     return modules
 
 
+@mcp.tool()
+async def get_module_details(module_id: str) -> Dict[str, Any]:
+    """
+    Gibt die vollständigen Details eines Moduls zurück.
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            f"{API_BASE_URL}/modules/{module_id}", headers=get_headers()
+        )
+        response.raise_for_status()
+        return response.json()
+
+
+@mcp.tool()
+async def update_module(module_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Aktualisiert ein Modul mit den übergebenen Daten (PUT).
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.put(
+            f"{API_BASE_URL}/modules/{module_id}", json=data, headers=get_headers()
+        )
+        response.raise_for_status()
+        return response.json()
+
+
 if __name__ == "__main__":
     mcp.run()
