@@ -12,7 +12,7 @@ from modul_anerkennung.mcp_client import MocogiClient
 
 # Logging konfigurieren
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("migration")
@@ -60,20 +60,39 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
     Führt die Migration der Inhalte durch.
     """
     async with MocogiClient() as client:
+        # Verifiziere PO IDs und hole Studiengang-Namen
+        logger.info("Verifiziere Prüfungsordnungen...")
+        all_programs = await client.list_study_programs(filter="")
+
+        po2_info = next((p for p in all_programs if p.get("po", {}).get("id") == po2_id), None)
+        po3_info = next((p for p in all_programs if p.get("po", {}).get("id") == po3_id), None)
+
+        if po2_info:
+            logger.info(f"PO2 gefunden: {po2_info.get('deLabel')} (Version {po2_info.get('po', {}).get('version')})")
+        else:
+            logger.warning(f"PO2 ID '{po2_id}' nicht in API gefunden!")
+
+        if po3_info:
+            logger.info(f"PO3 gefunden: {po3_info.get('deLabel')} (Version {po3_info.get('po', {}).get('version')})")
+        else:
+            logger.warning(f"PO3 ID '{po3_id}' nicht in API gefunden!")
+
         logger.info(f"Lade Module für PO2: {po2_id}")
         po2_modules_list = await client.get_modules_by_po(po2_id)
+        logger.info(f"  {len(po2_modules_list)} Module für PO2 geladen.")
 
         logger.info(f"Lade Module für PO3: {po3_id}")
         po3_modules_list = await client.get_modules_by_po(po3_id)
+        logger.info(f"  {len(po3_modules_list)} Module für PO3 geladen.")
 
         # Mapping von Titel zu Modul-Objekt (vereinfacht die Suche)
-        # Note: Mocogi returns a list of dicts where each dict has a 'module' key
         po2_by_title = {}
         for item in po2_modules_list:
             mod = item.get('module', {})
             title = mod.get('metadata', {}).get('title')
             if title:
                 po2_by_title[title.lower().strip()] = mod
+                logger.debug(f"    Gefundenes PO2 Modul: {title}")
 
         po3_by_title = {}
         for item in po3_modules_list:
@@ -81,6 +100,7 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
             title = mod.get('metadata', {}).get('title')
             if title:
                 po3_by_title[title.lower().strip()] = mod
+                logger.debug(f"    Gefundenes PO3 Modul: {title}")
 
         logger.info(f"Starte Migration von {len(mappings)} Mappings...")
 
@@ -107,7 +127,7 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
                 fail_count += 1
                 continue
 
-            # Hole vollständige Details (da die Liste nur Metadaten enthalten könnte)
+            # Hole vollständige Details
             source_id = source_mod['id']
             target_id = target_mod['id']
 
@@ -116,7 +136,6 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
             full_target = await client.get_module_details(target_id)
 
             # Kopiere Inhalte
-            # Wir behalten die Metadaten von PO3 bei, kopieren aber deContent und enContent
             updated_data = full_target.copy()
             updated_data['deContent'] = full_source.get('deContent')
             updated_data['enContent'] = full_source.get('enContent')
