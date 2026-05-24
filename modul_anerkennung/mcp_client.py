@@ -103,6 +103,29 @@ class MocogiClient:
         """
         return await self.call_tool("get_all_active_modules")
 
+    async def get_module_details(self, module_id: str) -> Dict[str, Any]:
+        """Gibt die vollständigen Details eines Moduls zurück.
+
+        Args:
+            module_id (str): Die ID des Moduls.
+
+        Returns:
+            Dict[str, Any]: Die Details des Moduls.
+        """
+        return await self.call_tool("get_module_details", {"module_id": module_id})
+
+    async def update_module(self, module_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Aktualisiert ein Modul mit den übergebenen Daten.
+
+        Args:
+            module_id (str): Die ID des Moduls.
+            data (Dict[str, Any]): Die neuen Daten für das Modul.
+
+        Returns:
+            Dict[str, Any]: Das aktualisierte Modul.
+        """
+        return await self.call_tool("update_module", {"module_id": module_id, "data": data})
+
     async def call_tool(self, name: str, arguments: Dict[str, Any] = None) -> Any:
         """Führt einen generischen Aufruf eines MCP-Tools aus.
 
