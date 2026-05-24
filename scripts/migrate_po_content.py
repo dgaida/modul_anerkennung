@@ -45,7 +45,7 @@ def parse_markdown_table(file_path: str) -> List[Tuple[str, str]]:
                 po3_name = parts[1]
 
                 # Ignoriere Header-Zeile
-                if "PO2" in po2_name.upper() or "PO3" in po3_name.upper() or "MODUL" in po2_name.upper():
+                if any(x in po2_name.upper() for x in ["PO2", "PO3", "MODUL"]):
                     continue
 
                 mappings.append((po2_name, po3_name))
@@ -73,14 +73,14 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
             mod = item.get('module', {})
             title = mod.get('metadata', {}).get('title')
             if title:
-                po2_by_title[title] = mod
+                po2_by_title[title.lower().strip()] = mod
 
         po3_by_title = {}
         for item in po3_modules_list:
             mod = item.get('module', {})
             title = mod.get('metadata', {}).get('title')
             if title:
-                po3_by_title[title] = mod
+                po3_by_title[title.lower().strip()] = mod
 
         logger.info(f"Starte Migration von {len(mappings)} Mappings...")
 
@@ -91,8 +91,11 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
             logger.info(f"Verarbeite: '{po2_name}' -> '{po3_name}'")
 
             # Suche Module in den geladenen Listen
-            source_mod = po2_by_title.get(po2_name)
-            target_mod = po3_by_title.get(po3_name)
+            po2_key = po2_name.lower().strip()
+            po3_key = po3_name.lower().strip()
+
+            source_mod = po2_by_title.get(po2_key)
+            target_mod = po3_by_title.get(po3_key)
 
             if not source_mod:
                 logger.warning(f"  PO2 Modul '{po2_name}' nicht in API gefunden.")
