@@ -1,0 +1,12 @@
+Untersuchung der Modulzahlen für verschiedene Prüfungsordnungen (PO):
+
+1. PO2 (inf_inf2): 70 aktive Module gefunden.
+2. PO3 (inf_inf3): 0 Module gefunden. Die PO existiert zwar im System (Version 3), ihr sind jedoch aktuell keine Module zugeordnet. Dies erklärt, warum das Skript 0 Module lädt.
+3. PO1 (inf_inf1): ID existiert nicht. Es gibt jedoch 'inf_inf1_flex' (Informatik Flexibel) mit 4 Modulen.
+4. PO4 (inf_inf4): ID existiert nicht.
+
+Zusammenfassung:
+- inf_inf1: 0 (Ungültige ID)
+- inf_inf2: 70
+- inf_inf3: 0 (Keine Module zugeordnet)
+- inf_inf4: 0 (Ungültige ID)
