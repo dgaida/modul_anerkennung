@@ -43,7 +43,7 @@ async def check_po(client, po_id):
         if resp.status_code == 200:
             try:
                 return len(resp.json())
-            except:
+            except Exception:
                 return "JSON_ERROR"
         return 0 if resp.status_code == 404 else f"HTTP_{resp.status_code}"
 
