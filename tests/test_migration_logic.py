@@ -22,10 +22,10 @@ async def test_migrate_content():
     mappings = [("Algorithmik", "Algorithmen und Datenstrukturen")]
 
     po2_modules = [
-        {"module": {"id": "old_1", "metadata": {"title": "Algorithmik"}}}
+        {"id": "old_1", "metadata": {"title": "Algorithmik"}, "isDraft": False}
     ]
     po3_modules = [
-        {"module": {"id": "new_1", "metadata": {"title": "Algorithmen und Datenstrukturen"}}}
+        {"id": "new_1", "metadata": {"title": "Algorithmen und Datenstrukturen"}, "isDraft": False}
     ]
 
     full_source = {

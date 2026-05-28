@@ -97,19 +97,17 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
         # Mapping von Titel zu Modul-Objekt (vereinfacht die Suche)
         po2_by_title = {}
         for item in po2_modules_list:
-            mod = item.get('module', {})
-            title = mod.get('metadata', {}).get('title')
+            title = item.get("metadata", {}).get("title")
             if title:
-                po2_by_title[title.lower().strip()] = mod
-                logger.debug(f"    Gefundenes PO2 Modul: {title}")
+                po2_by_title[title.lower().strip()] = item
+                logger.debug(f"    Gefundenes PO2 Modul: {title} (Draft: {item.get('isDraft', False)})")
 
         po3_by_title = {}
         for item in po3_modules_list:
-            mod = item.get('module', {})
-            title = mod.get('metadata', {}).get('title')
+            title = item.get("metadata", {}).get("title")
             if title:
-                po3_by_title[title.lower().strip()] = mod
-                logger.debug(f"    Gefundenes PO3 Modul: {title}")
+                po3_by_title[title.lower().strip()] = item
+                logger.debug(f"    Gefundenes PO3 Modul: {title} (Draft: {item.get('isDraft', False)})")
 
         logger.info(f"Starte Migration von {len(mappings)} Mappings...")
 
@@ -137,20 +135,33 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
                 continue
 
             # Hole vollständige Details
-            source_id = source_mod['id']
-            target_id = target_mod['id']
+            source_id = source_mod["id"]
+            target_id = target_mod["id"]
+            is_source_draft = source_mod.get("isDraft", False)
+            is_target_draft = target_mod.get("isDraft", False)
 
-            logger.info(f"  Hole Details für Source {source_id} und Target {target_id}")
-            full_source = await client.get_module_details(source_id)
-            full_target = await client.get_module_details(target_id)
+            logger.info(f"  Hole Details für Source {source_id} (Draft: {is_source_draft}) und Target {target_id} (Draft: {is_target_draft})")
+
+            if is_source_draft:
+                full_source = await client.get_module_draft_details(source_id)
+            else:
+                full_source = await client.get_module_details(source_id)
+
+            if is_target_draft:
+                full_target = await client.get_module_draft_details(target_id)
+            else:
+                full_target = await client.get_module_details(target_id)
 
             # Kopiere Inhalte
             updated_data = full_target.copy()
-            updated_data['deContent'] = full_source.get('deContent')
-            updated_data['enContent'] = full_source.get('enContent')
+            updated_data["deContent"] = full_source.get("deContent")
+            updated_data["enContent"] = full_source.get("enContent")
 
             try:
-                await client.update_module(target_id, updated_data)
+                if is_target_draft:
+                    await client.update_module_draft(target_id, updated_data)
+                else:
+                    await client.update_module(target_id, updated_data)
                 logger.info(f"  Successfully migrated content for '{po3_name}'")
                 success_count += 1
             except Exception as e:
