@@ -44,7 +44,7 @@ async def test_get_modules_by_po_merges_drafts():
 
         res_drafts = MagicMock()
         res_drafts.status_code = 200
-        res_drafts.json.return_value = drafts
+        res_drafts.json.return_value = {"direct": drafts}
 
         mock_get.side_effect = [res_published, res_drafts]
 
