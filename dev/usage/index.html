@@ -763,6 +763,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#arbeiten-mit-modul-entwurfen-po3-inf_inf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arbeiten mit Modul-Entwürfen (PO3 / inf_inf3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arbeiten mit Modul-Entwürfen (PO3 / inf_inf3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sichtbarkeit-von-entwurfen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sichtbarkeit von Entwürfen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-von-inhalten-po2-zu-po3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration von Inhalten (PO2 zu PO3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1271,6 +1310,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#arbeiten-mit-modul-entwurfen-po3-inf_inf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arbeiten mit Modul-Entwürfen (PO3 / inf_inf3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arbeiten mit Modul-Entwürfen (PO3 / inf_inf3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sichtbarkeit-von-entwurfen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sichtbarkeit von Entwürfen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-von-inhalten-po2-zu-po3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration von Inhalten (PO2 zu PO3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1306,6 +1384,16 @@ Für jeden Treffer wird ein Vergleich durchgeführt:<br />
 <em>   </em><em>Status</em>*: Ja, Nein oder Vielleicht.  </p>
 <h2 id="antrags-erstellung">Antrags-Erstellung</h2>
 <p>Sie können positive Vergleiche zu einer Merkliste hinzufügen. Am Ende generiert das Tool eine strukturierte Übersicht für den Prüfungsausschuss.</p>
+<h2 id="arbeiten-mit-modul-entwurfen-po3-inf_inf3">Arbeiten mit Modul-Entwürfen (PO3 / inf_inf3)</h2>
+<p>Für die neue Prüfungsordnung <strong>inf_inf3</strong> (Informatik PO3) sind viele Module aktuell noch im Entwurfsstatus. Das Tool unterstützt den Zugriff auf diese Entwürfe (Drafts) vollumfänglich.</p>
+<h3 id="sichtbarkeit-von-entwurfen">Sichtbarkeit von Entwürfen</h3>
+<p>Wenn ein gültiger <code>MOCOGI_API_TOKEN</code> konfiguriert ist, lädt das System automatisch alle Entwürfe, auf die Sie Zugriff haben. Diese werden bei der Suche innerhalb der jeweiligen PO (z. B. <code>inf_inf3</code>) wie reguläre Module behandelt.</p>
+<h3 id="migration-von-inhalten-po2-zu-po3">Migration von Inhalten (PO2 zu PO3)</h3>
+<p>Um bestehende Modulbeschreibungen von der alten PO2 (<code>inf_inf2</code>) in die Entwürfe der neuen PO3 (<code>inf_inf3</code>) zu übernehmen, steht ein Migrations-Skript zur Verfügung:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Beispiel: Migration basierend auf einer Mapping-Tabelle (Markdown)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>scripts/migrate_po_content.py<span class="w"> </span>mappings.md<span class="w"> </span>--po2<span class="w"> </span>inf_inf2<span class="w"> </span>--po3<span class="w"> </span>inf_inf3
+</span></code></pre></div>
+<p>Das Skript gleicht Module anhand ihres Titels ab und kopiert die inhaltlichen Beschreibungen (<code>deContent</code>, <code>enContent</code>) vom Quell-Modul in den Ziel-Entwurf.</p>
 
 
 

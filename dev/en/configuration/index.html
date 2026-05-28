@@ -660,6 +660,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#obtaining-the-mocogi-api-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtaining the Mocogi API Token
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#example-env-file" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1249,6 +1260,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#obtaining-the-mocogi-api-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtaining the Mocogi API Token
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#example-env-file" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1339,6 +1361,16 @@
 </tr>
 </tbody>
 </table>
+<h2 id="obtaining-the-mocogi-api-token">Obtaining the Mocogi API Token</h2>
+<p>A <code>MOCOGI_API_TOKEN</code> is required for write access to the Mocogi API (e.g., updating drafts) and for accessing your own module drafts. You can extract this from your browser after logging into Mocogi:</p>
+<ol>
+<li>Open <a href="https://module.gm.th-koeln.de/">Mocogi</a> in your browser and log in.</li>
+<li>Open the <strong>Developer Tools</strong> (F12 or Right-click -&gt; Inspect).</li>
+<li>Navigate to the <strong>Application</strong> or <strong>Storage</strong> tab.</li>
+<li>In the left sidebar under <strong>Cookies</strong>, select the address <code>https://module.gm.th-koeln.de</code>.</li>
+<li>Look for the cookie named <code>access_token</code> in the list.</li>
+<li>Copy the value of this cookie and enter it as <code>MOCOGI_API_TOKEN</code> in your configuration.</li>
+</ol>
 <h2 id="example-env-file">Example .env File</h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Either API_KEY (provider auto-detection)
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>API_KEY=sk-proj-xxxx...
