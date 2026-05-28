@@ -102,6 +102,7 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
             logger.error(f"  Fehler bei /modules: {e}")
 
     # 2. Hole Entwürfe und filtere nach PO
+            logger.debug(f"  Draft: {d.get("module", {}).get("title")} | Mandatory: {mandatory} | Optional: {optional}")
     try:
         logger.info(f"Abfrage Modul-Entwürfe (Drafts) für PO {po_id}...")
         drafts = await get_module_drafts()
@@ -140,13 +141,16 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
                 standardized["id"] = module_part.get("id") or module_part["metadata"].get("id")
             else:
                 # Draft Struktur
+                # WICHTIG: Für Drafts ist item["id"] die Draft-ID, die für Updates benötigt wird.
+                # module_part["id"] ist die ID des zugrundeliegenden Moduls.
+                draft_id = item.get("id")
                 standardized["metadata"] = {
                     "title": module_part.get("title"),
                     "ects": item.get("ects") or module_part.get("ects"),
                     "abbreviation": module_part.get("abbreviation"),
                     "id": module_part.get("id")
                 }
-                standardized["id"] = module_part.get("id")
+                standardized["id"] = draft_id or module_part.get("id")
 
         if standardized.get("metadata", {}).get("title"):
             standardized_modules.append(standardized)
