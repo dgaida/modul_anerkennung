@@ -1,19 +1,22 @@
-import logging
-import modul_anerkennung.config  # ensure env is loaded
-logger = logging.getLogger(__name__)
 """MCP-Server-Implementierung für den Zugriff auf die Mocogi-API der TH Köln."""
 
+import logging
 import os
+from typing import Any, Dict, List, Optional
+
 import httpx
 import numpy as np
 from fastmcp import FastMCP
-from typing import List, Dict, Any, Optional
 from sentence_transformers import SentenceTransformer
+
+import modul_anerkennung.config  # noqa: F401 (ensure env is loaded)
+
+logger = logging.getLogger(__name__)
+
+API_BASE_URL = "https://module.gm.th-koeln.de/api"
 
 # Initialize FastMCP server
 mcp = FastMCP("Mocogi API Server")
-
-API_BASE_URL = "https://module.gm.th-koeln.de/api"
 
 # Lazy loading of the embedding model
 _model = None
