@@ -73,7 +73,7 @@ async def get_module_drafts() -> List[Dict[str, Any]]:
         if response.status_code != 200:
             logger.error(f"Failed to get module drafts: {response.status_code} - {response.text}")
         response.raise_for_status()
-        return response.json()
+        return response.json().get("direct", [])
 
 
 @mcp.tool()
@@ -121,31 +121,35 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
     # Standardisierung der Ergebnisse für den Service-Layer
     standardized_modules = []
     for item in all_raw_items:
-        # Falls schon standardmäßig (durch /modules?select=metadata)
+        # Basis-Struktur
+        standardized = item.copy()
+        is_draft = "moduleDraftState" in item or item.get("isDraft", False)
+        standardized["isDraft"] = is_draft
+
+        # 1. Fall: /modules?select=metadata (flach)
         if "metadata" in item and isinstance(item["metadata"], dict) and "title" in item["metadata"]:
-            standardized_modules.append(item)
-            continue
+            standardized["metadata"] = item["metadata"]
+            standardized["id"] = item.get("id") or item["metadata"].get("id")
 
-        # Falls gewrapped (durch /modules ohne select=metadata)
-        if "module" in item and isinstance(item["module"], dict) and "metadata" in item["module"]:
-            new_item = item.copy()
-            new_item["metadata"] = item["module"]["metadata"]
-            standardized_modules.append(new_item)
-            continue
+        # 2. Fall: Gewrapped (publiziert oder Draft)
+        elif "module" in item and isinstance(item["module"], dict):
+            module_part = item["module"]
+            if "metadata" in module_part:
+                # Publiziert gewrapped
+                standardized["metadata"] = module_part["metadata"]
+                standardized["id"] = module_part.get("id") or module_part["metadata"].get("id")
+            else:
+                # Draft Struktur
+                standardized["metadata"] = {
+                    "title": module_part.get("title"),
+                    "ects": item.get("ects") or module_part.get("ects"),
+                    "abbreviation": module_part.get("abbreviation"),
+                    "id": module_part.get("id")
+                }
+                standardized["id"] = module_part.get("id")
 
-        # Falls Draft-Struktur
-        module_part = item.get("module", {})
-        if isinstance(module_part, dict):
-            metadata = {
-                "title": module_part.get("title"),
-                "ects": item.get("ects") or module_part.get("ects"),
-                "abbreviation": module_part.get("abbreviation"),
-                "id": module_part.get("id")
-            }
-            new_item = item.copy()
-            new_item["metadata"] = metadata
-            new_item["isDraft"] = True
-            standardized_modules.append(new_item)
+        if standardized.get("metadata", {}).get("title"):
+            standardized_modules.append(standardized)
 
     return standardized_modules
 
