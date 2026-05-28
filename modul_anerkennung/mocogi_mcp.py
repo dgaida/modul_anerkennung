@@ -1,3 +1,6 @@
+import logging
+import modul_anerkennung.config  # ensure env is loaded
+logger = logging.getLogger(__name__)
 """MCP-Server-Implementierung für den Zugriff auf die Mocogi-API der TH Köln."""
 
 import os
@@ -29,7 +32,12 @@ def get_headers(extra_headers: Optional[Dict[str, str]] = None):
     headers = extra_headers.copy() if extra_headers else {}
     token = os.getenv("MOCOGI_API_TOKEN")
     if token:
+        # Masked token for logging
+        masked = token[:4] + "..." + token[-4:] if len(token) > 8 else "***"
+        logger.debug(f"Using MOCOGI_API_TOKEN: {masked}")
         headers["Authorization"] = f"Bearer {token}"
+    else:
+        logger.warning("MOCOGI_API_TOKEN is NOT set!")
     return headers
 
 
@@ -55,9 +63,12 @@ async def get_module_drafts() -> List[Dict[str, Any]]:
     Entspricht "Meine Module" im Mocogi-Frontend.
     """
     async with httpx.AsyncClient() as client:
+        logger.debug("Requesting module drafts from API...")
         response = await client.get(
             f"{API_BASE_URL}/moduleDrafts", headers=get_headers()
         )
+        if response.status_code != 200:
+            logger.error(f"Failed to get module drafts: {response.status_code} - {response.text}")
         response.raise_for_status()
         return response.json()
 
@@ -74,26 +85,35 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
     async with httpx.AsyncClient() as client:
         params = {"select": "metadata", "active": "true", "po": po_id}
         try:
+            logger.info(f"Abfrage publizierter Module für PO {po_id}...")
             response = await client.get(
                 f"{API_BASE_URL}/modules", params=params, headers=get_headers()
             )
             if response.status_code == 200:
-                all_raw_items.extend(response.json())
-        except Exception:
-            # Wenn 404 o.ä., ignorieren wir das hier und schauen bei den Drafts
-            pass
+                data = response.json()
+                logger.info(f"  {len(data)} publizierte Module gefunden.")
+                all_raw_items.extend(data)
+            else:
+                logger.warning(f"  Status {response.status_code} bei /modules: {response.text}")
+        except Exception as e:
+            logger.error(f"  Fehler bei /modules: {e}")
 
     # 2. Hole Entwürfe und filtere nach PO
     try:
+        logger.info(f"Abfrage Modul-Entwürfe (Drafts) für PO {po_id}...")
         drafts = await get_module_drafts()
+        logger.info(f"  Insgesamt {len(drafts)} Drafts gefunden.")
+        found_drafts = 0
         for d in drafts:
             # Filtere nach PO in mandatoryPOs oder optionalPOs
             mandatory = d.get("mandatoryPOs", [])
             optional = d.get("optionalPOs", [])
             if po_id in mandatory or po_id in optional:
                 all_raw_items.append(d)
-    except Exception:
-        pass
+                found_drafts += 1
+        logger.info(f"  {found_drafts} passende Drafts für {po_id} gefunden.")
+    except Exception as e:
+        logger.error(f"  Fehler bei get_module_drafts: {e}")
 
     # Standardisierung der Ergebnisse für den Service-Layer
     standardized_modules = []

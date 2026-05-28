@@ -60,6 +60,15 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
     Führt die Migration der Inhalte durch.
     """
     async with MocogiClient() as client:
+        # Authentifizierungs-Check
+        logger.info("Prüfe Authentifizierung...")
+        try:
+            drafts = await client.get_module_drafts()
+            logger.info(f"Authentifizierung erfolgreich. {len(drafts)} Modul-Entwürfe zugänglich.")
+        except Exception as e:
+            logger.warning(f"Authentifizierungs-Check fehlgeschlagen: {e}")
+            logger.warning("Migration wird eventuell unvollständig sein (keine Drafts) oder bei Updates fehlschlagen.")
+
         # Verifiziere PO IDs und hole Studiengang-Namen
         logger.info("Verifiziere Prüfungsordnungen...")
         all_programs = await client.list_study_programs(filter="")
