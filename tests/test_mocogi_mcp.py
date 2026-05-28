@@ -10,11 +10,21 @@ async def test_search_modules_filtering():
         {"metadata": {"title": "Math 2", "ects": 10}},
     ]
 
+    # Wir müssen beide Aufrufe (published und drafts) mocken
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_modules
-        mock_response.raise_for_status = MagicMock()
-        mock_get.return_value = mock_response
+        # Erster Aufruf: Published
+        res1 = MagicMock()
+        res1.status_code = 200
+        res1.json.return_value = mock_modules
+        res1.raise_for_status = MagicMock()
+
+        # Zweiter Aufruf: Drafts (leer)
+        res2 = MagicMock()
+        res2.status_code = 200
+        res2.json.return_value = []
+        res2.raise_for_status = MagicMock()
+
+        mock_get.side_effect = [res1, res2]
 
         # Test ECTS filter
         results = await search_modules("po123", max_ects=6)
@@ -30,10 +40,19 @@ async def test_search_modules_similarity():
     ]
 
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_modules
-        mock_response.raise_for_status = MagicMock()
-        mock_get.return_value = mock_response
+        # Erster Aufruf: Published
+        res1 = MagicMock()
+        res1.status_code = 200
+        res1.json.return_value = mock_modules
+        res1.raise_for_status = MagicMock()
+
+        # Zweiter Aufruf: Drafts (leer)
+        res2 = MagicMock()
+        res2.status_code = 200
+        res2.json.return_value = []
+        res2.raise_for_status = MagicMock()
+
+        mock_get.side_effect = [res1, res2]
 
         # Test similarity sorting
         results = await search_modules("po123", search_term="Mathe")

@@ -86,6 +86,7 @@ class MocogiClient:
 
     async def get_modules_by_po(self, po_id: str) -> List[Dict[str, Any]]:
         """Gibt alle aktiven Module für eine bestimmte Prüfungsordnung (PO) zurück.
+        Berücksichtigt sowohl publizierte Module als auch Entwürfe (Drafts).
 
         Args:
             po_id (str): Die ID der Prüfungsordnung (z.B. 'inf_mi5').
@@ -94,6 +95,14 @@ class MocogiClient:
             List[Dict[str, Any]]: Eine Liste von Modulen als Dictionaries.
         """
         return await self.call_tool("get_modules_by_po", {"po_id": po_id})
+
+    async def get_module_drafts(self) -> List[Dict[str, Any]]:
+        """Gibt alle Modul-Entwürfe (Drafts) zurück.
+
+        Returns:
+            List[Dict[str, Any]]: Eine Liste von Modul-Entwürfen.
+        """
+        return await self.call_tool("get_module_drafts")
 
     async def get_all_active_modules(self) -> List[Dict[str, Any]]:
         """Gibt eine Liste aller aktiven Module zurück.
@@ -114,8 +123,19 @@ class MocogiClient:
         """
         return await self.call_tool("get_module_details", {"module_id": module_id})
 
+    async def get_module_draft_details(self, module_id: str) -> Dict[str, Any]:
+        """Gibt die vollständigen Details eines Modul-Entwurfs (Draft) zurück.
+
+        Args:
+            module_id (str): Die ID des Modul-Drafts.
+
+        Returns:
+            Dict[str, Any]: Die Details des Modul-Drafts.
+        """
+        return await self.call_tool("get_module_draft_details", {"module_id": module_id})
+
     async def update_module(self, module_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Aktualisiert ein Modul mit den übergebenen Daten.
+        """Aktualisiert ein publiziertes Modul mit den übergebenen Daten.
 
         Args:
             module_id (str): Die ID des Moduls.
@@ -125,6 +145,18 @@ class MocogiClient:
             Dict[str, Any]: Das aktualisierte Modul.
         """
         return await self.call_tool("update_module", {"module_id": module_id, "data": data})
+
+    async def update_module_draft(self, module_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Aktualisiert einen Modul-Entwurf (Draft) mit den übergebenen Daten.
+
+        Args:
+            module_id (str): Die ID des Modul-Drafts.
+            data (Dict[str, Any]): Die neuen Daten für den Modul-Draft.
+
+        Returns:
+            Dict[str, Any]: Der aktualisierte Modul-Draft.
+        """
+        return await self.call_tool("update_module_draft", {"module_id": module_id, "data": data})
 
     async def call_tool(self, name: str, arguments: Dict[str, Any] = None) -> Any:
         """Führt einen generischen Aufruf eines MCP-Tools aus.
