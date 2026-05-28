@@ -1,5 +1,5 @@
 import pytest
-import httpx
+
 from unittest.mock import patch, MagicMock, AsyncMock
 from modul_anerkennung.mocogi_mcp import get_modules_by_po, search_modules
 
