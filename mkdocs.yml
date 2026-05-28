@@ -54,7 +54,6 @@ plugins:
             show_source: true
             show_root_heading: true
             show_category_heading: true
-            allow_lookup: true
   - mermaid2:
       arguments:
         theme: light

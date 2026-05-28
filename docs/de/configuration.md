@@ -14,6 +14,17 @@ Die Konfiguration erfolgt primär über Umgebungsvariablen oder eine `.env` / `s
 | `MOCOGI_API_TOKEN` | Bearer Token für die Mocogi API (TH Köln) | - |
 | `LOG_LEVEL` | Logging-Stufe (`DEBUG`, `INFO`, `WARNING`) | `INFO` |
 
+## Bezug des Mocogi API-Tokens
+
+Für den Schreibzugriff auf die Mocogi-API (z.B. Aktualisierung von Entwürfen) sowie den Zugriff auf Ihre eigenen Modul-Entwürfe wird ein `MOCOGI_API_TOKEN` benötigt. Diesen können Sie aus Ihrem Browser extrahieren, nachdem Sie sich bei Mocogi angemeldet haben:
+
+1.  Öffnen Sie [Mocogi](https://module.gm.th-koeln.de/) im Browser und loggen Sie sich ein.
+2.  Öffnen Sie die **Entwicklertools** (F12 oder Rechtsklick -> Untersuchen).
+3.  Navigieren Sie zum Tab **Anwendung** (Application) oder **Speicher** (Storage).
+4.  Wählen Sie in der linken Seitenleiste unter **Cookies** die Adresse `https://module.gm.th-koeln.de` aus.
+5.  Suchen Sie in der Liste nach dem Cookie mit dem Namen `access_token`.
+6.  Kopieren Sie den Wert dieses Cookies und tragen Sie ihn als `MOCOGI_API_TOKEN` in Ihre Konfiguration ein.
+
 ## Beispiel .env Datei
 
 ```env
