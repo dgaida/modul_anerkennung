@@ -49,7 +49,7 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
     Konvertiert die vollständigen API-Daten in das ModuleProtocolUpdate Format.
     """
     # Drafts haben oft eine andere Struktur als publizierte Module
-    if "module" in full_data and not "metadata" in full_data:
+    if "module" in full_data and "metadata" not in full_data:
         # Draft Struktur
         module_part = full_data.get("module", {})
         metadata = {

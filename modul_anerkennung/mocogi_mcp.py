@@ -102,7 +102,6 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
             logger.error(f"  Fehler bei /modules: {e}")
 
     # 2. Hole Entwürfe und filtere nach PO
-            logger.debug(f"  Draft: {d.get("module", {}).get("title")} | Mandatory: {mandatory} | Optional: {optional}")
     try:
         logger.info(f"Abfrage Modul-Entwürfe (Drafts) für PO {po_id}...")
         drafts = await get_module_drafts()
@@ -113,6 +112,7 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
             mandatory = d.get("mandatoryPOs", [])
             optional = d.get("optionalPOs", [])
             if po_id in mandatory or po_id in optional:
+                logger.debug(f"  Draft: {d.get('module', {}).get('title')} | Mandatory: {mandatory} | Optional: {optional}")
                 all_raw_items.append(d)
                 found_drafts += 1
         logger.info(f"  {found_drafts} passende Drafts für {po_id} gefunden.")
