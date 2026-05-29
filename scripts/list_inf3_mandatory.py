@@ -34,6 +34,7 @@ async def list_inf3_mandatory():
             po_id = "inf_inf3"
 
             for draft in drafts:
+                print(draft)
                 # Prüfe mandatoryPOs
                 mandatory = draft.get("mandatoryPOs") or []
                 module_info = draft.get("module") or {}
@@ -58,6 +59,7 @@ async def list_inf3_mandatory():
                 print(f"\nDetails für \"{target_title}\":")
                 for i, match in enumerate(target_matches):
                     # Bei Drafts ist die Top-Level ID die Draft-ID, die für Detailabfragen benötigt wird
+                    print(match)
                     draft_id = match.get("id")
                     if not draft_id:
                         # Fallback falls ID fehlt
