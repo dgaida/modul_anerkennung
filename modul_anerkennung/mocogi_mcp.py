@@ -74,8 +74,8 @@ async def get_module_drafts() -> List[Dict[str, Any]]:
             logger.error(f"Failed to get module drafts: {response.status_code} - {response.text}")
         response.raise_for_status()
         data = response.json()
-        direct = data.get("direct", [])
-        indirect = data.get("indirect", [])
+        direct = data.get("direct") or []
+        indirect = data.get("indirect") or []
         return direct + indirect
 
 
@@ -112,8 +112,8 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
         found_drafts = 0
         for d in drafts:
             # Filtere nach PO in mandatoryPOs oder optionalPOs
-            mandatory = d.get("mandatoryPOs", [])
-            optional = d.get("optionalPOs", [])
+            mandatory = d.get("mandatoryPOs") or []
+            optional = d.get("optionalPOs") or []
             if po_id in mandatory or po_id in optional:
                 logger.debug(f"  Draft: {d.get('module', {}).get('title')} | Mandatory: {mandatory} | Optional: {optional}")
                 all_raw_items.append(d)

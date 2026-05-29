@@ -30,9 +30,9 @@ async def list_inf3_mandatory():
 
             for draft in drafts:
                 # Prüfe mandatoryPOs
-                mandatory = draft.get("mandatoryPOs", [])
+                mandatory = draft.get("mandatoryPOs") or []
                 if "inf_inf3" in mandatory:
-                    module_info = draft.get("module", {})
+                    module_info = draft.get("module") or {}
                     title = module_info.get("title", "Unbekanntes Modul")
                     inf3_mandatory.append(title)
 
