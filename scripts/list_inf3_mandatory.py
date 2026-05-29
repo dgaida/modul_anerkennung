@@ -75,13 +75,13 @@ async def list_inf3_mandatory():
                     print(f"ECTS:           {details.get('ects')}")
 
                     de_content = details.get("deContent") or {}
-                    print(f"\nInhalt (DE):")
+                    print("\nInhalt (DE):")
                     print(de_content.get("content", "Kein Inhalt vorhanden."))
 
-                    print(f"\nLernergebnisse (DE):")
+                    print("\nLernergebnisse (DE):")
                     print(de_content.get("learningOutcomes", "Keine Lernergebnisse vorhanden."))
 
-                    print(f"\nPrüfungsform:")
+                    print("\nPrüfungsform:")
                     exams = details.get("examPhases") or []
                     if exams:
                         for exam in exams:
