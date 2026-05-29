@@ -63,7 +63,7 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
     # Drafts haben oft eine andere Struktur als publizierte Module
     if "module" in full_data and "metadata" not in full_data:
         # Draft Struktur
-        module_part = full_data.get("module", {})
+        module_part = full_data.get("module") or {}
         metadata = {
             "title": module_part.get("title"),
             "abbrev": module_part.get("abbreviation"),
@@ -79,22 +79,22 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
             "moduleRelation": module_part.get("moduleRelation"),
             "management": module_part.get("management"),
             "lecturers": module_part.get("lecturers"),
-            "assessmentMethods": module_part.get("assessmentMethods", {}),
-            "examiner": module_part.get("examiner", {}),
-            "examPhases": module_part.get("examPhases", []),
-            "prerequisites": module_part.get("prerequisites", {}),
-            "po": full_data.get("mandatoryPOs", []) + full_data.get("optionalPOs", []),
-            "taughtWith": module_part.get("taughtWith", []),
+            "assessmentMethods": module_part.get("assessmentMethods") or {},
+            "examiner": module_part.get("examiner") or {},
+            "examPhases": module_part.get("examPhases") or [],
+            "prerequisites": module_part.get("prerequisites") or {},
+            "po": (full_data.get("mandatoryPOs") or []) + (full_data.get("optionalPOs") or []),
+            "taughtWith": module_part.get("taughtWith") or [],
             "attendanceRequirement": module_part.get("attendanceRequirement"),
             "assessmentPrerequisite": module_part.get("assessmentPrerequisite")
         }
-        de_content = full_data.get("deContent") or module_part.get("deContent", {})
-        en_content = full_data.get("enContent") or module_part.get("enContent", {})
+        de_content = full_data.get("deContent") or module_part.get("deContent") or {}
+        en_content = full_data.get("enContent") or module_part.get("enContent") or {}
     else:
         # Publizierte Struktur oder bereits standardisierte Struktur
-        metadata = full_data.get("metadata", {}).copy()
-        de_content = full_data.get("deContent", {})
-        en_content = full_data.get("enContent", {})
+        metadata = (full_data.get("metadata") or {}).copy()
+        de_content = full_data.get("deContent") or {}
+        en_content = full_data.get("enContent") or {}
         # Stelle sicher, dass abbrev -> abbreviation gemappt wird falls nötig
         if "abbreviation" in metadata and "abbrev" not in metadata:
             metadata["abbrev"] = metadata["abbreviation"]
