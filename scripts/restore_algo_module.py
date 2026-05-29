@@ -7,7 +7,6 @@ Nutzt Daten aus der PO inf_inf2 als Vorlage.
 import asyncio
 import json
 import logging
-import os
 import httpx
 from modul_anerkennung.mcp_client import MocogiClient
 

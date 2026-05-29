@@ -7,7 +7,6 @@ Handhabt publizierte Module und fehlende Details robust.
 import asyncio
 import json
 import logging
-import os
 from modul_anerkennung.mcp_client import MocogiClient
 
 # Logging konfigurieren
