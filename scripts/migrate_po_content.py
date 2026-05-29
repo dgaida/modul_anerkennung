@@ -7,7 +7,7 @@ Basierend auf einer Äquivalenzliste in einer Markdown-Datei.
 import asyncio
 import argparse
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
 from modul_anerkennung.mcp_client import MocogiClient
 
 # Logging konfigurieren
@@ -54,6 +54,56 @@ def parse_markdown_table(file_path: str) -> List[Tuple[str, str]]:
         logger.error(f"Fehler beim Parsen der Datei {file_path}: {e}")
 
     return mappings
+
+def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Konvertiert die vollständigen API-Daten in das ModuleProtocolUpdate Format.
+    Erforderlich für die Mocogi API (PUT /moduleDrafts/{id}).
+    """
+    # Drafts haben oft eine andere Struktur als publizierte Module
+    if "module" in full_data and "metadata" not in full_data:
+        # Draft Struktur
+        module_part = full_data.get("module", {})
+        metadata = {
+            "title": module_part.get("title"),
+            "abbrev": module_part.get("abbreviation"),
+            "moduleType": module_part.get("moduleType"),
+            "ects": full_data.get("ects") or module_part.get("ects"),
+            "language": module_part.get("language"),
+            "duration": module_part.get("duration"),
+            "season": module_part.get("season"),
+            "workload": module_part.get("workload"),
+            "status": module_part.get("status"),
+            "location": module_part.get("location"),
+            "participants": module_part.get("participants"),
+            "moduleRelation": module_part.get("moduleRelation"),
+            "management": module_part.get("management"),
+            "lecturers": module_part.get("lecturers"),
+            "assessmentMethods": module_part.get("assessmentMethods", {}),
+            "examiner": module_part.get("examiner", {}),
+            "examPhases": module_part.get("examPhases", []),
+            "prerequisites": module_part.get("prerequisites", {}),
+            "po": full_data.get("mandatoryPOs", []) + full_data.get("optionalPOs", []),
+            "taughtWith": module_part.get("taughtWith", []),
+            "attendanceRequirement": module_part.get("attendanceRequirement"),
+            "assessmentPrerequisite": module_part.get("assessmentPrerequisite")
+        }
+        de_content = full_data.get("deContent") or module_part.get("deContent", {})
+        en_content = full_data.get("enContent") or module_part.get("enContent", {})
+    else:
+        # Publizierte Struktur oder bereits standardisierte Struktur
+        metadata = full_data.get("metadata", {}).copy()
+        de_content = full_data.get("deContent", {})
+        en_content = full_data.get("enContent", {})
+        # Stelle sicher, dass abbrev -> abbreviation gemappt wird falls nötig
+        if "abbreviation" in metadata and "abbrev" not in metadata:
+            metadata["abbrev"] = metadata["abbreviation"]
+
+    return {
+        "metadata": metadata,
+        "deContent": de_content,
+        "enContent": en_content
+    }
 
 async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, str]]):
     """
@@ -152,16 +202,16 @@ async def migrate_content(po2_id: str, po3_id: str, mappings: List[Tuple[str, st
             else:
                 full_target = await client.get_module_details(target_id)
 
-            # Kopiere Inhalte
-            updated_data = full_target.copy()
-            updated_data["deContent"] = full_source.get("deContent")
-            updated_data["enContent"] = full_source.get("enContent")
+            # Transformation des payloads in das von der API erwartete Format
+            payload = map_to_protocol_update(full_target)
+            payload["deContent"] = full_source.get("deContent")
+            payload["enContent"] = full_source.get("enContent")
 
             try:
                 if is_target_draft:
-                    await client.update_module_draft(target_id, updated_data)
+                    await client.update_module_draft(target_id, payload)
                 else:
-                    await client.update_module(target_id, updated_data)
+                    await client.update_module(target_id, payload)
                 logger.info(f"  Successfully migrated content for '{po3_name}'")
                 success_count += 1
             except Exception as e:

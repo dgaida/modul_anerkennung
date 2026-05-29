@@ -112,6 +112,7 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
             mandatory = d.get("mandatoryPOs", [])
             optional = d.get("optionalPOs", [])
             if po_id in mandatory or po_id in optional:
+                logger.debug(f"  Draft: {d.get('module', {}).get('title')} | Mandatory: {mandatory} | Optional: {optional}")
                 all_raw_items.append(d)
                 found_drafts += 1
         logger.info(f"  {found_drafts} passende Drafts für {po_id} gefunden.")
@@ -140,13 +141,16 @@ async def get_modules_by_po(po_id: str) -> List[Dict[str, Any]]:
                 standardized["id"] = module_part.get("id") or module_part["metadata"].get("id")
             else:
                 # Draft Struktur
+                # WICHTIG: Für Drafts ist item["id"] die Draft-ID, die für Updates benötigt wird.
+                # module_part["id"] ist die ID des zugrundeliegenden Moduls.
+                draft_id = item.get("id")
                 standardized["metadata"] = {
                     "title": module_part.get("title"),
                     "ects": item.get("ects") or module_part.get("ects"),
                     "abbreviation": module_part.get("abbreviation"),
                     "id": module_part.get("id")
                 }
-                standardized["id"] = module_part.get("id")
+                standardized["id"] = draft_id or module_part.get("id")
 
         if standardized.get("metadata", {}).get("title"):
             standardized_modules.append(standardized)
