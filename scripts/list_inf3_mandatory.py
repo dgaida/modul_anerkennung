@@ -5,7 +5,6 @@ Nutzt die Mocogi-API über den MCP-Client.
 
 import asyncio
 import logging
-import os
 from modul_anerkennung.mcp_client import MocogiClient
 
 # Logging konfigurieren
