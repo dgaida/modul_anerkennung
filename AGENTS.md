@@ -44,4 +44,4 @@ description: >
   or docstring-related output — even for partial documentation tasks.
 ---
 
-- Lösche keine Kommentare grundlos und auch keine debug Ausgaben, es sei denn der User fragt explizit danach.
+- Lösche keine Kommentare grundlos und auch keine debug Ausgaben, es sei denn der User fragt explizit danach.  
