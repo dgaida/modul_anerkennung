@@ -24,7 +24,7 @@ async def list_inf3_mandatory():
 
     async with MocogiClient() as client:
         try:
-            # Hole alle Entwürfe (jetzt inklusive indirect)
+            # Hole alle Entwürfe (wichtig für inf_inf3, da get_modules_by_po hier eventuell unvollständig ist)
             drafts = await client.get_module_drafts()
             logger.info(f"Insgesamt {len(drafts)} Entwürfe geladen.")
 
@@ -45,9 +45,9 @@ async def list_inf3_mandatory():
                         target_matches.append(draft)
 
             if not inf3_mandatory:
-                print("\nKeine Pflichtmodule für inf_inf3 gefunden.")
+                print(f"\nKeine Pflichtmodule für {po_id} gefunden.")
             else:
-                print(f"\nPflichtveranstaltungen in inf_inf3 ({len(inf3_mandatory)}):")
+                print(f"\nPflichtveranstaltungen in {po_id} ({len(inf3_mandatory)}):")
                 print("-" * 50)
                 for title in sorted(inf3_mandatory):
                     print(f"- {title}")
@@ -57,7 +57,17 @@ async def list_inf3_mandatory():
             if target_matches:
                 print(f"\nDetails für \"{target_title}\":")
                 for i, match in enumerate(target_matches):
+                    # Bei Drafts ist die Top-Level ID die Draft-ID, die für Detailabfragen benötigt wird
                     draft_id = match.get("id")
+                    if not draft_id:
+                        # Fallback falls ID fehlt
+                        module_info = match.get("module") or {}
+                        draft_id = module_info.get("id")
+
+                    if not draft_id:
+                        logger.warning(f"Konnte keine ID für Modul '{target_title}' finden.")
+                        continue
+
                     details = await client.get_module_draft_details(draft_id)
 
                     if len(target_matches) > 1:
