@@ -4,6 +4,7 @@ Nutzt die Mocogi-API über den MCP-Client.
 """
 
 import asyncio
+import json
 import logging
 from modul_anerkennung.mcp_client import MocogiClient
 
@@ -17,6 +18,7 @@ logger = logging.getLogger("inf3_list")
 async def list_inf3_mandatory():
     """
     Halt alle Modulentwürfe ab, filtert nach inf_inf3 Pflichtmodulen und gibt sie aus.
+    Anschließend werden Details für "Algorithmen und Datenstrukturen" angezeigt.
     """
     logger.info("Starte Abfrage der inf_inf3 Pflichtmodule...")
 
@@ -27,28 +29,69 @@ async def list_inf3_mandatory():
             logger.info(f"Insgesamt {len(drafts)} Entwürfe geladen.")
 
             inf3_mandatory = []
+            target_matches = []
+            target_title = "Algorithmen und Datenstrukturen"
+            po_id = "inf_inf3"
 
             for draft in drafts:
                 # Prüfe mandatoryPOs
                 mandatory = draft.get("mandatoryPOs") or []
-                if "inf_inf3" in mandatory:
-                    module_info = draft.get("module") or {}
-                    title = module_info.get("title", "Unbekanntes Modul")
+                module_info = draft.get("module") or {}
+                title = module_info.get("title", "Unbekanntes Modul")
+
+                if po_id in mandatory:
                     inf3_mandatory.append(title)
+                    if title == target_title:
+                        target_matches.append(draft)
 
             if not inf3_mandatory:
                 print("\nKeine Pflichtmodule für inf_inf3 gefunden.")
-                # Debug-Hinweis falls keine gefunden wurden
-                if drafts:
-                    logger.debug("Beispiel-POs in den ersten 3 Drafts:")
-                    for d in drafts[:3]:
-                        logger.debug(f"  Modul: {d.get('module', {}).get('title')} | Mandatory: {d.get('mandatoryPOs')}")
             else:
                 print(f"\nPflichtveranstaltungen in inf_inf3 ({len(inf3_mandatory)}):")
                 print("-" * 50)
                 for title in sorted(inf3_mandatory):
                     print(f"- {title}")
                 print("-" * 50)
+
+            # Details für das gewünschte Modul ausgeben
+            if target_matches:
+                print(f"\nDetails für \"{target_title}\":")
+                for i, match in enumerate(target_matches):
+                    draft_id = match.get("id")
+                    details = await client.get_module_draft_details(draft_id)
+
+                    if len(target_matches) > 1:
+                        print(f"\n--- Treffer {i+1} (ID: {draft_id}) ---")
+
+                    # 1. Rohdaten
+                    print("\n[Rohdaten]")
+                    print(json.dumps(details, indent=2, ensure_ascii=False))
+
+                    # 2. Schöner formatiert
+                    print("\n[Formatiert]")
+                    module = details.get("module", {})
+                    print(f"Titel:          {module.get('title')}")
+                    print(f"Kürzel:         {module.get('abbreviation')}")
+                    print(f"ECTS:           {details.get('ects')}")
+
+                    de_content = details.get("deContent") or {}
+                    print(f"\nInhalt (DE):")
+                    print(de_content.get("content", "Kein Inhalt vorhanden."))
+
+                    print(f"\nLernergebnisse (DE):")
+                    print(de_content.get("learningOutcomes", "Keine Lernergebnisse vorhanden."))
+
+                    print(f"\nPrüfungsform:")
+                    exams = details.get("examPhases") or []
+                    if exams:
+                        for exam in exams:
+                            print(f"- {exam}")
+                    else:
+                        print("Keine Prüfungsformen angegeben.")
+
+                    print("-" * 50)
+            else:
+                print(f"\nKein Modul mit dem Titel \"{target_title}\" in {po_id} gefunden.")
 
         except Exception as e:
             logger.error(f"Fehler bei der Abfrage: {e}")
