@@ -17,33 +17,32 @@ logger = logging.getLogger("inf3_list")
 
 async def list_inf3_mandatory():
     """
-    Halt alle Module für inf_inf3 ab, filtert nach Pflichtmodulen und gibt sie aus.
+    Halt alle Modulentwürfe ab, filtert nach inf_inf3 Pflichtmodulen und gibt sie aus.
     Anschließend werden Details für "Algorithmen und Datenstrukturen" angezeigt.
     """
-    po_id = "inf_inf3"
-    target_title = "Algorithmen und Datenstrukturen"
-    logger.info(f"Starte Abfrage der {po_id} Pflichtmodule...")
+    logger.info("Starte Abfrage der inf_inf3 Pflichtmodule...")
 
     async with MocogiClient() as client:
         try:
-            # Hole alle Module für die PO (standardisiert durch den MCP Server)
-            modules = await client.get_modules_by_po(po_id)
-            logger.info(f"Insgesamt {len(modules)} Module für {po_id} geladen.")
+            # Hole alle Entwürfe (wichtig für inf_inf3, da get_modules_by_po hier eventuell unvollständig ist)
+            drafts = await client.get_module_drafts()
+            logger.info(f"Insgesamt {len(drafts)} Entwürfe geladen.")
 
             inf3_mandatory = []
             target_matches = []
+            target_title = "Algorithmen und Datenstrukturen"
+            po_id = "inf_inf3"
 
-            for mod in modules:
-                # get_modules_by_po liefert bereits gefilterte Module für die PO
-                # Wir müssen nur prüfen, ob es ein Pflichtmodul ist
-                mandatory_pos = mod.get("mandatoryPOs") or []
-                metadata = mod.get("metadata") or {}
-                title = metadata.get("title", "Unbekanntes Modul")
+            for draft in drafts:
+                # Prüfe mandatoryPOs
+                mandatory = draft.get("mandatoryPOs") or []
+                module_info = draft.get("module") or {}
+                title = module_info.get("title", "Unbekanntes Modul")
 
-                if po_id in mandatory_pos:
+                if po_id in mandatory:
                     inf3_mandatory.append(title)
                     if title == target_title:
-                        target_matches.append(mod)
+                        target_matches.append(draft)
 
             if not inf3_mandatory:
                 print(f"\nKeine Pflichtmodule für {po_id} gefunden.")
@@ -58,20 +57,21 @@ async def list_inf3_mandatory():
             if target_matches:
                 print(f"\nDetails für \"{target_title}\":")
                 for i, match in enumerate(target_matches):
-                    module_id = match.get("id")
-                    is_draft = match.get("isDraft", False)
+                    # Bei Drafts ist die Top-Level ID die Draft-ID, die für Detailabfragen benötigt wird
+                    draft_id = match.get("id")
+                    if not draft_id:
+                        # Fallback falls ID fehlt
+                        module_info = match.get("module") or {}
+                        draft_id = module_info.get("id")
 
-                    if not module_id:
-                        logger.warning(f"Modul '{target_title}' hat keine ID.")
+                    if not draft_id:
+                        logger.warning(f"Konnte keine ID für Modul '{target_title}' finden.")
                         continue
 
-                    if is_draft:
-                        details = await client.get_module_draft_details(module_id)
-                    else:
-                        details = await client.get_module_details(module_id)
+                    details = await client.get_module_draft_details(draft_id)
 
                     if len(target_matches) > 1:
-                        print(f"\n--- Treffer {i+1} (ID: {module_id}, Draft: {is_draft}) ---")
+                        print(f"\n--- Treffer {i+1} (ID: {draft_id}) ---")
 
                     # 1. Rohdaten
                     print("\n[Rohdaten]")
@@ -79,24 +79,12 @@ async def list_inf3_mandatory():
 
                     # 2. Schöner formatiert
                     print("\n[Formatiert]")
+                    module = details.get("module", {})
+                    print(f"Titel:          {module.get('title')}")
+                    print(f"Kürzel:         {module.get('abbreviation')}")
+                    print(f"ECTS:           {details.get('ects')}")
 
-                    # Details-Struktur kann je nach Draft/Publiziert variieren
-                    # Wir versuchen die wichtigsten Felder zu finden
-                    module_data = details.get("module") if is_draft else details
-                    if not module_data:
-                        module_data = details
-
-                    meta = details.get("metadata") if not is_draft else {}
-
-                    title = module_data.get("title") or meta.get("title")
-                    abbrev = module_data.get("abbreviation") or meta.get("abbreviation")
-                    ects = details.get("ects") or meta.get("ects") or module_data.get("ects")
-
-                    print(f"Titel:          {title}")
-                    print(f"Kürzel:         {abbrev}")
-                    print(f"ECTS:           {ects}")
-
-                    de_content = details.get("deContent") or module_data.get("deContent") or {}
+                    de_content = details.get("deContent") or {}
                     print("\nInhalt (DE):")
                     print(de_content.get("content", "Kein Inhalt vorhanden."))
 
@@ -104,11 +92,7 @@ async def list_inf3_mandatory():
                     print(de_content.get("learningOutcomes", "Keine Lernergebnisse vorhanden."))
 
                     print("\nPrüfungsform:")
-                    # Prüfungsformen können in metadata oder direkt liegen
-                    exams = details.get("examPhases") or (meta.get("examPhases") if meta else [])
-                    if not exams and module_data:
-                        exams = module_data.get("examPhases") or []
-
+                    exams = details.get("examPhases") or []
                     if exams:
                         for exam in exams:
                             print(f"- {exam}")
