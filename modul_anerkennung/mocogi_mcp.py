@@ -58,12 +58,12 @@ async def list_study_programs(filter: str = "currently-active") -> List[Dict[str
         response.raise_for_status()
         return response.json()
 
-
 @mcp.tool()
 async def get_module_drafts() -> List[Dict[str, Any]]:
     """
     Gibt alle Modul-Entwürfe (Drafts) zurück, auf die der aktuelle Benutzer Zugriff hat.
     Entspricht "Meine Module" im Mocogi-Frontend.
+    Berücksichtigt sowohl direkte Zuweisungen als auch indirekte (über die PO).
     """
     async with httpx.AsyncClient() as client:
         logger.debug("Requesting module drafts from API...")
@@ -73,7 +73,10 @@ async def get_module_drafts() -> List[Dict[str, Any]]:
         if response.status_code != 200:
             logger.error(f"Failed to get module drafts: {response.status_code} - {response.text}")
         response.raise_for_status()
-        return response.json().get("direct", [])
+        data = response.json()
+        direct = data.get("direct", [])
+        indirect = data.get("indirect", [])
+        return direct + indirect
 
 
 @mcp.tool()
