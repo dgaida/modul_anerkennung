@@ -20,39 +20,41 @@ logger = logging.getLogger("restore_algo")
 def map_to_protocol_update(source_data: dict) -> dict:
     """
     Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
-    Basierend auf: https://github.com/THK-ADV/modules/blob/45be4208af3ebf83ef7b587b660fd91b7e5b9df7/src/routes/my-modules/%5Bid%3Duuid%5D/%2Bpage.server.ts#L60
     """
     print(source_data)
     print("*****")
-    m = source_data.get("metadata", {})
-    print(m)
+    m = source_data.get("metadata") or source_data.get("module", {}).get("metadata") or source_data.get("module") or {}
+
     # Mapping auf die Struktur von ModuleProtocolUpdate
     metadata = {
-        "title": "Algorithmen und Datenstrukturen",
-        "abbrev": "Algo",
+        "title": m.get("title") or "Algorithmen und Datenstrukturen",
+        "abbrev": m.get("abbreviation") or m.get("abbrev") or "Algo",
         "moduleType": m.get("moduleType", "module"),
-        "ects": 6,
+        "ects": source_data.get("ects") or m.get("ects") or 6,
         "language": m.get("language", "de"),
         "duration": m.get("duration", 1),
         "season": m.get("season", "ss"),
-        "workload": m.get("workload"),
+        "workload": m.get("workload") or {
+            "lecture": 0, "seminar": 0, "practical": 0,
+            "exercise": 0, "projectSupervision": 0, "projectWork": 0
+        },
         "status": "active",
         "location": m.get("location", "gm"),
         "participants": m.get("participants"),
         "moduleRelation": m.get("moduleRelation"),
-        "moduleManagement": m.get("moduleManagement"),
-        "lecturers": m.get("lecturers"),
+        "moduleManagement": m.get("moduleManagement") or m.get("management") or [],
+        "lecturers": m.get("lecturers") or [],
         "assessmentMethods": {
-            "mandatory": m.get("assessmentMethods", {}).get("mandatory") or []
+            "mandatory": (m.get("assessmentMethods") or {}).get("mandatory") or []
         },
         "examiner": {
-            "first": m.get("examiner", {}).get("first"),
-            "second": m.get("examiner", {}).get("second")
+            "first": (m.get("examiner") or {}).get("first"),
+            "second": (m.get("examiner") or {}).get("second")
         },
         "examPhases": m.get("examPhases") or [],
         "prerequisites": {
-            "recommended": m.get("prerequisites", {}).get("recommended") or {"text": "", "modules": []},
-            "required": m.get("prerequisites", {}).get("required")
+            "recommended": (m.get("prerequisites") or {}).get("recommended") or {"text": "", "modules": []},
+            "required": (m.get("prerequisites") or {}).get("required")
         },
         "po": ["inf_inf3"],
         "taughtWith": m.get("taughtWith") or [],
@@ -64,11 +66,7 @@ def map_to_protocol_update(source_data: dict) -> dict:
     print(metadata)
     print("*****")
 
-    return {
-        "metadata": metadata,
-        "deContent": source_data.get("deContent") or {},
-        "enContent": source_data.get("enContent") or {}
-    }
+    return {"metadata": metadata, "deContent": source_data.get("deContent") or m.get("deContent") or {}, "enContent": source_data.get("enContent") or m.get("enContent") or {}}
 
 async def restore():
     # ID des Ziel-Moduls in inf_inf3

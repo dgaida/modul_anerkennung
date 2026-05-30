@@ -44,6 +44,6 @@ description: >
   or docstring-related output — even for partial documentation tasks.
 ---
 
-- Lösche keine Kommentare grundlos und auch keine debug Ausgaben, es sei denn der User fragt explizit danach.  
+- Lösche keine Kommentare, debug Ausgaben (print/logging) oder Dokumentation grundlos, es sei denn der User fragt explizit danach oder die Dokumentation ist veraltet.
 
 - **Hinweis zu API-Tools**: Das Tool `get_modules_by_po` liefert eventuell nicht zuverlässig alle Entwürfe (Drafts) für neue Prüfungsordnungen wie `inf_inf3`. In solchen Fällen sollte stattdessen `get_module_drafts` verwendet werden, um alle zugänglichen Entwürfe abzurufen. Bei Entwürfen ist darauf zu achten, dass die ID oft unter `id` (Draft-ID) oder `module.id` (Modul-ID) liegen kann; für Detailabfragen (`get_module_draft_details`) wird die Draft-ID benötigt.  
