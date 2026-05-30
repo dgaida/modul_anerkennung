@@ -1,6 +1,7 @@
 """
 Skript zum Auflisten aller Pflichtveranstaltungen der Prüfungsordnung inf_inf3.
 Nutzt die Mocogi-API über den MCP-Client.
+Handhabt publizierte Module und fehlende Details robust.
 """
 
 import asyncio
@@ -24,9 +25,13 @@ async def list_inf3_mandatory():
 
     async with MocogiClient() as client:
         try:
-            # Hole alle Entwürfe (wichtig für inf_inf3, da get_modules_by_po hier eventuell unvollständig ist)
-            drafts = await client.get_module_drafts()
-            logger.info(f"Insgesamt {len(drafts)} Entwürfe geladen.")
+            # Hole alle Entwürfe
+            try:
+                drafts = await client.get_module_drafts()
+                logger.info(f"Insgesamt {len(drafts)} Entwürfe geladen.")
+            except Exception as e:
+                logger.error(f"Konnte Entwürfe nicht laden: {e}")
+                return
 
             inf3_mandatory = []
             target_matches = []
@@ -34,8 +39,6 @@ async def list_inf3_mandatory():
             po_id = "inf_inf3"
 
             for draft in drafts:
-                print(draft)
-                # Prüfe mandatoryPOs
                 mandatory = draft.get("mandatoryPOs") or []
                 module_info = draft.get("module") or {}
                 title = module_info.get("title", "Unbekanntes Modul")
@@ -48,32 +51,51 @@ async def list_inf3_mandatory():
             if not inf3_mandatory:
                 print(f"\nKeine Pflichtmodule für {po_id} gefunden.")
             else:
-                print(f"\nPflichtveranstaltungen in {po_id} ({len(inf3_mandatory)}):")
+                # Doppelte Einträge (z.B. durch direct/indirect) filtern
+                unique_titles = sorted(list(set(inf3_mandatory)))
+                print(f"\nPflichtveranstaltungen in {po_id} ({len(unique_titles)}):")
                 print("-" * 50)
-                for title in sorted(inf3_mandatory):
+                for title in unique_titles:
                     print(f"- {title}")
                 print("-" * 50)
 
             # Details für das gewünschte Modul ausgeben
             if target_matches:
                 print(f"\nDetails für \"{target_title}\":")
-                for i, match in enumerate(target_matches):
-                    # Bei Drafts ist die Top-Level ID die Draft-ID, die für Detailabfragen benötigt wird
-                    print(match)
+                # Nur den ersten eindeutigen Treffer anzeigen um Redundanz zu vermeiden
+                seen_ids = set()
+                for match in target_matches:
                     draft_id = match.get("id")
-                    if not draft_id:
-                        # Fallback falls ID fehlt
-                        module_info = match.get("module") or {}
-                        draft_id = module_info.get("id")
+                    module_info_summary = match.get("module") or {}
+                    module_id = module_info_summary.get("id")
 
-                    if not draft_id:
-                        logger.warning(f"Konnte keine ID für Modul '{target_title}' finden.")
+                    actual_id = draft_id or module_id
+                    if actual_id in seen_ids:
                         continue
+                    seen_ids.add(actual_id)
 
-                    details = await client.get_module_draft_details(draft_id)
+                    draft_state = match.get("moduleDraftState")
 
-                    if len(target_matches) > 1:
-                        print(f"\n--- Treffer {i+1} (ID: {draft_id}) ---")
+                    details = None
+                    try:
+                        # Falls publiziert, direkt die Modul-Details laden
+                        if draft_state == "published" and module_id:
+                            logger.debug(f"Modul ist publiziert (ID: {module_id}). Nutze get_module_details.")
+                            details = await client.get_module_details(module_id)
+                        elif draft_id:
+                            logger.debug(f"Lade Draft-Details für ID: {draft_id}")
+                            details = await client.get_module_draft_details(draft_id)
+                    except Exception as e:
+                        logger.warning(f"Konnte Details nicht von API laden ({e}).")
+
+                    # Fallback-Struktur aufbauen, falls API-Details fehlen oder unvollständig sind (z.B. 500 error)
+                    if not details or details.get("id") == "published":
+                        logger.info("Nutze Zusammenfassungsdaten als Fallback für die Anzeige.")
+                        details = {
+                            "ects": match.get("ects"),
+                            "module": module_info_summary,
+                            "examPhases": match.get("examPhases") or []
+                        }
 
                     # 1. Rohdaten
                     print("\n[Rohdaten]")
@@ -82,16 +104,24 @@ async def list_inf3_mandatory():
                     # 2. Schöner formatiert
                     print("\n[Formatiert]")
                     module = details.get("module", {})
-                    print(f"Titel:          {module.get('title')}")
-                    print(f"Kürzel:         {module.get('abbreviation')}")
-                    print(f"ECTS:           {details.get('ects')}")
+                    metadata = details.get("metadata") or {}
+
+                    res_title = module.get("title") or metadata.get("title") or module_info_summary.get("title")
+                    res_abbrev = module.get("abbreviation") or metadata.get("abbrev") or metadata.get("abbreviation") or module_info_summary.get("abbreviation")
+                    res_ects = details.get("ects") or metadata.get("ects") or match.get("ects")
+
+                    print(f"Titel:          {res_title}")
+                    print(f"Kürzel:         {res_abbrev}")
+                    print(f"ECTS:           {res_ects}")
 
                     de_content = details.get("deContent") or {}
                     print("\nInhalt (DE):")
                     print(de_content.get("content", "Kein Inhalt vorhanden."))
 
                     print("\nLernergebnisse (DE):")
-                    print(de_content.get("learningOutcomes", "Keine Lernergebnisse vorhanden."))
+                    # Verschiedene mögliche Keys für Lernergebnisse prüfen
+                    outcomes = de_content.get("learningOutcome") or de_content.get("learningOutcomes") or "Keine Lernergebnisse vorhanden."
+                    print(outcomes)
 
                     print("\nPrüfungsform:")
                     exams = details.get("examPhases") or []
@@ -106,9 +136,7 @@ async def list_inf3_mandatory():
                 print(f"\nKein Modul mit dem Titel \"{target_title}\" in {po_id} gefunden.")
 
         except Exception as e:
-            logger.error(f"Fehler bei der Abfrage: {e}")
-            if "Authorization" in str(e) or "401" in str(e):
-                logger.error("Bitte überprüfe den MOCOGI_API_TOKEN in deiner secrets.env.")
+            logger.error(f"Unerwarteter Fehler: {e}")
 
 if __name__ == "__main__":
     asyncio.run(list_inf3_mandatory())
