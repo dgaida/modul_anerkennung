@@ -15,6 +15,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+import modul_anerkennung.config  # noqa: E402, F401
+
 logger = logging.getLogger("restore_algo")
 
 def map_to_protocol_update(source_data: dict) -> dict:
