@@ -13,6 +13,7 @@ Configuration is primarily done via environment variables or a `.env` / `secrets
 | `GEMINI_API_KEY` | API key for Google Gemini | - |
 | `MOCOGI_API_TOKEN` | Bearer Token for the Mocogi API (TH Köln) | - |
 | `LOG_LEVEL` | Logging level (`DEBUG`, `INFO`, `WARNING`) | `INFO` |
+| `DEBUG_CONFIG` | Enables debug output for the configuration | `false` |
 
 ## Obtaining the Mocogi API Token
 
@@ -35,6 +36,7 @@ API_KEY=sk-proj-xxxx...
 # OPENAI_API_KEY=sk-proj-xxxx...
 # LLM_PROVIDER=openai
 MOCOGI_API_TOKEN=your_bearer_token
+DEBUG_CONFIG=true
 ```
 
 ## Google Colab
