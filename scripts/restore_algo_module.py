@@ -22,8 +22,10 @@ def map_to_protocol_update(source_data: dict) -> dict:
     Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
     Basierend auf: https://github.com/THK-ADV/modules/blob/45be4208af3ebf83ef7b587b660fd91b7e5b9df7/src/routes/my-modules/%5Bid%3Duuid%5D/%2Bpage.server.ts#L60
     """
+    print(source_data)
+    print("*****")
     m = source_data.get("metadata", {})
-
+    print(m)
     # Mapping auf die Struktur von ModuleProtocolUpdate
     metadata = {
         "title": "Algorithmen und Datenstrukturen",
@@ -57,6 +59,10 @@ def map_to_protocol_update(source_data: dict) -> dict:
         "attendanceRequirement": m.get("attendanceRequirement"),
         "assessmentPrerequisite": m.get("assessmentPrerequisite")
     }
+
+    print("*****")
+    print(metadata)
+    print("*****")
 
     return {
         "metadata": metadata,
