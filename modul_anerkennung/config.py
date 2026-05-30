@@ -43,9 +43,11 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 for env_name in ["secrets.env", ".env"]:
     dotenv_path = BASE_DIR / env_name
     if dotenv_path.exists():
-        if os.getenv("DEBUG_CONFIG", "false").lower() == "true":
-            print(f"[Config] Loading environment from {dotenv_path}")
+        # Immer ausgeben, dass die Datei gefunden wurde, um Debugging zu erleichtern
+        print(f"[Config] Found {env_name} at {dotenv_path}")
         load_dotenv(dotenv_path=dotenv_path)
+        if os.getenv("DEBUG_CONFIG", "false").lower() == "true":
+            print(f"[Config] Loaded environment variables from {dotenv_path}")
 
 # Ensure MOCOGI_API_TOKEN is set if MOCOGI_API_KEY is provided
 if not os.getenv("MOCOGI_API_TOKEN") and os.getenv("MOCOGI_API_KEY"):
