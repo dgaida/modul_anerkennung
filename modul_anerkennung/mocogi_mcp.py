@@ -249,6 +249,8 @@ async def update_module(module_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         response = await client.put(
             f"{API_BASE_URL}/modules/{module_id}", json=data, headers=get_headers()
         )
+        if response.status_code >= 400:
+            logger.error(f"Error updating module {module_id}: {response.status_code} - {response.text}")
         response.raise_for_status()
         return response.json()
 
@@ -266,6 +268,8 @@ async def update_module_draft(module_id: str, data: Dict[str, Any]) -> Dict[str,
             json=data,
             headers=headers
         )
+        if response.status_code >= 400:
+            logger.error(f"Error updating module draft {module_id}: {response.status_code} - {response.text}")
         response.raise_for_status()
         return response.json()
 
