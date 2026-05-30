@@ -21,6 +21,8 @@ def map_to_protocol_update(source_data: dict) -> dict:
     """
     Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
     """
+    print(source_data)
+    print("*****")
     m = source_data.get("metadata") or source_data.get("module", {}).get("metadata") or source_data.get("module") or {}
 
     # Mapping auf die Struktur von ModuleProtocolUpdate
@@ -59,6 +61,10 @@ def map_to_protocol_update(source_data: dict) -> dict:
         "attendanceRequirement": m.get("attendanceRequirement"),
         "assessmentPrerequisite": m.get("assessmentPrerequisite")
     }
+
+    print("*****")
+    print(metadata)
+    print("*****")
 
     return {"metadata": metadata, "deContent": source_data.get("deContent") or m.get("deContent") or {}, "enContent": source_data.get("enContent") or m.get("enContent") or {}}
 
