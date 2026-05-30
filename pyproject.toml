@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modul_anerkennung"
-version = "0.4.2"
+version = "0.4.3"
 description = "Ein RAG-basiertes Python-Tool zur Unterstützung von Prüfungsausschüssen bei der Anerkennung externer Studienmodule."
 readme = "README.md"
 authors = [
