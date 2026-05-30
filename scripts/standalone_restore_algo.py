@@ -98,56 +98,64 @@ def api_call(url, method="GET", data=None, extra_headers=None):
         raise
 
 
-def map_to_protocol_update(source_data: dict) -> dict:
-    """Konvertiert die API-Daten in das ModuleProtocolUpdate Format."""
-    logger.debug("Mappe Quelldaten auf Zielformat...")
+def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
+    """Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
+    Dabei werden die Metadaten vom Ziel-Draft (target_data) verwendet und die
+    Inhalte (deContent, enContent) vom Quell-Modul (source_data).
+    """
+    logger.debug("Mappe Quelldaten auf Zielformat unter Verwendung von Ziel-Metadaten...")
 
-    # Extrahiere Metadaten aus verschiedenen möglichen Ebenen
-    m = (source_data.get("metadata") or
-         source_data.get("module", {}).get("metadata") or
-         source_data.get("module") or {})
+    # Extrahiere Metadaten aus dem Ziel-Draft
+    # Laut Memory: Metadaten unter "module", ects und POs auf Top-Level
+    tm = target_data.get("module") or {}
+    tm_meta = tm.get("metadata") or tm
+
+    # Fallback auf Source-Metadaten falls Target unvollständig
+    sm = (source_data.get("metadata") or
+          source_data.get("module", {}).get("metadata") or
+          source_data.get("module") or {})
 
     # Mapping auf die Struktur von ModuleProtocolUpdate
     metadata = {
-        "title": m.get("title") or "Algorithmen und Datenstrukturen",
-        "abbrev": m.get("abbreviation") or m.get("abbrev") or "Algo",
-        "moduleType": m.get("moduleType", "module"),
-        "ects": source_data.get("ects") or m.get("ects") or 6,
-        "language": m.get("language", "de"),
-        "duration": m.get("duration", 1),
-        "season": m.get("season", "ss"),
-        "workload": m.get("workload") or {
+        "title": tm_meta.get("title") or sm.get("title") or "Algorithmen und Datenstrukturen",
+        "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
+        "moduleType": tm_meta.get("moduleType") or sm.get("moduleType", "module"),
+        "ects": target_data.get("ects") or tm_meta.get("ects") or source_data.get("ects") or 6,
+        "language": tm_meta.get("language") or sm.get("language", "de"),
+        "duration": tm_meta.get("duration") or sm.get("duration", 1),
+        "season": tm_meta.get("season") or sm.get("season", "ss"),
+        "workload": tm_meta.get("workload") or sm.get("workload") or {
             "lecture": 0, "seminar": 0, "practical": 0,
             "exercise": 0, "projectSupervision": 0, "projectWork": 0
         },
         "status": "active",
-        "location": m.get("location", "gm"),
-        "participants": m.get("participants"),
-        "moduleRelation": m.get("moduleRelation"),
-        "moduleManagement": m.get("moduleManagement") or m.get("management") or [],
-        "lecturers": m.get("lecturers") or [],
+        "location": tm_meta.get("location") or sm.get("location", "gm"),
+        "participants": tm_meta.get("participants") or sm.get("participants"),
+        "moduleRelation": tm_meta.get("moduleRelation") or sm.get("moduleRelation"),
+        "moduleManagement": tm_meta.get("moduleManagement") or tm_meta.get("management") or sm.get("moduleManagement") or [],
+        "lecturers": tm_meta.get("lecturers") or sm.get("lecturers") or [],
         "assessmentMethods": {
-            "mandatory": (m.get("assessmentMethods") or {}).get("mandatory") or []
+            "mandatory": (tm_meta.get("assessmentMethods") or {}).get("mandatory") or (sm.get("assessmentMethods") or {}).get("mandatory") or []
         },
         "examiner": {
-            "first": (m.get("examiner") or {}).get("first"),
-            "second": (m.get("examiner") or {}).get("second")
+            "first": (tm_meta.get("examiner") or {}).get("first") or (sm.get("examiner") or {}).get("first"),
+            "second": (tm_meta.get("examiner") or {}).get("second") or (sm.get("examiner") or {}).get("second")
         },
-        "examPhases": m.get("examPhases") or [],
+        "examPhases": tm_meta.get("examPhases") or sm.get("examPhases") or [],
         "prerequisites": {
-            "recommended": (m.get("prerequisites") or {}).get("recommended") or {"text": "", "modules": []},
-            "required": (m.get("prerequisites") or {}).get("required")
+            "recommended": (tm_meta.get("prerequisites") or {}).get("recommended") or (sm.get("prerequisites") or {}).get("recommended") or {"text": "", "modules": []},
+            "required": (tm_meta.get("prerequisites") or {}).get("required") or (sm.get("prerequisites") or {}).get("required")
         },
-        "po": ["inf_inf3"],
-        "taughtWith": m.get("taughtWith") or [],
-        "attendanceRequirement": m.get("attendanceRequirement"),
-        "assessmentPrerequisite": m.get("assessmentPrerequisite")
+        "po": target_data.get("mandatoryPOs") or target_data.get("optionalPOs") or ["inf_inf3"],
+        "taughtWith": tm_meta.get("taughtWith") or sm.get("taughtWith") or [],
+        "attendanceRequirement": tm_meta.get("attendanceRequirement") or sm.get("attendanceRequirement"),
+        "assessmentPrerequisite": tm_meta.get("assessmentPrerequisite") or sm.get("assessmentPrerequisite")
     }
 
     payload = {
         "metadata": metadata,
-        "deContent": source_data.get("deContent") or m.get("deContent") or {},
-        "enContent": source_data.get("enContent") or m.get("enContent") or {}
+        "deContent": source_data.get("deContent") or sm.get("deContent") or {},
+        "enContent": source_data.get("enContent") or sm.get("enContent") or {}
     }
 
     logger.debug(f"Payload erstellt: {json.dumps(payload, indent=2, ensure_ascii=False)}")
@@ -171,10 +179,15 @@ def restore():
         logger.info(f"Lade Quelldaten von {source_url}...")
         source_data = api_call(source_url)
 
-        # 2. Mappe Daten
-        payload = map_to_protocol_update(source_data)
+        # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
+        target_draft_url = f"{base_url}/moduleDrafts/{target_id}"
+        logger.info(f"Lade Zieldaten von {target_draft_url}...")
+        target_data = api_call(target_draft_url)
 
-        # 3. Update Draft
+        # 3. Mappe Daten (Merge)
+        payload = map_to_protocol_update(source_data, target_data)
+
+        # 4. Update Draft
         target_url = f"{base_url}/moduleDrafts/{target_id}"
         logger.info(f"Sende Update an {target_url}...")
         headers = {"Mocogi-Version-Scheme": "v1.0s"}
