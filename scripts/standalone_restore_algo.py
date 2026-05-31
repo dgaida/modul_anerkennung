@@ -309,7 +309,7 @@ def restore() -> None:
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
         # Wir suchen den Draft via Titel, da die ID allein oft nicht ausreicht oder sich ändern kann
         target_data = get_draft_by_title(base_url, target_po, target_title)
-        target_id = target_data.get('id')
+        target_id = target_data.get('module').get('id')
         
         logger.debug(f"Target Data: {json.dumps(target_data, indent=2, ensure_ascii=False)}")
 
