@@ -35,9 +35,21 @@ def load_env_manual():
                         continue
                     if "=" in line:
                         key, value = line.split("=", 1)
-                        # Entferne Anführungszeichen falls vorhanden
+
+                        # Säubere Key (entferne 'export ' und Leerzeichen)
+                        key = key.strip()
+                        if key.lower().startswith("export "):
+                            key = key[7:].strip()
+
+                        # Säubere Value (entferne Inline-Kommentare, Leerzeichen und Anführungszeichen)
+                        if "#" in value:
+                            # Vorsicht: # innerhalb von Anführungszeichen sollte eigentlich erhalten bleiben,
+                            # aber .env Dateien sind meist simpel. Wir nehmen an, # startet einen Kommentar.
+                            value = value.split("#", 1)[0]
+
                         value = value.strip().strip("'").strip('"')
-                        os.environ[key.strip()] = value
+
+                        os.environ[key] = value
             found = True
             break
 
@@ -68,9 +80,14 @@ def api_call(url, method="GET", data=None, extra_headers=None):
     token = os.getenv("MOCOGI_API_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
+        masked_token = token[:4] + "..." + token[-4:] if len(token) > 8 else "***"
+        logger.debug(f"Sende Authorization Header mit Token {masked_token}")
+    else:
+        logger.warning("Kein MOCOGI_API_TOKEN vorhanden. Anfrage erfolgt ohne Authentifizierung.")
 
     if extra_headers:
         headers.update(extra_headers)
+        logger.debug(f"Zusätzliche Header: {list(extra_headers.keys())}")
 
     payload = None
     if data:
@@ -92,6 +109,13 @@ def api_call(url, method="GET", data=None, extra_headers=None):
         error_body = e.read().decode("utf-8")
         logger.error(f"HTTP Fehler: {e.code} - {e.reason}")
         logger.error(f"Fehler-Body: {error_body}")
+
+        # Log headers sent (except full token)
+        sent_headers = headers.copy()
+        if "Authorization" in sent_headers:
+            sent_headers["Authorization"] = "Bearer " + (token[:4] + "..." if token else "***")
+        logger.debug(f"Gesendete Header: {sent_headers}")
+
         raise Exception(f"API Call fehlgeschlagen: {e.code} {e.reason}")
     except Exception as e:
         logger.error(f"Unerwarteter Fehler beim API-Call: {e}")
