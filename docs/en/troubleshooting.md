@@ -10,10 +10,12 @@ Häufig auftretende Probleme und deren Lösungen.
 kill $(lsof -t -i :7860)
 ```
 
-## 2. Authentifizierungsfehler bei Mocogi
+## 2. Authentication Errors with Mocogi
 
-**Problem**: Die Suche liefert keine Ergebnisse oder Fehlermeldungen (401 Unauthorized).
-**Lösung**: Überprüfen Sie, ob `MOCOGI_API_TOKEN` in Ihrer `.env` korrekt gesetzt ist und das Präfix `Bearer` nicht doppelt vorhanden ist.
+**Problem**: Search returns no results or error messages (401 Unauthorized / 403 Forbidden).
+**Lösung**:
+- Check if `MOCOGI_API_TOKEN` is correctly set in your `.env` and that the `Bearer` prefix is not duplicated.
+- The token might have expired. Log in to Mocogi in your browser, copy the current token from the cookies (`access_token`), and update your `.env` or `secrets.env` file.
 
 ## 3. LLM API Limit erreicht
 

@@ -1,0 +1,5 @@
+I have modified scripts/standalone_restore_algo.py to:
+1. Add a get_draft_by_title function that fetches all module drafts and filters by PO ID and title.
+2. Refactored the restore() function to use this new helper for finding the target module in inf_inf3.
+3. Enhanced error handling to suggest checking for an expired MOCOGI_API_TOKEN on authentication failures.
+4. Updated docs/de/troubleshooting.md and docs/en/troubleshooting.md with information about expired tokens.

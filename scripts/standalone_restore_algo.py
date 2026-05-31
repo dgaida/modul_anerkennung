@@ -116,11 +116,43 @@ def api_call(url, method="GET", data=None, extra_headers=None):
             sent_headers["Authorization"] = "Bearer " + (token[:4] + "..." if token else "***")
         logger.debug(f"Gesendete Header: {sent_headers}")
 
-        raise Exception(f"API Call fehlgeschlagen: {e.code} {e.reason}")
+        msg = f"API Call fehlgeschlagen: {e.code} {e.reason}"
+        if e.code in [401, 403]:
+            msg += " (Hinweis: MOCOGI_API_TOKEN könnte abgelaufen sein!)"
+        raise Exception(msg)
     except Exception as e:
         logger.error(f"Unerwarteter Fehler beim API-Call: {e}")
         raise
 
+
+def get_draft_by_title(base_url, po_id, title):
+    """Sucht einen Modul-Draft anhand von PO-ID und Titel."""
+    url = f"{base_url}/moduleDrafts"
+    logger.info(f"Lade alle Entwürfe von {url}...")
+    data = api_call(url)
+
+    # Extrahiere direct und indirect Drafts (siehe Memory)
+    drafts = (data.get("direct") or []) + (data.get("indirect") or [])
+    logger.debug(f"{len(drafts)} Entwürfe insgesamt gefunden.")
+
+    search_title = title.lower().strip()
+    for draft in drafts:
+        mandatory = draft.get("mandatoryPOs") or []
+        optional = draft.get("optionalPOs") or []
+
+        if po_id in mandatory or po_id in optional:
+            module_info = draft.get("module") or {}
+            # Manchmal ist der Titel auch direkt im Draft-Objekt oder tiefer verschachtelt
+            draft_title = (module_info.get("title") or
+                           draft.get("title") or
+                           (module_info.get("metadata") or {}).get("title") or
+                           "")
+
+            if draft_title.lower().strip() == search_title:
+                logger.info(f"Passenden Entwurf gefunden: {draft_title} (ID: {draft.get('id')})")
+                return draft
+
+    raise Exception(f"Kein Entwurf mit dem Titel {title} in PO {po_id} gefunden. (Hinweis: MOCOGI_API_TOKEN könnte abgelaufen sein!)")
 
 def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
     """Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
@@ -188,34 +220,30 @@ def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
 
 def restore():
     """Hauptfunktion zur Wiederherstellung des Algo-Moduls."""
-    # ID des Ziel-Moduls in inf_inf3
-    target_id = "8cff2c5b-6f2f-4d8f-8101-f74f30c0a603"
     # ID eines funktionsfähigen Algo-Moduls (hier aus inf_inf2)
     source_id = "21723454-3c3e-4ebe-ade0-82eacb69b185"
 
+    # Ziel-Modul in inf_inf3
+    target_po = "inf_inf3"
+    target_title = "Algorithmen und Datenstrukturen"
+
     base_url = "https://module.gm.th-koeln.de/api"
 
-    logger.info(f"Starte Wiederherstellung: {source_id} -> {target_id}")
+    logger.info(f"Starte Wiederherstellung von '{target_title}' in {target_po}...")
 
     try:
         # 1. Lade Quelldaten
         source_url = f"{base_url}/modules/{source_id}"
         logger.info(f"Lade Quelldaten von {source_url}...")
         source_data = api_call(source_url)
-        print(source_data)
-        print("******")
 
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
-        target_draft_url = f"{base_url}/moduleDrafts/{target_id}"
-        logger.info(f"Lade Zieldaten von {target_draft_url}...")
-        target_data = api_call(target_draft_url)
-        print(target_data)
-        print("******")
+        # Wir suchen den Draft via Titel, da die ID allein oft nicht ausreicht oder sich ändern kann
+        target_data = get_draft_by_title(base_url, target_po, target_title)
+        target_id = target_data.get('id')
 
         # 3. Mappe Daten (Merge)
         payload = map_to_protocol_update(source_data, target_data)
-        print(payload)
-        print("******")
 
         # 4. Update Draft
         target_url = f"{base_url}/moduleDrafts/{target_id}"
@@ -224,10 +252,11 @@ def restore():
         result = api_call(target_url, method="PUT", data=payload, extra_headers=headers)
 
         logger.info("Wiederherstellung erfolgreich abgeschlossen!")
-        logger.info(f"Ergebnis: {json.dumps(result, indent=2, ensure_ascii=False)}")
+        logger.debug(f"Ergebnis: {json.dumps(result, indent=2, ensure_ascii=False)}")
 
     except Exception as e:
         logger.error(f"Fehler bei der Wiederherstellung: {e}")
+        logger.error("Hinweis: Stellen Sie sicher, dass der MOCOGI_API_TOKEN aktuell ist und Schreibrechte besitzt.")
         sys.exit(1)
 
 if __name__ == "__main__":
