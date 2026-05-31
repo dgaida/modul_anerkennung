@@ -141,7 +141,7 @@ def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
 
     # Mapping auf die Struktur von ModuleProtocolUpdate
     metadata = {
-        "title": tm_meta.get("title") or sm.get("title") or "Algorithmen und Datenstrukturen",
+        "title": tm_meta.get("title") or "Algorithmen und Datenstrukturen",
         "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
         "moduleType": tm_meta.get("moduleType") or sm.get("moduleType", "module"),
         "ects": target_data.get("ects") or tm_meta.get("ects") or source_data.get("ects") or 6,
