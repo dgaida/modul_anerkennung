@@ -1,3 +1,15 @@
+"""Wiederherstellungsskript für das Modul 'Algorithmen und Datenstrukturen'.
+
+Dieses Skript migriert Lerninhalte (deContent, enContent) von einem existierenden Quell-Modul
+(z.B. 'Algorithmik' aus einer älteren Prüfungsordnung) in eine Entwurfsfassung (Draft)
+von 'Algorithmen und Datenstrukturen' in einer Ziel-Prüfungsordnung (z.B. inf_inf3).
+
+Dabei wird die Identität des Ziel-Moduls (Titel, Abkürzung, ECTS, PO-Zuordnung) beibehalten,
+während die inhaltlichen Beschreibungen überschrieben werden. Dies ist nützlich, wenn
+ein Modul in einer neuen PO als leerer Stub angelegt wurde und mit den Inhalten des
+Vorgängermoduls befüllt werden soll.
+"""
+
 import json
 import logging
 import os
@@ -5,6 +17,7 @@ import pathlib
 import sys
 import urllib.request
 import urllib.error
+from typing import Dict, Any, Optional
 
 # Logging-Konfiguration
 logging.basicConfig(
@@ -15,8 +28,12 @@ logging.basicConfig(
 logger = logging.getLogger("standalone_restore")
 
 
-def load_env_manual():
-    """Lädt Umgebungsvariablen aus .env oder secrets.env manuell."""
+def load_env_manual() -> None:
+    """Lädt Umgebungsvariablen aus .env oder secrets.env manuell.
+
+    Sucht in verschiedenen Verzeichnissen nach .env-Dateien und parst diese,
+    um MOCOGI_API_TOKEN oder MOCOGI_API_KEY in os.environ zu setzen.
+    """
     possible_paths = [
         pathlib.Path.cwd() / "secrets.env",
         pathlib.Path.cwd() / ".env",
@@ -69,8 +86,26 @@ def load_env_manual():
 
 load_env_manual()
 
-def api_call(url, method="GET", data=None, extra_headers=None):
-    """Führt einen API-Call mit urllib aus."""
+def api_call(
+    url: str,
+    method: str = "GET",
+    data: Optional[Dict[str, Any]] = None,
+    extra_headers: Optional[Dict[str, str]] = None
+) -> Dict[str, Any]:
+    """Führt einen API-Call mit urllib aus.
+
+    Args:
+        url: Die Ziel-URL der Mocogi API.
+        method: Die HTTP-Methode (z.B. 'GET', 'PUT', 'POST'). Standard ist 'GET'.
+        data: Ein optionales Dictionary mit Daten, die als JSON gesendet werden sollen.
+        extra_headers: Optionale zusätzliche HTTP-Header.
+
+    Returns:
+        Ein Dictionary mit der JSON-Antwort der API oder ein leeres Dictionary bei Erfolg ohne Body.
+
+    Raises:
+        Exception: Wenn der API-Call fehlschlägt (z.B. HTTP-Fehler 401, 404, 500).
+    """
     logger.debug(f"API Call: {method} {url}")
 
     headers = {
@@ -125,8 +160,23 @@ def api_call(url, method="GET", data=None, extra_headers=None):
         raise
 
 
-def get_draft_by_title(base_url, po_id, title):
-    """Sucht einen Modul-Draft anhand von PO-ID und Titel."""
+def get_draft_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
+    """Sucht einen Modul-Draft anhand von PO-ID und Titel.
+
+    Fragt alle Entwürfe von der API ab und filtert sie nach der angegebenen
+    Prüfungsordnung und dem Modultitel (case-insensitive).
+
+    Args:
+        base_url: Die Basis-URL der Mocogi API.
+        po_id: Die Kennung der Prüfungsordnung (z.B. 'inf_inf3').
+        title: Der exakte Titel des gesuchten Modul-Entwurfs.
+
+    Returns:
+        Das Dictionary mit den Daten des gefundenen Modul-Drafts.
+
+    Raises:
+        Exception: Wenn kein passender Entwurf gefunden werden konnte.
+    """
     url = f"{base_url}/moduleDrafts"
     logger.info(f"Lade alle Entwürfe von {url}...")
     data = api_call(url)
@@ -154,10 +204,20 @@ def get_draft_by_title(base_url, po_id, title):
 
     raise Exception(f"Kein Entwurf mit dem Titel {title} in PO {po_id} gefunden. (Hinweis: MOCOGI_API_TOKEN könnte abgelaufen sein!)")
 
-def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
+def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, Any]) -> Dict[str, Any]:
     """Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
+
     Dabei werden die Metadaten vom Ziel-Draft (target_data) verwendet und die
-    Inhalte (deContent, enContent) vom Quell-Modul (source_data).
+    Inhalte (deContent, enContent) vom Quell-Modul (source_data). Dies stellt sicher,
+    dass die Identität im Zielsystem erhalten bleibt, während die Beschreibungen
+    übernommen werden.
+
+    Args:
+        source_data: Das Quell-Modul-Objekt (Inhaltslieferant).
+        target_data: Das Ziel-Draft-Objekt (Metadaten-Basis).
+
+    Returns:
+        Ein Dictionary im Format 'ModuleProtocolUpdate', bereit für den PUT-Request.
     """
     logger.debug("Mappe Quelldaten auf Zielformat unter Verwendung von Ziel-Metadaten...")
 
@@ -218,8 +278,15 @@ def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
     return payload
 
 
-def restore():
-    """Hauptfunktion zur Wiederherstellung des Algo-Moduls."""
+def restore() -> None:
+    """Hauptfunktion zur Wiederherstellung des Algo-Moduls.
+
+    Diese Funktion koordiniert den gesamten Prozess:
+    1. Laden der Inhaltsdaten des Quell-Moduls (Algorithmik aus inf_inf2).
+    2. Identifizieren des Ziel-Drafts (Algorithmen und Datenstrukturen in inf_inf3).
+    3. Zusammenführen der Daten (Ziel-Metadaten + Quell-Inhalte).
+    4. Aktualisieren des Ziel-Drafts über die Mocogi API.
+    """
     # ID eines funktionsfähigen Algo-Moduls (hier aus inf_inf2)
     source_id = "21723454-3c3e-4ebe-ade0-82eacb69b185"
 
