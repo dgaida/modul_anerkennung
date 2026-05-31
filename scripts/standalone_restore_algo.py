@@ -174,7 +174,7 @@ def map_to_protocol_update(source_data: dict, target_data: dict) -> dict:
     # Mapping auf die Struktur von ModuleProtocolUpdate
     metadata = {
         "title": tm_meta.get("title") or "Algorithmen und Datenstrukturen",
-        "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
+        "abbreviation": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
         "moduleType": tm_meta.get("moduleType") or sm.get("moduleType", "module"),
         "ects": target_data.get("ects") or tm_meta.get("ects") or source_data.get("ects") or 6,
         "language": tm_meta.get("language") or sm.get("language", "de"),
@@ -236,24 +236,19 @@ def restore():
         source_url = f"{base_url}/modules/{source_id}"
         logger.info(f"Lade Quelldaten von {source_url}...")
         source_data = api_call(source_url)
-        print(source_data)
-        print("******")
+        
         logger.debug(f"Source Data: {json.dumps(source_data, indent=2, ensure_ascii=False)}")
 
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
         # Wir suchen den Draft via Titel, da die ID allein oft nicht ausreicht oder sich ändern kann
         target_data = get_draft_by_title(base_url, target_po, target_title)
         target_id = target_data.get('id')
-        print(target_data)
-        print("******")
+        
         logger.debug(f"Target Data: {json.dumps(target_data, indent=2, ensure_ascii=False)}")
 
         # 3. Mappe Daten (Merge)
         payload = map_to_protocol_update(source_data, target_data)
-        print(payload)
-        print("******")
-        logger.debug(f"Payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
-
+        
         # 4. Update Draft
         target_url = f"{base_url}/moduleDrafts/{target_id}"
         logger.info(f"Sende Update an {target_url}...")
