@@ -236,14 +236,23 @@ def restore():
         source_url = f"{base_url}/modules/{source_id}"
         logger.info(f"Lade Quelldaten von {source_url}...")
         source_data = api_call(source_url)
+        print(source_data)
+        print("******")
+        logger.debug(f"Source Data: {json.dumps(source_data, indent=2, ensure_ascii=False)}")
 
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
         # Wir suchen den Draft via Titel, da die ID allein oft nicht ausreicht oder sich ändern kann
         target_data = get_draft_by_title(base_url, target_po, target_title)
         target_id = target_data.get('id')
+        print(target_data)
+        print("******")
+        logger.debug(f"Target Data: {json.dumps(target_data, indent=2, ensure_ascii=False)}")
 
         # 3. Mappe Daten (Merge)
         payload = map_to_protocol_update(source_data, target_data)
+        print(payload)
+        print("******")
+        logger.debug(f"Payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
 
         # 4. Update Draft
         target_url = f"{base_url}/moduleDrafts/{target_id}"
