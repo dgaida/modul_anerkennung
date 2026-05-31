@@ -178,14 +178,20 @@ def restore():
         source_url = f"{base_url}/modules/{source_id}"
         logger.info(f"Lade Quelldaten von {source_url}...")
         source_data = api_call(source_url)
+        print(source_data)
+        print("******")
 
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
         target_draft_url = f"{base_url}/moduleDrafts/{target_id}"
         logger.info(f"Lade Zieldaten von {target_draft_url}...")
         target_data = api_call(target_draft_url)
+        print(target_data)
+        print("******")
 
         # 3. Mappe Daten (Merge)
         payload = map_to_protocol_update(source_data, target_data)
+        print(payload)
+        print("******")
 
         # 4. Update Draft
         target_url = f"{base_url}/moduleDrafts/{target_id}"
