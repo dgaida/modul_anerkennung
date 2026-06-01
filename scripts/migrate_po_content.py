@@ -64,9 +64,35 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
     if "module" in full_data and "metadata" not in full_data:
         # Draft Struktur
         module_part = full_data.get("module") or {}
+
+        # Wandle flache PO-Listen in strukturierte PO-Objekte um
+        target_mandatory = full_data.get("mandatoryPOs") or []
+        target_optional = full_data.get("optionalPOs") or []
+
+        po_structured = {
+            "mandatory": [],
+            "optional": []
+        }
+
+        for po_id in target_mandatory:
+            po_structured["mandatory"].append({
+                "po": po_id,
+                "specialization": None,
+                "recommendedSemester": [1] # Default
+            })
+
+        for po_id in target_optional:
+            po_structured["optional"].append({
+                "po": po_id,
+                "specialization": None,
+                "recommendedSemester": [1],
+                "instanceOf": module_part.get("id") or "",
+                "partOfCatalog": True
+            })
+
         metadata = {
             "title": module_part.get("title"),
-            "abbrev": module_part.get("abbreviation"),
+            "abbrev": module_part.get("abbreviation") or module_part.get("abbrev"),
             "moduleType": module_part.get("moduleType"),
             "ects": full_data.get("ects") or module_part.get("ects"),
             "language": module_part.get("language"),
@@ -77,13 +103,13 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
             "location": module_part.get("location"),
             "participants": module_part.get("participants"),
             "moduleRelation": module_part.get("moduleRelation"),
-            "management": module_part.get("management"),
+            "moduleManagement": module_part.get("moduleManagement") or module_part.get("management"),
             "lecturers": module_part.get("lecturers"),
             "assessmentMethods": module_part.get("assessmentMethods") or {},
             "examiner": module_part.get("examiner") or {},
             "examPhases": module_part.get("examPhases") or [],
             "prerequisites": module_part.get("prerequisites") or {},
-            "po": (full_data.get("mandatoryPOs") or []) + (full_data.get("optionalPOs") or []),
+            "po": po_structured,
             "taughtWith": module_part.get("taughtWith") or [],
             "attendanceRequirement": module_part.get("attendanceRequirement"),
             "assessmentPrerequisite": module_part.get("assessmentPrerequisite")
@@ -95,9 +121,18 @@ def map_to_protocol_update(full_data: Dict[str, Any]) -> Dict[str, Any]:
         metadata = (full_data.get("metadata") or {}).copy()
         de_content = full_data.get("deContent") or {}
         en_content = full_data.get("enContent") or {}
+
         # Stelle sicher, dass abbrev -> abbreviation gemappt wird falls nötig
         if "abbreviation" in metadata and "abbrev" not in metadata:
             metadata["abbrev"] = metadata["abbreviation"]
+
+        # Falls die PO noch flach ist, wandle sie um
+        if isinstance(metadata.get("po"), list):
+            po_list = metadata.get("po")
+            metadata["po"] = {
+                "mandatory": [{"po": p, "specialization": None, "recommendedSemester": [1]} for p in po_list],
+                "optional": []
+            }
 
     return {
         "metadata": metadata,

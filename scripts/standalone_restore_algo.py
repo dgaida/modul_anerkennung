@@ -232,9 +232,47 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
           source_data.get("module") or {})
 
     # Mapping auf die Struktur von ModuleProtocolUpdate
+    # Extrahiere PO-Informationen und wandle sie in das strukturierte Format um
+    target_mandatory = target_data.get("mandatoryPOs") or []
+    target_optional = target_data.get("optionalPOs") or []
+
+    po_structured = {
+        "mandatory": [],
+        "optional": []
+    }
+
+    # Wenn wir in einer bestimmten PO sind (z.B. inf_inf3), bauen wir das Pflicht-Objekt
+    # Hier nutzen wir die Infos vom Entwickler: po="inf_inf3", specialization=None, recommendedSemester=[2]
+    for po_id in target_mandatory:
+        po_structured["mandatory"].append({
+            "po": po_id,
+            "specialization": None,
+            "recommendedSemester": [2] if po_id == "inf_inf3" else [1]
+        })
+
+    for po_id in target_optional:
+        # Fuer Optional muessen wir eigentlich instanceOf angeben (die UUID des Moduls)
+        # Da wir das hier nicht exakt wissen, setzen wir einen Platzhalter oder lassen es leer
+        # Der Entwickler sagte: "Bei Optional nimmst du alles wie bei PO-Mandatory, nur dass du bei “instanceOf” die UUID des Moduls angeben musst"
+        po_structured["optional"].append({
+            "po": po_id,
+            "specialization": None,
+            "recommendedSemester": [1],
+            "instanceOf": target_data.get("module", {}).get("id") or "",
+            "partOfCatalog": True
+        })
+
+    # Fallback falls gar keine POs da sind
+    if not po_structured["mandatory"] and not po_structured["optional"]:
+         po_structured["mandatory"].append({
+            "po": "inf_inf3",
+            "specialization": None,
+            "recommendedSemester": [2]
+        })
+
     metadata = {
         "title": tm_meta.get("title") or "Algorithmen und Datenstrukturen",
-        "abbreviation": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
+        "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
         "moduleType": tm_meta.get("moduleType") or sm.get("moduleType", "module"),
         "ects": target_data.get("ects") or tm_meta.get("ects") or source_data.get("ects") or 6,
         "language": tm_meta.get("language") or sm.get("language", "de"),
@@ -262,7 +300,7 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
             "recommended": (tm_meta.get("prerequisites") or {}).get("recommended") or (sm.get("prerequisites") or {}).get("recommended") or {"text": "", "modules": []},
             "required": (tm_meta.get("prerequisites") or {}).get("required") or (sm.get("prerequisites") or {}).get("required")
         },
-        "po": target_data.get("mandatoryPOs") or target_data.get("optionalPOs") or ["inf_inf3"],
+        "po": po_structured,
         "taughtWith": tm_meta.get("taughtWith") or sm.get("taughtWith") or [],
         "attendanceRequirement": tm_meta.get("attendanceRequirement") or sm.get("attendanceRequirement"),
         "assessmentPrerequisite": tm_meta.get("assessmentPrerequisite") or sm.get("assessmentPrerequisite")
@@ -309,7 +347,7 @@ def restore() -> None:
         # 2. Lade Zieldaten (Draft) um Metadaten zu erhalten
         # Wir suchen den Draft via Titel, da die ID allein oft nicht ausreicht oder sich ändern kann
         target_data = get_draft_by_title(base_url, target_po, target_title)
-        target_id = target_data.get('module').get('id')
+        target_id = target_data.get('id')
         
         logger.debug(f"Target Data: {json.dumps(target_data, indent=2, ensure_ascii=False)}")
 
