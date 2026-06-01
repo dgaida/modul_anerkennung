@@ -66,7 +66,7 @@ def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
         lines = f.readlines()
 
     # Überspringe Header und Trennzeile
-    for line in lines[2:]:
+    for line in lines[1:]:
         line = line.strip()
         if not line or not line.startswith("|"):
             continue
