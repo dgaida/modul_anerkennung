@@ -63,4 +63,4 @@ async def test_map_to_protocol_update_handles_none():
 
     assert result["metadata"]["examPhases"] == []
     assert result["metadata"]["assessmentMethods"] == {}
-    assert result["metadata"]["po"] == []
+    assert result["metadata"]["po"] == {"mandatory": [], "optional": []}

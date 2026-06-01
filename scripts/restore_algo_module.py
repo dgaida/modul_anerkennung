@@ -58,7 +58,16 @@ def map_to_protocol_update(source_data: dict) -> dict:
             "recommended": (m.get("prerequisites") or {}).get("recommended") or {"text": "", "modules": []},
             "required": (m.get("prerequisites") or {}).get("required")
         },
-        "po": ["inf_inf3"],
+        "po": {
+            "mandatory": [
+                {
+                    "po": "inf_inf3",
+                    "specialization": None,
+                    "recommendedSemester": [2]
+                }
+            ],
+            "optional": []
+        },
         "taughtWith": m.get("taughtWith") or [],
         "attendanceRequirement": m.get("attendanceRequirement"),
         "assessmentPrerequisite": m.get("assessmentPrerequisite")
