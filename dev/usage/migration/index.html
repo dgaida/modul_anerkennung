@@ -8,19 +8,19 @@
       
       
       
-        <link rel="canonical" href="https://dgaida.github.io/modul_anerkennung/dev/development/changelog/">
+        <link rel="canonical" href="https://dgaida.github.io/modul_anerkennung/dev/usage/migration/">
       
       
-        <link rel="prev" href="../versioning/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../../troubleshooting/">
+        <link rel="next" href="../../api/">
       
       
         
           <link rel="alternate" href="./" hreflang="de">
         
-          <link rel="alternate" href="../../en/development/changelog/" hreflang="en">
+          <link rel="alternate" href="../../en/usage/migration/" hreflang="en">
         
       
       
@@ -29,7 +29,7 @@
     
     
       
-        <title>Changelog - Modul-Anerkennungstool</title>
+        <title>Migration - Modul-Anerkennungstool</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#changelog-workflow" class="md-skip">
+        <a href="#migration-von-modulinhalten-via-liste" class="md-skip">
           Zum Inhalt
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Changelog
+              Migration
             
           </span>
         </div>
@@ -173,7 +173,7 @@
           </li>
         
           <li class="md-select__item">
-            <a href="../../en/development/changelog/" hreflang="en" class="md-select__link">
+            <a href="../../en/usage/migration/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
@@ -338,11 +338,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../usage/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -398,13 +400,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../development/" class="md-tabs__link">
           
   
   
@@ -611,28 +611,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -650,7 +653,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -668,7 +671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -693,10 +696,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../usage/migration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -712,6 +742,109 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ziel-und-zweck" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ziel und Zweck
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voraussetzungen-und-abhangigkeiten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen und Abhängigkeiten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vorbereitung-der-aquivalenzliste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vorbereitung der Äquivalenzliste
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentifizierung-api-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentifizierung (API-Token)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentifizierung (API-Token)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#token-erhalten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token erhalten
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-speichern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token speichern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skript-starten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skript starten
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -906,31 +1039,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -948,7 +1078,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -966,7 +1096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../development/" class="md-nav__link">
         
   
   
@@ -994,7 +1124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../docstring-guide/" class="md-nav__link">
+      <a href="../../development/docstring-guide/" class="md-nav__link">
         
   
   
@@ -1022,7 +1152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../compliance-report/" class="md-nav__link">
+      <a href="../../development/compliance-report/" class="md-nav__link">
         
   
   
@@ -1050,7 +1180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../versioning/" class="md-nav__link">
+      <a href="../../development/versioning/" class="md-nav__link">
         
   
   
@@ -1075,37 +1205,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../development/changelog/" class="md-nav__link">
         
   
   
@@ -1121,65 +1224,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Inhaltsverzeichnis
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#konventionelle-commits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Konventionelle Commits
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Konventionelle Commits">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#typen" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Typen
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#automatisierung" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Automatisierung
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1273,22 +1317,66 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#konventionelle-commits" class="md-nav__link">
+  <a href="#ziel-und-zweck" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Konventionelle Commits
+        Ziel und Zweck
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Konventionelle Commits">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#voraussetzungen-und-abhangigkeiten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen und Abhängigkeiten
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vorbereitung-der-aquivalenzliste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vorbereitung der Äquivalenzliste
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentifizierung-api-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentifizierung (API-Token)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentifizierung (API-Token)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#typen" class="md-nav__link">
+  <a href="#token-erhalten" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Typen
+        Token erhalten
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-speichern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token speichern
       
     </span>
   </a>
@@ -1301,10 +1389,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatisierung" class="md-nav__link">
+  <a href="#skript-starten" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatisierung
+        Skript starten
       
     </span>
   </a>
@@ -1331,28 +1419,44 @@
   
 
 
-<h1 id="changelog-workflow">Changelog Workflow</h1>
-<p>Wir verwenden <strong>Conventional Commits</strong> und <strong>git-cliff</strong>, um unseren Changelog automatisch zu generieren.</p>
-<h2 id="konventionelle-commits">Konventionelle Commits</h2>
-<p>Bitte strukturieren Sie Ihre Commit-Nachrichten nach folgendem Schema:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;typ&gt;(&lt;bereich&gt;): &lt;beschreibung&gt;
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>[optionaler body]
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>[optionaler footer]
+<h1 id="migration-von-modulinhalten-via-liste">Migration von Modulinhalten via Liste</h1>
+<p>Das Skript <code>scripts/migrate_from_list.py</code> ermöglicht die automatisierte Übernahme von Modulinhalten (Deutsch und Englisch) aus einer bestehenden Prüfungsordnung (z. B. PO2) in die Entwürfe einer neuen Prüfungsordnung (z. B. PO3).</p>
+<h2 id="ziel-und-zweck">Ziel und Zweck</h2>
+<p>Das Ziel ist es, die mühsame manuelle Übertragung von Lehrinhalten zu vermeiden, wenn Module in einer neuen PO identisch oder sehr ähnlich bleiben. Das Skript stellt sicher, dass die inhaltlichen Beschreibungen konsistent übernommen werden, während die Identität und spezifische Metadaten (wie IDs) des Ziel-Entwurfs erhalten bleiben.</p>
+<h2 id="voraussetzungen-und-abhangigkeiten">Voraussetzungen und Abhängigkeiten</h2>
+<p>Das Skript ist als Standalone-Werkzeug konzipiert, nutzt jedoch Logik aus anderen Skripten:
+- <strong>Abhängigkeit</strong>: <code>scripts/standalone_restore_algo.py</code> (muss im selben Verzeichnis liegen, da Funktionen daraus importiert werden).
+- <strong>Eingabedatei</strong>: <code>data/aequivalenzliste.md</code> (enthält das Mapping).</p>
+<h2 id="vorbereitung-der-aquivalenzliste">Vorbereitung der Äquivalenzliste</h2>
+<p>Die Liste muss als Markdown-Tabelle in <code>data/aequivalenzliste.md</code> vorliegen. Das Format ist wie folgt:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>| Modul in PO2 | Modul in PO3 | Semester |
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>| :--- | :--- | :--- |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>| Algorithmik | Algorithmen und Datenstrukturen | 2 |
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>| Mathematik 1 | Mathe 1 | 1 |
 </span></code></pre></div>
-<h3 id="typen">Typen</h3>
 <ul>
-<li><code>feat</code>: Ein neues Feature  </li>
-<li><code>fix</code>: Ein Bugfix  </li>
-<li><code>docs</code>: Änderungen an der Dokumentation  </li>
-<li><code>style</code>: Formatierung, fehlende Semikolons, etc.  </li>
-<li><code>refactor</code>: Codeänderung, die weder einen Bug behebt noch ein Feature hinzufügt  </li>
-<li><code>test</code>: Hinzufügen von fehlenden Tests  </li>
-<li><code>chore</code>: Änderungen am Build-Prozess oder an Hilfsmitteln  </li>
+<li><strong>Spalte 1</strong>: Der exakte Titel des Quell-Moduls in der PO <code>inf_inf2</code>.</li>
+<li><strong>Spalte 2</strong>: Der exakte Titel des Ziel-Entwurfs in der PO <code>inf_inf3</code>.</li>
+<li><strong>Spalte 3</strong>: Das empfohlene Semester für das Ziel-Modul.</li>
 </ul>
-<h2 id="automatisierung">Automatisierung</h2>
-<p>Bei jedem Release (Push eines Tags <code>v*</code>) wird <code>git-cliff</code> ausgeführt, um die <code>CHANGELOG.md</code> zu aktualisieren und einen GitHub-Release zu erstellen.</p>
+<h2 id="authentifizierung-api-token">Authentifizierung (API-Token)</h2>
+<p>Für den Schreibzugriff auf die Mocogi-API wird ein gültiger <code>MOCOGI_API_TOKEN</code> benötigt.</p>
+<h3 id="token-erhalten">Token erhalten</h3>
+<ol>
+<li>Melden Sie sich im Browser bei <a href="https://module.gm.th-koeln.de">module.gm.th-koeln.de</a> an.</li>
+<li>Öffnen Sie die Entwicklertools (F12) -&gt; Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".</li>
+<li>Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.</li>
+<li>Kopieren Sie den Wert des Tokens (meist <code>access_token</code> oder ähnlich).</li>
+</ol>
+<h3 id="token-speichern">Token speichern</h3>
+<p>Erstellen Sie im Wurzelverzeichnis des Projekts eine Datei namens <code>secrets.env</code> (falls nicht vorhanden) und fügen Sie den Token ein:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>MOCOGI_API_TOKEN=ihr_kopierter_token_hier
+</span></code></pre></div>
+<h2 id="skript-starten">Skript starten</h2>
+<p>Führen Sie das Skript aus dem Hauptverzeichnis des Projekts aus:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>.<span class="w"> </span>python3<span class="w"> </span>scripts/migrate_from_list.py
+</span></code></pre></div>
+<p>Das Skript gibt detaillierte Logs über den Fortschritt und eventuelle Fehler aus.</p>
 
 
 

@@ -99,6 +99,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/modul_anerkennung/deven/usage/"/>
     </url>
     <url>
+        <loc>https://dgaida.github.io/modul_anerkennung/dev/usage/migration/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/modul_anerkennung/dev/usage/migration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/modul_anerkennung/deven/usage/migration/"/>
+    </url>
+    <url>
         <loc>https://dgaida.github.io/modul_anerkennung/dev/en/</loc>
         <lastmod>2026-06-01</lastmod>
         <changefreq>daily</changefreq>
@@ -195,5 +202,12 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/modul_anerkennung/dev/en/usage/"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/modul_anerkennung/devusage/"/>
+    </url>
+    <url>
+        <loc>https://dgaida.github.io/modul_anerkennung/dev/en/usage/migration/</loc>
+        <lastmod>2026-06-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://dgaida.github.io/modul_anerkennung/dev/en/usage/migration/"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://dgaida.github.io/modul_anerkennung/devusage/migration/"/>
     </url>
 </urlset>
