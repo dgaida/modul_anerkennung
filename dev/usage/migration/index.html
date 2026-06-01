@@ -1424,9 +1424,9 @@
 <h2 id="ziel-und-zweck">Ziel und Zweck</h2>
 <p>Das Ziel ist es, die mühsame manuelle Übertragung von Lehrinhalten zu vermeiden, wenn Module in einer neuen PO identisch oder sehr ähnlich bleiben. Das Skript stellt sicher, dass die inhaltlichen Beschreibungen konsistent übernommen werden, während die Identität und spezifische Metadaten (wie IDs) des Ziel-Entwurfs erhalten bleiben.</p>
 <h2 id="voraussetzungen-und-abhangigkeiten">Voraussetzungen und Abhängigkeiten</h2>
-<p>Das Skript ist als Standalone-Werkzeug konzipiert, nutzt jedoch Logik aus anderen Skripten:
-- <strong>Abhängigkeit</strong>: <code>scripts/standalone_restore_algo.py</code> (muss im selben Verzeichnis liegen, da Funktionen daraus importiert werden).
-- <strong>Eingabedatei</strong>: <code>data/aequivalenzliste.md</code> (enthält das Mapping).</p>
+<p>Das Skript ist als Standalone-Werkzeug konzipiert, nutzt jedoch Logik aus anderen Skripten:<br />
+- <strong>Abhängigkeit</strong>: <code>scripts/standalone_restore_algo.py</code> (muss im selben Verzeichnis liegen, da Funktionen daraus importiert werden).<br />
+- <strong>Eingabedatei</strong>: <code>data/aequivalenzliste.md</code> (enthält das Mapping).  </p>
 <h2 id="vorbereitung-der-aquivalenzliste">Vorbereitung der Äquivalenzliste</h2>
 <p>Die Liste muss als Markdown-Tabelle in <code>data/aequivalenzliste.md</code> vorliegen. Das Format ist wie folgt:</p>
 <div class="language-markdown highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>| Modul in PO2 | Modul in PO3 | Semester |
@@ -1435,18 +1435,18 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>| Mathematik 1 | Mathe 1 | 1 |
 </span></code></pre></div>
 <ul>
-<li><strong>Spalte 1</strong>: Der exakte Titel des Quell-Moduls in der PO <code>inf_inf2</code>.</li>
-<li><strong>Spalte 2</strong>: Der exakte Titel des Ziel-Entwurfs in der PO <code>inf_inf3</code>.</li>
-<li><strong>Spalte 3</strong>: Das empfohlene Semester für das Ziel-Modul.</li>
+<li><strong>Spalte 1</strong>: Der exakte Titel des Quell-Moduls in der PO <code>inf_inf2</code>.  </li>
+<li><strong>Spalte 2</strong>: Der exakte Titel des Ziel-Entwurfs in der PO <code>inf_inf3</code>.  </li>
+<li><strong>Spalte 3</strong>: Das empfohlene Semester für das Ziel-Modul.  </li>
 </ul>
 <h2 id="authentifizierung-api-token">Authentifizierung (API-Token)</h2>
 <p>Für den Schreibzugriff auf die Mocogi-API wird ein gültiger <code>MOCOGI_API_TOKEN</code> benötigt.</p>
 <h3 id="token-erhalten">Token erhalten</h3>
 <ol>
-<li>Melden Sie sich im Browser bei <a href="https://module.gm.th-koeln.de">module.gm.th-koeln.de</a> an.</li>
-<li>Öffnen Sie die Entwicklertools (F12) -&gt; Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".</li>
-<li>Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.</li>
-<li>Kopieren Sie den Wert des Tokens (meist <code>access_token</code> oder ähnlich).</li>
+<li>Melden Sie sich im Browser bei <a href="https://module.gm.th-koeln.de">module.gm.th-koeln.de</a> an.  </li>
+<li>Öffnen Sie die Entwicklertools (F12) -&gt; Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".  </li>
+<li>Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.  </li>
+<li>Kopieren Sie den Wert des Tokens (meist <code>access_token</code> oder ähnlich).  </li>
 </ol>
 <h3 id="token-speichern">Token speichern</h3>
 <p>Erstellen Sie im Wurzelverzeichnis des Projekts eine Datei namens <code>secrets.env</code> (falls nicht vorhanden) und fügen Sie den Token ein:</p>
