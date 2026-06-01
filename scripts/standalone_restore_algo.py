@@ -17,7 +17,7 @@ import pathlib
 import sys
 import urllib.request
 import urllib.error
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 
 # Logging-Konfiguration
 logging.basicConfig(
