@@ -17,7 +17,7 @@ import pathlib
 import sys
 import urllib.request
 import urllib.error
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 # Logging-Konfiguration
 logging.basicConfig(
@@ -160,6 +160,30 @@ def api_call(
         raise
 
 
+def get_module_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
+    """Sucht ein veröffentlichtes Modul anhand von PO-ID und Titel.
+    """
+    url = f"{base_url}/modules?po={po_id}&active=true"
+    logger.info(f"Lade alle Module für PO {po_id} von {url}...")
+    data = api_call(url)
+
+    # Die API liefert oft eine Liste unter dem Key 'module' oder direkt
+    modules = data if isinstance(data, list) else data.get('module', [])
+
+    search_title = title.lower().strip()
+    for item in modules:
+        # Manchmal ist das Modul-Objekt noch unter einem Key 'module'
+        m = item.get('module') if isinstance(item, dict) and 'module' in item else item
+        m_title = m.get('title', '') if isinstance(m, dict) else ''
+
+        if m_title.lower().strip() == search_title:
+            m_id = m.get('id')
+            logger.info(f"Passendes Modul gefunden: {m_title} (ID: {m_id})")
+            # Wir brauchen die Details
+            return api_call(f"{base_url}/modules/{m_id}")
+
+    raise Exception(f"Kein Modul mit dem Titel {title} in PO {po_id} gefunden.")
+
 def get_draft_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
     """Sucht einen Modul-Draft anhand von PO-ID und Titel.
 
@@ -204,7 +228,7 @@ def get_draft_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
 
     raise Exception(f"Kein Entwurf mit dem Titel {title} in PO {po_id} gefunden. (Hinweis: MOCOGI_API_TOKEN könnte abgelaufen sein!)")
 
-def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, Any]) -> Dict[str, Any]:
+def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, Any], recommended_semester: Optional[int] = None) -> Dict[str, Any]:
     """Konvertiert die API-Daten in das ModuleProtocolUpdate Format.
 
     Dabei werden die Metadaten vom Ziel-Draft (target_data) verwendet und die
@@ -245,12 +269,21 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
     }
 
     # Wenn wir in einer bestimmten PO sind (z.B. inf_inf3), bauen wir das Pflicht-Objekt
-    # Hier nutzen wir die Infos vom Entwickler: po="inf_inf3", specialization=None, recommendedSemester=[2]
+    # Hier nutzen wir das übergebene Semester oder das aus dem Source-Modul
+    if recommended_semester is None:
+        # Versuche das Semester aus dem Source-Modul zu extrahieren
+        source_mandatory = source_po.get("mandatory") or []
+        if source_mandatory:
+            sem_list = source_mandatory[0].get("recommendedSemester") or [1]
+            recommended_semester = sem_list[0] if sem_list else 1
+        else:
+            recommended_semester = 1
+
     for po_id in target_mandatory:
         po_structured["mandatory"].append({
             "po": po_id,
             "specialization": None,
-            "recommendedSemester": [2] if po_id == "inf_inf3" else [1]
+            "recommendedSemester": [recommended_semester]
         })
 
     # Fallback falls gar keine POs da sind
@@ -258,9 +291,8 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
          po_structured["mandatory"].append({
             "po": "inf_inf3",
             "specialization": None,
-            "recommendedSemester": [2]
+            "recommendedSemester": [recommended_semester]
         })
-
     metadata = {
         "title": tm_meta.get("title") or "Algorithmen und Datenstrukturen",
         "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
