@@ -234,11 +234,14 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
     # Mapping auf die Struktur von ModuleProtocolUpdate
     # Extrahiere PO-Informationen und wandle sie in das strukturierte Format um
     target_mandatory = target_data.get("mandatoryPOs") or []
-    target_optional = target_data.get("optionalPOs") or []
+
+    # Optional-Struktur direkt vom Quell-Modul übernehmen wie vom User gewünscht
+    source_po = sm.get("po") or {}
+    source_optional = source_po.get("optional") or []
 
     po_structured = {
         "mandatory": [],
-        "optional": []
+        "optional": source_optional
     }
 
     # Wenn wir in einer bestimmten PO sind (z.B. inf_inf3), bauen wir das Pflicht-Objekt
@@ -248,18 +251,6 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
             "po": po_id,
             "specialization": None,
             "recommendedSemester": [2] if po_id == "inf_inf3" else [1]
-        })
-
-    for po_id in target_optional:
-        # Fuer Optional muessen wir eigentlich instanceOf angeben (die UUID des Moduls)
-        # Da wir das hier nicht exakt wissen, setzen wir einen Platzhalter oder lassen es leer
-        # Der Entwickler sagte: "Bei Optional nimmst du alles wie bei PO-Mandatory, nur dass du bei “instanceOf” die UUID des Moduls angeben musst"
-        po_structured["optional"].append({
-            "po": po_id,
-            "specialization": None,
-            "recommendedSemester": [1],
-            "instanceOf": target_data.get("module", {}).get("id") or "",
-            "partOfCatalog": True
         })
 
     # Fallback falls gar keine POs da sind
