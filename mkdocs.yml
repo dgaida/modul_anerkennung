@@ -93,6 +93,7 @@ nav:
   - Konfiguration: configuration.md
   - Nutzung:
     - Übersicht: usage/index.md
+    - Migration: usage/migration.md
   - API Referenz:
     - Übersicht: api/index.md
   - Architektur:

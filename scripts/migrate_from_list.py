@@ -1,8 +1,30 @@
+"""Migriert Modulinhalte basierend auf einer Äquivalenzliste von PO2 nach PO3.
+
+Dieses Skript liest eine Markdown-Tabelle (standardmäßig unter `data/aequivalenzliste.md`),
+die Zuordnungen zwischen Modulen der Informatik PO2 (inf_inf2) und PO3 (inf_inf3) enthält.
+Für jeden Eintrag wird der Inhalt (Deutsch/Englisch) vom PO2-Modul in den PO3-Entwurf (Draft)
+übertragen, wobei die Metadaten des Ziels erhalten bleiben.
+
+Nutzung:
+    Das Skript wird typischerweise aus dem Wurzelverzeichnis des Projekts gestartet:
+    `PYTHONPATH=. python3 scripts/migrate_from_list.py`
+
+Ziel:
+    Automatisierung der Befüllung von PO3-Modulentwürfen mit bewährten Inhalten aus der PO2.
+
+Abhängigkeiten:
+    - `scripts/standalone_restore_algo.py`: Enthält Kernfunktionen für API-Aufrufe und Mapping.
+    - `data/aequivalenzliste.md`: Die Quelldatei für das Mapping.
+
+Authentifizierung:
+    Erfordert einen gültigen `MOCOGI_API_TOKEN` in der `secrets.env`.
+"""
+
 import logging
 import sys
-
 import os
 from pathlib import Path
+from typing import List, Dict, Any
 
 # Importiere Funktionen aus dem Standalone-Skript
 # Da das Skript keine .py Endung in sys.path braucht, wenn wir im richtigen Verzeichnis sind
@@ -18,12 +40,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger("migrate_from_list")
 
-def parse_markdown_table(file_path: str):
+def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
     """Parst die Äquivalenzliste aus einer Markdown-Datei.
 
-    Erwartet ein Format wie:
+    Die Tabelle muss mindestens drei Spalten haben: Quelle (PO2), Ziel (PO3) und Semester.
+    Header und Trennzeile werden übersprungen.
+
+    Format-Beispiel:
     | Modul in PO2 | Modul in PO3 | Semester |
+    | :--- | :--- | :--- |
     | Algorithmik | Algorithmen und Datenstrukturen | 2 |
+
+    Args:
+        file_path: Pfad zur Markdown-Datei mit der Äquivalenzliste.
+
+    Returns:
+        Eine Liste von Dictionaries mit den Schlüsseln 'source', 'target' und 'semester'.
     """
     entries = []
     if not os.path.exists(file_path):
@@ -56,8 +88,18 @@ def parse_markdown_table(file_path: str):
 
     return entries
 
-def run_migration():
-    """Führt die Migration basierend auf der Liste in data/aequivalenzliste.md aus."""
+def run_migration() -> None:
+    """Führt die Migration basierend auf der Liste in data/aequivalenzliste.md aus.
+
+    Der Prozess für jeden Eintrag umfasst:
+    1. Abruf des Quell-Moduls aus der PO inf_inf2 via Titel.
+    2. Abruf des Ziel-Entwurfs aus der PO inf_inf3 via Titel.
+    3. Mergen der Daten (Inhalt von Quelle, Identität/Metadaten von Ziel).
+    4. Senden des Updates (PUT) an den Mocogi-Draft-Endpunkt.
+
+    Raises:
+        Exception: Bei Fehlern während des API-Zugriffs oder der Datenverarbeitung.
+    """
     list_path = "data/aequivalenzliste.md"
     base_url = "https://module.gm.th-koeln.de/api"
 
