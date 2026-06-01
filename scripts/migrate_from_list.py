@@ -79,16 +79,22 @@ def run_migration():
         try:
             # 1. Quell-Modul finden (PO2)
             # Wir nehmen an, dass die Quelle in inf_inf2 liegt
+            logger.info(f"Suche Quell-Modul '{source_title}' in PO inf_inf2...")
             source_data = get_module_by_title(base_url, "inf_inf2", source_title)
+            logger.info(f"Quell-Modul '{source_title}' erfolgreich geladen (ID: {source_data.get('id')})")
 
             # 2. Ziel-Draft finden (PO3)
+            logger.info(f"Suche Ziel-Draft '{target_title}' in PO inf_inf3...")
             target_data = get_draft_by_title(base_url, "inf_inf3", target_title)
             target_id = target_data.get('module', {}).get('id') or target_data.get('id')
 
             if not target_id:
                 raise Exception(f"Konnte ID für Ziel-Draft '{target_title}' nicht ermitteln.")
 
+            logger.info(f"Ziel-Draft '{target_title}' gefunden (Draft-ID: {target_data.get('id')}, Modul-ID: {target_id})")
+
             # 3. Payload erstellen
+            logger.info(f"Erstelle Payload für '{target_title}'...")
             payload = map_to_protocol_update(source_data, target_data, recommended_semester=semester)
 
             # 4. Update durchführen

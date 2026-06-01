@@ -163,24 +163,30 @@ def api_call(
 def get_module_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
     """Sucht ein veröffentlichtes Modul anhand von PO-ID und Titel.
     """
-    url = f"{base_url}/modules?po={po_id}&active=true"
+    url = f"{base_url}/modules?po={po_id}&active=true&select=metadata"
     logger.info(f"Lade alle Module für PO {po_id} von {url}...")
     data = api_call(url)
 
     # Die API liefert oft eine Liste unter dem Key 'module' oder direkt
     modules = data if isinstance(data, list) else data.get('module', [])
+    logger.debug(f"Anzahl gefundener Module in {po_id}: {len(modules)}")
 
     search_title = title.lower().strip()
     for item in modules:
         # Manchmal ist das Modul-Objekt noch unter einem Key 'module'
         m = item.get('module') if isinstance(item, dict) and 'module' in item else item
-        m_title = m.get('title', '') if isinstance(m, dict) else ''
+        m_meta = m.get('metadata') if isinstance(m, dict) and 'metadata' in m else m
+        m_title = m_meta.get('title', '') if isinstance(m_meta, dict) else ''
+
+        logger.debug(f"Vergleiche '{search_title}' mit '{m_title.lower().strip()}'")
 
         if m_title.lower().strip() == search_title:
-            m_id = m.get('id')
+            m_id = m.get('id') or m_meta.get('id')
             logger.info(f"Passendes Modul gefunden: {m_title} (ID: {m_id})")
             # Wir brauchen die Details
-            return api_call(f"{base_url}/modules/{m_id}")
+            detail_url = f"{base_url}/modules/{m_id}"
+            logger.debug(f"Lade Modul-Details von {detail_url}")
+            return api_call(detail_url)
 
     raise Exception(f"Kein Modul mit dem Titel {title} in PO {po_id} gefunden.")
 
@@ -221,6 +227,8 @@ def get_draft_by_title(base_url: str, po_id: str, title: str) -> Dict[str, Any]:
                            draft.get("title") or
                            (module_info.get("metadata") or {}).get("title") or
                            "")
+
+            logger.debug(f"Prüfe Draft '{draft_title}' für PO {po_id} (Mandatory: {mandatory}, Optional: {optional})")
 
             if draft_title.lower().strip() == search_title:
                 logger.info(f"Passenden Entwurf gefunden: {draft_title} (ID: {draft.get('id')})")
@@ -279,6 +287,8 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
         else:
             recommended_semester = 1
 
+    logger.debug(f"Verwende empfohlenes Semester: {recommended_semester}")
+
     for po_id in target_mandatory:
         po_structured["mandatory"].append({
             "po": po_id,
@@ -293,6 +303,7 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
             "specialization": None,
             "recommendedSemester": [recommended_semester]
         })
+
     metadata = {
         "title": tm_meta.get("title") or "Algorithmen und Datenstrukturen",
         "abbrev": tm_meta.get("abbreviation") or tm_meta.get("abbrev") or sm.get("abbreviation") or "Algo",
@@ -329,13 +340,15 @@ def map_to_protocol_update(source_data: Dict[str, Any], target_data: Dict[str, A
         "assessmentPrerequisite": tm_meta.get("assessmentPrerequisite") or sm.get("assessmentPrerequisite")
     }
 
+    logger.debug(f"Mapping abgeschlossen für '{metadata['title']}' ({metadata['abbrev']}), ECTS: {metadata['ects']}")
+
     payload = {
         "metadata": metadata,
         "deContent": source_data.get("deContent") or sm.get("deContent") or {},
         "enContent": source_data.get("enContent") or sm.get("enContent") or {}
     }
 
-    logger.debug(f"Payload erstellt: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+    logger.debug(f"Payload erstellt für '{metadata['title']}'")
     return payload
 
 
