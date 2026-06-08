@@ -1,0 +1,19 @@
+{
+  "config": {
+    "MD004": { "style": "asterisk" },
+    "MD007": { "indent": 2 },
+    "MD013": false,
+    "MD029": { "style": "one" },
+    "MD030": { "ul_multi": 1, "ol_multi": 1 },
+    "MD033": false,
+    "MD022": false,
+    "MD032": false,
+    "MD003": false,
+    "MD041": false,
+    "MD040": false,
+    "MD060": false,
+    "MD010": false,
+    "MD009": false
+  },
+  "ignores": ["node_modules"]
+}

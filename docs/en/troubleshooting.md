@@ -6,6 +6,7 @@ Häufig auftretende Probleme und deren Lösungen.
 
 **Problem**: Die Gradio-GUI kann nicht starten, weil der Standard-Port belegt ist.
 **Lösung**: Beenden Sie laufende Prozesse oder ändern Sie den Port in der `main.py`.
+
 ```bash
 kill $(lsof -t -i :7860)
 ```
@@ -14,8 +15,8 @@ kill $(lsof -t -i :7860)
 
 **Problem**: Search returns no results or error messages (401 Unauthorized / 403 Forbidden).
 **Lösung**:  
-- Check if `MOCOGI_API_TOKEN` is correctly set in your `.env` and that the `Bearer` prefix is not duplicated.  
-- The token might have expired. Log in to Mocogi in your browser, copy the current token from the cookies (`access_token`), and update your `.env` or `secrets.env` file.  
+* Check if `MOCOGI_API_TOKEN` is correctly set in your `.env` and that the `Bearer` prefix is not duplicated.
+* The token might have expired. Log in to Mocogi in your browser, copy the current token from the cookies (`access_token`), and update your `.env` or `secrets.env` file.
 
 ## 3. LLM API Limit erreicht
 

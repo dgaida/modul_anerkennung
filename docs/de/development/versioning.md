@@ -5,6 +5,7 @@ Wir verwenden **mike**, um mehrere Versionen unserer Dokumentation gleichzeitig 
 ## Deployment-Workflow
 
 ### Neue Version veröffentlichen
+
 Wenn ein Git-Tag (z.B. `v1.0.0`) gepusht wird, erstellt die CI automatisch eine neue Version der Dokumentation:
 
 ```bash
@@ -13,6 +14,7 @@ mike set-default --push latest
 ```
 
 ### Entwicklungs-Dokumentation
+
 Pushes auf den `main`-Branch aktualisieren automatisch die `dev`-Version der Dokumentation.
 
 ## Lokale Vorschau von Versionen
@@ -25,4 +27,5 @@ mike serve
 ```
 
 ## Versions-Switcher
+
 Der Switcher oben rechts in der Navigationsleiste ermöglicht es Benutzern, zwischen verschiedenen Versionen (z.B. `latest`, `dev`, `v0.1.9`) zu wechseln.
