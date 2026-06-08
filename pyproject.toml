@@ -22,6 +22,7 @@ dependencies = [
     "fastmcp",
     "httpx",
     "python-dotenv",
+    "python-docx",
     "numpy",
     "sentence-transformers",
     "torch",
