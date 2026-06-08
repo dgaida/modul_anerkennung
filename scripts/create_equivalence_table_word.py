@@ -1,15 +1,16 @@
 """
-Erzeugt ein Word-Dokument mit einer Äquivalenzliste zwischen PO2 und PO3.
+Erzeugt ein Word-Dokument mit einer Äquivalenzliste zwischen zwei Prüfungsordnungen.
 
 Dieses Skript liest die Äquivalenzliste aus `data/aequivalenzliste.md` und ergänzt sie
-um alle weiteren Module aus der Informatik PO2 (inf_inf2) und PO3 (inf_inf3).
-Das Ergebnis ist eine 4-spaltige Tabelle (PO2 Name, PO2 ECTS, PO3 Name, PO3 ECTS),
-die nach Semester und Titel sortiert ist. Äquivalente Module stehen in derselben Zeile.
+um alle weiteren Pflichtmodule aus den angegebenen Prüfungsordnungen (Standard: inf_inf2 und inf_inf3).
+Das Ergebnis ist eine 4-spaltige Tabelle (Alte PO Name, Alte PO ECTS, Neue PO Name, Neue PO ECTS),
+die primär nach dem Semester der neuen PO sortiert ist. Äquivalente Module stehen in derselben Zeile.
 
 Nutzung:
-    PYTHONPATH=. python3 scripts/create_equivalence_table_word.py
+    PYTHONPATH=. python3 scripts/create_equivalence_table_word.py --old-po inf_inf2 --new-po inf_inf3
 """
 
+import argparse
 import json
 import logging
 import os
@@ -34,7 +35,10 @@ logging.basicConfig(
 logger = logging.getLogger("create_word_table")
 
 # Konfiguration und Environment laden
-import modul_anerkennung.config  # noqa: E402, F401
+try:
+    import modul_anerkennung.config  # noqa: E402, F401
+except ImportError:
+    logger.warning("Konnte modul_anerkennung.config nicht laden. Stelle sicher, dass PYTHONPATH gesetzt ist.")
 
 BASE_URL = "https://module.gm.th-koeln.de/api"
 API_TOKEN = os.environ.get("MOCOGI_API_TOKEN") or os.environ.get("MOCOGI_API_KEY")
@@ -48,34 +52,27 @@ def api_call(url: str, method: str = "GET", data: Dict[str, Any] = None) -> Any:
         data (Dict[str, Any], optional): Optionales Dictionary mit JSON-Daten für den Body.
 
     Returns:
-        Any: Die Antwort der API als Dictionary oder None bei Auth-Fehlern.
-
-    Raises:
-        urllib.error.HTTPError: Bei anderen API-Fehlern (z.B. 404, 500).
+        Any: Die Antwort der API als Dictionary oder Liste.
     """
     headers = {
         "Content-Type": "application/json",
-        "Accept": "application/json"
     }
     if API_TOKEN:
         headers["Authorization"] = f"Bearer {API_TOKEN}"
 
-    req = urllib.request.Request(url, method=method, headers=headers)
+    req = urllib.request.Request(url, headers=headers, method=method)
     if data:
-        json_data = json.dumps(data).encode("utf-8")
-        req.data = json_data
+        req.data = json.dumps(data).encode("utf-8")
 
     try:
         with urllib.request.urlopen(req) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8")
-        # Logge Status und Body für Debugging (wie in anderen Skripten erwünscht)
-        logger.debug(f"API Fehler {e.code} für {url}: {body}")
         if e.code in [401, 403]:
-            logger.warning(f"Authentifizierungsfehler (401/403) bei {url}. Token prüfen.")
-            return None
-        raise
+            logger.error("Authentifizierungsfehler (401/403). Prüfen Sie Ihren MOCOGI_API_TOKEN.")
+        else:
+            logger.error(f"HTTP-Fehler beim API-Aufruf ({url}): {e.code} {e.reason}")
+        return None
     except Exception as e:
         logger.error(f"Unerwarteter Fehler beim API-Aufruf ({url}): {e}")
         raise
@@ -132,12 +129,12 @@ def is_mandatory(m: Dict[str, Any], po_id: str) -> bool:
     Returns:
         bool: True, wenn es ein Pflichtmodul ist, sonst False.
     """
-    # Fall 1: Draft-Objekt (PO3)
+    # Fall 1: Draft-Objekt
     mandatory_pos = m.get("mandatoryPOs") or []
     if po_id in mandatory_pos:
         return True
 
-    # Fall 2: Publiziertes Modul (PO2) - Metadaten Struktur
+    # Fall 2: Publiziertes Modul - Metadaten Struktur
     meta = get_module_metadata(m)
     po_info = meta.get("po") or {}
     mandatory_list = po_info.get("mandatory") or []
@@ -152,7 +149,7 @@ def get_semester(m: Dict[str, Any], po_id: str) -> int:
 
     Args:
         m (Dict[str, Any]): Das Modul- oder Draft-Objekt.
-        po_id (str): Die Kennung der Prüfungsordnung (z.B. 'inf_inf2').
+        po_id (str): Die Kennung der Prüfungsordnung.
 
     Returns:
         int: Das Semester als Integer oder 99 als Fallback.
@@ -167,8 +164,13 @@ def get_semester(m: Dict[str, Any], po_id: str) -> int:
             if item.get("po") == po_id:
                 sem_list = item.get("recommendedSemester") or []
                 if sem_list:
-                    return int(sem_list[0])
+                    try:
+                        return int(sem_list[0])
+                    except (ValueError, IndexError):
+                        continue
 
+    # Fallback für Drafts (manchmal direkt im Objekt)
+    # In Drafts ist die Struktur oft anders, falls oben nicht gefunden:
     return 99
 
 def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
@@ -213,21 +215,34 @@ def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
 
 def main() -> None:
     """Hauptfunktion zur Tabellenerzeugung."""
-    logger.info("Starte Generierung der Äquivalenzliste für Word (nur Pflichtmodule)...")
+    parser = argparse.ArgumentParser(description="Erzeugt ein Word-Dokument mit einer Äquivalenzliste.")
+    parser.add_argument("--old-po", default="inf_inf2", help="ID der alten Prüfungsordnung (Default: inf_inf2)")
+    parser.add_argument("--new-po", default="inf_inf3", help="ID der neuen Prüfungsordnung (Default: inf_inf3)")
+    args = parser.parse_args()
+
+    old_po = args.old_po
+    new_po = args.new_po
+
+    logger.info(f"Starte Generierung der Äquivalenzliste für Word: {old_po} -> {new_po}")
 
     # 1. Daten von API abrufen (alle aktiven für Lookup)
-    logger.info("Lade Module der PO2 (inf_inf2)...")
-    # API erfordert select=metadata für PO-Filterung wie in anderen Skripten
-    po2_all = api_call(f"{BASE_URL}/modules?po=inf_inf2&active=true&select=metadata") or []
+    logger.info(f"Lade Module der alten PO ({old_po})...")
+    old_po_all = api_call(f"{BASE_URL}/modules?po={old_po}&active=true&select=metadata") or []
     
-    logger.info("Lade Entwürfe der PO3 (inf_inf3)...")
+    logger.info(f"Lade Entwürfe/Module der neuen PO ({new_po})...")
+    # Zuerst Entwürfe prüfen (üblich für neue POs)
     drafts_resp = api_call(f"{BASE_URL}/moduleDrafts")
-    po3_all = []
+    new_po_all = []
     if drafts_resp:
         all_drafts = (drafts_resp.get("direct") or []) + (drafts_resp.get("indirect") or [])
-        po3_all = all_drafts
-    else:
-        logger.warning("Konnte Entwürfe nicht laden (Token abgelaufen?).")
+        new_po_all = all_drafts
+
+    # Auch publizierte Module der neuen PO laden (falls vorhanden)
+    published_new = api_call(f"{BASE_URL}/modules?po={new_po}&active=true&select=metadata") or []
+    new_po_all.extend(published_new)
+
+    if not old_po_all and not new_po_all:
+        logger.warning("Keine Module für beide Prüfungsordnungen gefunden. Prüfen Sie die IDs.")
 
     # 2. Äquivalenzliste einlesen
     list_path = "data/aequivalenzliste.md"
@@ -235,12 +250,12 @@ def main() -> None:
     logger.info(f"{len(equiv_list)} Einträge aus {list_path} geladen.")
 
     # 3. Hilfs-Mappings erstellen (Titel -> Modul-Objekt)
-    # Wir filtern hier schon auf Pflichtmodule
-    po2_by_title = {get_module_title(m).lower(): m for m in po2_all if is_mandatory(m, "inf_inf2")}
-    po3_by_title = {get_module_title(m).lower(): m for m in po3_all if is_mandatory(m, "inf_inf3")}
+    # Wir filtern hier auf Pflichtmodule
+    old_by_title = {get_module_title(m).lower(): m for m in old_po_all if is_mandatory(m, old_po)}
+    new_by_title = {get_module_title(m).lower(): m for m in new_po_all if is_mandatory(m, new_po)}
 
-    used_po2: Set[str] = set()
-    used_po3: Set[str] = set()
+    used_old: Set[str] = set()
+    used_new: Set[str] = set()
     rows: List[Dict[str, Any]] = []
 
     # 4. Einträge aus der Äquivalenzliste verarbeiten (Zusammenführung)
@@ -250,55 +265,56 @@ def main() -> None:
         src_t = src_t_raw.lower()
         tgt_t = tgt_t_raw.lower()
 
-        m2 = po2_by_title.get(src_t)
-        m3 = po3_by_title.get(tgt_t)
+        m_old = old_by_title.get(src_t)
+        m_new = new_by_title.get(tgt_t)
 
         # Filter: Mindestens eines muss mandatory sein
-        is_m2_man = m2 and is_mandatory(m2, "inf_inf2")
-        is_m3_man = m3 and is_mandatory(m3, "inf_inf3")
+        is_old_man = m_old and is_mandatory(m_old, old_po)
+        is_new_man = m_new and is_mandatory(m_new, new_po)
 
-        if not is_m2_man and not is_m3_man:
+        if not is_old_man and not is_new_man:
             logger.debug(f"Überspringe Wahl-Äquivalenz: {src_t_raw} -> {tgt_t_raw}")
             continue
 
-        if is_m2_man:
-            used_po2.add(src_t)
-        if is_m3_man:
-            used_po3.add(tgt_t)
+        if is_old_man:
+            used_old.add(src_t)
+        if is_new_man:
+            used_new.add(tgt_t)
 
-        # Bestimme Sortier-Semester
-        sort_sem = eq["semester"] or (get_semester(m3, "inf_inf3") if m3 else get_semester(m2, "inf_inf2"))
+        # Bestimme Sortier-Semester (Bevorzugt neue PO)
+        sort_sem = eq["semester"] or (get_semester(m_new, new_po) if m_new else get_semester(m_old, old_po))
 
         rows.append({
-            "po2": m2,
-            "po2_title_fallback": src_t_raw if not m2 else None,
-            "po3": m3,
-            "po3_title_fallback": tgt_t_raw if not m3 else None,
+            "old": m_old,
+            "old_title_fallback": src_t_raw if not m_old else None,
+            "new": m_new,
+            "new_title_fallback": tgt_t_raw if not m_new else None,
             "sort_semester": sort_sem,
-            "sort_title": (get_module_title(m3) if m3 else (get_module_title(m2) if m2 else tgt_t_raw))
+            "sort_title": (get_module_title(m_new) if m_new else (get_module_title(m_old) if m_old else tgt_t_raw))
         })
 
-    # 5. Restliche Pflichtmodule hinzufügen (ohne PO3-Äquivalent in der Liste)
-    for title_lower, m in po2_by_title.items():
-        if title_lower not in used_po2:
+    # 5. Restliche Pflichtmodule hinzufügen (ohne Äquivalent in der Liste)
+    for title_lower, m in old_by_title.items():
+        if title_lower not in used_old:
             rows.append({
-                "po2": m,
-                "po3": None,
-                "sort_semester": get_semester(m, "inf_inf2"),
+                "old": m,
+                "new": None,
+                "sort_semester": get_semester(m, old_po),
                 "sort_title": get_module_title(m)
             })
 
-    # 6. Restliche Pflichtmodule hinzufügen (ohne PO2-Äquivalent in der Liste)
-    for title_lower, m in po3_by_title.items():
-        if title_lower not in used_po3:
+    # 6. Restliche Pflichtmodule hinzufügen (ohne Äquivalent in der Liste)
+    for title_lower, m in new_by_title.items():
+        if title_lower not in used_new:
             rows.append({
-                "po2": None,
-                "po3": m,
-                "sort_semester": get_semester(m, "inf_inf3"),
+                "old": None,
+                "new": m,
+                "sort_semester": get_semester(m, new_po),
                 "sort_title": get_module_title(m)
             })
 
     # 7. Sortierung: nach Semester, dann alphabetisch nach Titel
+    print(f"INFO: Die Sortierung erfolgt primär nach dem empfohlenen Semester der neuen Prüfungsordnung ({new_po}).")
     rows.sort(key=lambda x: (x["sort_semester"], x["sort_title"].lower()))
 
     # 8. Word-Dokument erstellen
@@ -309,7 +325,7 @@ def main() -> None:
         section.left_margin = Inches(0.5)
         section.right_margin = Inches(0.5)
 
-    doc.add_heading('Anlage: Äquivalenzliste PO2 / PO3 Informatik', 0)
+    doc.add_heading(f'Anlage: Äquivalenzliste {old_po.upper()} / {new_po.upper()}', 0)
 
     # Tabelle mit 4 Spalten erzeugen
     table = doc.add_table(rows=1, cols=4)
@@ -317,7 +333,7 @@ def main() -> None:
 
     # Header setzen
     hdr_cells = table.rows[0].cells
-    header_labels = ['Modul PO2', 'ECTS PO2', 'Modul PO3', 'ECTS PO3']
+    header_labels = [f'Modul {old_po.upper()}', f'ECTS {old_po.upper()}', f'Modul {new_po.upper()}', f'ECTS {new_po.upper()}']
     for i, label in enumerate(header_labels):
         p = hdr_cells[i].paragraphs[0]
         run = p.add_run(label)
@@ -328,29 +344,27 @@ def main() -> None:
     for row_data in rows:
         row_cells = table.add_row().cells
 
-        # PO2 Spalten (1 & 2)
-        m2 = row_data["po2"]
-        if m2:
-            row_cells[0].text = get_module_title(m2)
-            row_cells[1].text = get_module_ects(m2)
-        elif row_data.get("po2_title_fallback"):
-            row_cells[0].text = row_data["po2_title_fallback"]
+        # Alte PO Spalten (1 & 2)
+        m_old = row_data["old"]
+        if m_old:
+            row_cells[0].text = get_module_title(m_old)
+            row_cells[1].text = get_module_ects(m_old)
+        elif row_data.get("old_title_fallback"):
+            row_cells[0].text = row_data["old_title_fallback"]
             row_cells[1].text = "-"
         else:
-            # Leerzeile zur Ausrichtung (User-Wunsch)
             row_cells[0].text = ""
             row_cells[1].text = ""
 
-        # PO3 Spalten (3 & 4)
-        m3 = row_data["po3"]
-        if m3:
-            row_cells[2].text = get_module_title(m3)
-            row_cells[3].text = get_module_ects(m3)
-        elif row_data.get("po3_title_fallback"):
-            row_cells[2].text = row_data["po3_title_fallback"]
+        # Neue PO Spalten (3 & 4)
+        m_new = row_data["new"]
+        if m_new:
+            row_cells[2].text = get_module_title(m_new)
+            row_cells[3].text = get_module_ects(m_new)
+        elif row_data.get("new_title_fallback"):
+            row_cells[2].text = row_data["new_title_fallback"]
             row_cells[3].text = "-"
         else:
-            # Leerzeile zur Ausrichtung
             row_cells[2].text = ""
             row_cells[3].text = ""
 
@@ -358,10 +372,10 @@ def main() -> None:
         row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         row_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    output_file = "aequivalenzliste_po2_po3.docx"
+    output_file = f"aequivalenzliste_{old_po}_{new_po}.docx"
     doc.save(output_file)
     logger.info(f"Dokument erfolgreich unter '{output_file}' gespeichert.")
-    print(f"\nERFOLG: {output_file} with {len(rows)} Zeilen erstellt.")
+    print(f"\nERFOLG: {output_file} mit {len(rows)} Zeilen erstellt.")
 
 if __name__ == "__main__":
     try:
