@@ -10,66 +10,48 @@ Nutzung:
     PYTHONPATH=. python3 scripts/create_equivalence_table_word.py
 """
 
-import os
 import json
-import urllib.request
 import logging
+import os
 import sys
-from pathlib import Path
-from typing import List, Dict, Any, Set
-from docx import Document
-from docx.shared import Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+import urllib.error
+import urllib.request
+from typing import Any, Dict, List, Set
 
-# Logging-Konfiguration
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches
+from dotenv import load_dotenv
+
+# Environment laden
+load_dotenv()
+
+# Logging konfigurieren
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stderr
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger("equivalence_table")
+logger = logging.getLogger("create_word_table")
 
-def load_env() -> None:
-    """Lädt Umgebungsvariablen aus secrets.env oder .env.
+# Konfiguration und Environment laden
+import modul_anerkennung.config  # noqa: E402, F401
 
-    Berücksichtigt das 'export ' Präfix und entfernt Kommentare.
-    """
-    for env_file in [Path("secrets.env"), Path(".env")]:
-        if env_file.exists():
-            logger.info(f"Lade Umgebungsvariablen aus {env_file}")
-            with open(env_file, "r", encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if not line or line.startswith("#"):
-                        continue
-                    if line.startswith("export "):
-                        line = line[7:]
-                    # Entferne Inline-Kommentare
-                    line = line.split("#")[0].strip()
-                    key_val = line.split("=", 1)
-                    if len(key_val) == 2:
-                        key = key_val[0].strip()
-                        val = key_val[1].strip().strip("'").strip('"')
-                        os.environ[key] = val
-
-load_env()
-
-API_TOKEN = os.getenv("MOCOGI_API_TOKEN") or os.getenv("MOCOGI_API_KEY")
 BASE_URL = "https://module.gm.th-koeln.de/api"
+API_TOKEN = os.environ.get("MOCOGI_API_TOKEN") or os.environ.get("MOCOGI_API_KEY")
 
-def api_call(url: str, method: str = "GET", data: Any = None) -> Any:
-    """Führt einen API-Aufruf an die Mocogi API durch.
+def api_call(url: str, method: str = "GET", data: Dict[str, Any] = None) -> Any:
+    """Führt einen API-Aufruf aus und handhabt Authentifizierungsfehler.
 
     Args:
-        url: Die Ziel-URL.
-        method: HTTP-Methode (GET, PUT, etc.).
-        data: Optionaler JSON-Body.
+        url (str): Die URL des API-Endpunkts.
+        method (str): Die HTTP-Methode (Standard: "GET").
+        data (Dict[str, Any], optional): Optionales Dictionary mit JSON-Daten für den Body.
 
     Returns:
-        Die geparsten JSON-Daten oder None bei Authentifizierungsfehlern.
+        Any: Die Antwort der API als Dictionary oder None bei Auth-Fehlern.
 
     Raises:
-        urllib.error.HTTPError: Bei anderen API-Fehlern.
+        urllib.error.HTTPError: Bei anderen API-Fehlern (z.B. 404, 500).
     """
     headers = {
         "Content-Type": "application/json",
@@ -102,10 +84,10 @@ def get_module_metadata(m: Dict[str, Any]) -> Dict[str, Any]:
     """Extrahiert Metadaten robust aus verschiedenen Verschachtelungsebenen.
 
     Args:
-        m: Das Modul- oder Draft-Objekt von der API.
+        m (Dict[str, Any]): Das Modul- oder Draft-Objekt von der API.
 
     Returns:
-        Das Dictionary mit den Metadaten.
+        Dict[str, Any]: Das Dictionary mit den Metadaten.
     """
     # Priorität: top-level metadata > module.metadata > module (als metadata)
     metadata = m.get("metadata") or m.get("module", {}).get("metadata") or m.get("module") or {}
@@ -117,10 +99,10 @@ def get_module_title(m: Dict[str, Any]) -> str:
     """Extrahiert den Titel aus einem Modul- oder Draft-Objekt.
 
     Args:
-        m: Das Modul- oder Draft-Objekt.
+        m (Dict[str, Any]): Das Modul- oder Draft-Objekt.
 
     Returns:
-        Der Titel des Moduls.
+        str: Der Titel des Moduls.
     """
     meta = get_module_metadata(m)
     title = meta.get("title") or m.get("title") or ""
@@ -130,25 +112,50 @@ def get_module_ects(m: Dict[str, Any]) -> str:
     """Extrahiert die ECTS aus einem Modul- oder Draft-Objekt.
 
     Args:
-        m: Das Modul- oder Draft-Objekt.
+        m (Dict[str, Any]): Das Modul- oder Draft-Objekt.
 
     Returns:
-        Die ECTS-Punkte als String.
+        str: Die ECTS-Punkte als String.
     """
     meta = get_module_metadata(m)
     # ECTS stehen bei Drafts oft auf Top-Level, bei Modulen in Metadata
     ects = m.get("ects") or meta.get("ects") or ""
     return str(ects)
 
+def is_mandatory(m: Dict[str, Any], po_id: str) -> bool:
+    """Prüft, ob ein Modul für eine bestimmte PO ein Pflichtmodul ist.
+
+    Args:
+        m (Dict[str, Any]): Das Modul- oder Draft-Objekt.
+        po_id (str): Die Kennung der Prüfungsordnung (z.B. 'inf_inf2').
+
+    Returns:
+        bool: True, wenn es ein Pflichtmodul ist, sonst False.
+    """
+    # Fall 1: Draft-Objekt (PO3)
+    mandatory_pos = m.get("mandatoryPOs") or []
+    if po_id in mandatory_pos:
+        return True
+
+    # Fall 2: Publiziertes Modul (PO2) - Metadaten Struktur
+    meta = get_module_metadata(m)
+    po_info = meta.get("po") or {}
+    mandatory_list = po_info.get("mandatory") or []
+    for item in mandatory_list:
+        if item.get("po") == po_id:
+            return True
+
+    return False
+
 def get_semester(m: Dict[str, Any], po_id: str) -> int:
     """Extrahiert das empfohlene Semester für eine bestimmte PO.
 
     Args:
-        m: Das Modul- oder Draft-Objekt.
-        po_id: Die Kennung der Prüfungsordnung (z.B. 'inf_inf2').
+        m (Dict[str, Any]): Das Modul- oder Draft-Objekt.
+        po_id (str): Die Kennung der Prüfungsordnung (z.B. 'inf_inf2').
 
     Returns:
-        Das Semester als Integer oder 99 als Fallback.
+        int: Das Semester als Integer oder 99 als Fallback.
     """
     meta = get_module_metadata(m)
     po_info = meta.get("po") or {}
@@ -168,10 +175,10 @@ def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
     """Parst die Äquivalenzliste aus einer Markdown-Datei.
 
     Args:
-        file_path: Pfad zur MD-Datei.
+        file_path (str): Pfad zur MD-Datei.
 
     Returns:
-        Liste von Dictionaries mit 'source', 'target' und 'semester'.
+        List[Dict[str, Any]]: Liste von Dictionaries mit 'source', 'target' und 'semester'.
     """
     entries = []
     if not os.path.exists(file_path):
@@ -206,24 +213,21 @@ def parse_markdown_table(file_path: str) -> List[Dict[str, Any]]:
 
 def main() -> None:
     """Hauptfunktion zur Tabellenerzeugung."""
-    logger.info("Starte Generierung der Äquivalenzliste für Word...")
+    logger.info("Starte Generierung der Äquivalenzliste für Word (nur Pflichtmodule)...")
 
-    # 1. Daten von API abrufen
+    # 1. Daten von API abrufen (alle aktiven für Lookup)
     logger.info("Lade Module der PO2 (inf_inf2)...")
     # API erfordert select=metadata für PO-Filterung wie in anderen Skripten
-    po2_raw = api_call(f"{BASE_URL}/modules?po=inf_inf2&active=true&select=metadata") or []
-    logger.info(f"{len(po2_raw)} Module in PO2 gefunden.")
-
+    po2_all = api_call(f"{BASE_URL}/modules?po=inf_inf2&active=true&select=metadata") or []
+    
     logger.info("Lade Entwürfe der PO3 (inf_inf3)...")
     drafts_resp = api_call(f"{BASE_URL}/moduleDrafts")
-    po3_raw = []
+    po3_all = []
     if drafts_resp:
         all_drafts = (drafts_resp.get("direct") or []) + (drafts_resp.get("indirect") or [])
-        # Filter auf inf_inf3 (Mandatory oder Optional)
-        po3_raw = [d for d in all_drafts if "inf_inf3" in (d.get("mandatoryPOs") or []) or "inf_inf3" in (d.get("optionalPOs") or [])]
+        po3_all = all_drafts
     else:
         logger.warning("Konnte Entwürfe nicht laden (Token abgelaufen?).")
-    logger.info(f"{len(po3_raw)} Module/Entwürfe in PO3 gefunden.")
 
     # 2. Äquivalenzliste einlesen
     list_path = "data/aequivalenzliste.md"
@@ -231,8 +235,9 @@ def main() -> None:
     logger.info(f"{len(equiv_list)} Einträge aus {list_path} geladen.")
 
     # 3. Hilfs-Mappings erstellen (Titel -> Modul-Objekt)
-    po2_by_title = {get_module_title(m).lower(): m for m in po2_raw}
-    po3_by_title = {get_module_title(m).lower(): m for m in po3_raw}
+    # Wir filtern hier schon auf Pflichtmodule
+    po2_by_title = {get_module_title(m).lower(): m for m in po2_all if is_mandatory(m, "inf_inf2")}
+    po3_by_title = {get_module_title(m).lower(): m for m in po3_all if is_mandatory(m, "inf_inf3")}
 
     used_po2: Set[str] = set()
     used_po3: Set[str] = set()
@@ -248,16 +253,21 @@ def main() -> None:
         m2 = po2_by_title.get(src_t)
         m3 = po3_by_title.get(tgt_t)
 
-        if m2:
+        # Filter: Mindestens eines muss mandatory sein
+        is_m2_man = m2 and is_mandatory(m2, "inf_inf2")
+        is_m3_man = m3 and is_mandatory(m3, "inf_inf3")
+
+        if not is_m2_man and not is_m3_man:
+            logger.debug(f"Überspringe Wahl-Äquivalenz: {src_t_raw} -> {tgt_t_raw}")
+            continue
+
+        if is_m2_man:
             used_po2.add(src_t)
-        if m3:
+        if is_m3_man:
             used_po3.add(tgt_t)
 
         # Bestimme Sortier-Semester
-        sort_sem = eq["semester"]
-        if not sort_sem:
-            # Prio: PO3 Semester, dann PO2 Semester
-            sort_sem = get_semester(m3, "inf_inf3") if m3 else get_semester(m2, "inf_inf2")
+        sort_sem = eq["semester"] or (get_semester(m3, "inf_inf3") if m3 else get_semester(m2, "inf_inf2"))
 
         rows.append({
             "po2": m2,
@@ -268,7 +278,7 @@ def main() -> None:
             "sort_title": (get_module_title(m3) if m3 else (get_module_title(m2) if m2 else tgt_t_raw))
         })
 
-    # 5. Restliche PO2 Module hinzufügen (ohne PO3-Äquivalent in der Liste)
+    # 5. Restliche Pflichtmodule hinzufügen (ohne PO3-Äquivalent in der Liste)
     for title_lower, m in po2_by_title.items():
         if title_lower not in used_po2:
             rows.append({
@@ -278,7 +288,7 @@ def main() -> None:
                 "sort_title": get_module_title(m)
             })
 
-    # 6. Restliche PO3 Module hinzufügen (ohne PO2-Äquivalent in der Liste)
+    # 6. Restliche Pflichtmodule hinzufügen (ohne PO2-Äquivalent in der Liste)
     for title_lower, m in po3_by_title.items():
         if title_lower not in used_po3:
             rows.append({
@@ -351,7 +361,7 @@ def main() -> None:
     output_file = "aequivalenzliste_po2_po3.docx"
     doc.save(output_file)
     logger.info(f"Dokument erfolgreich unter '{output_file}' gespeichert.")
-    print(f"\nERFOLG: {output_file} mit {len(rows)} Zeilen erstellt.")
+    print(f"\nERFOLG: {output_file} with {len(rows)} Zeilen erstellt.")
 
 if __name__ == "__main__":
     try:
