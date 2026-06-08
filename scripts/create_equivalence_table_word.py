@@ -176,8 +176,10 @@ def main() -> None:
             logger.debug(f"Überspringe Wahl-Äquivalenz: {src_t_raw} -> {tgt_t_raw}")
             continue
 
-        if is_m2_man: used_po2.add(src_t)
-        if is_m3_man: used_po3.add(tgt_t)
+        if is_m2_man:
+            used_po2.add(src_t)
+        if is_m3_man:
+            used_po3.add(tgt_t)
 
         sort_sem = eq["semester"] or (get_semester(m3, "inf_inf3") if m3 else get_semester(m2, "inf_inf2"))
 
