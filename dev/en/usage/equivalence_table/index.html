@@ -819,6 +819,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1349,6 +1366,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1394,34 +1428,39 @@
 
 
 <h1 id="creation-of-the-equivalence-table-word">Creation of the Equivalence Table (Word)</h1>
-<p>The script <code>scripts/create_equivalence_table_word.py</code> is used to generate a tabular comparison of modules from two study regulations (e.g., PO2 and PO3) as a Microsoft Word document (.docx). This list is an essential part of the annex for new study regulations.</p>
+<p>The script <code>scripts/create_equivalence_table_word.py</code> is used to generate a tabular comparison of modules from two study regulations as a Microsoft Word document (.docx). This list is an essential part of the annex for new study regulations.</p>
 <h2 id="purpose-and-objective">Purpose and Objective</h2>
-<p>When introducing new study regulations (PO), it must be documented which modules of the old PO correspond to which modules of the new PO. The script automates this process by:
-1.  Retrieving data from existing modules (PO2) and new drafts (PO3) directly from the Mocogi API.
-2.  Using a manual equivalence list (<code>data/aequivalenzliste.md</code>) as the basis for mapping.
-3.  Adding modules that are not in the list but are present in the POs.
-4.  Outputting the result sorted by semester and title in a formatted Word table.</p>
+<p>When introducing new study regulations (PO), it must be documented which modules of the old PO correspond to which modules of the new PO. The script automates this process by:<br />
+1.  Retrieving data from existing modules (old PO) and new drafts/modules (new PO) directly from the Mocogi API.
+2.  Using a manual equivalence list (<code>data/aequivalenzliste.md</code>) as the basis for mapping.<br />
+3.  Adding mandatory modules that are not in the list but are present in the POs.
+4.  Outputting the result sorted primarily by the recommended semester of the new PO in a formatted Word table.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li><strong>API Token</strong>: A <code>MOCOGI_API_TOKEN</code> in <code>secrets.env</code> or <code>.env</code> is required to access the Mocogi API (especially the drafts).</li>
-<li><strong>Equivalence List</strong>: A file named <code>data/aequivalenzliste.md</code> must exist and define the mapping.</li>
-<li><strong>Dependencies</strong>: The <code>python-docx</code> package must be installed.</li>
+<li><strong>API Token</strong>: A <code>MOCOGI_API_TOKEN</code> in <code>secrets.env</code> or <code>.env</code> is required to access the Mocogi API (especially the drafts).  </li>
+<li><strong>Equivalence List</strong>: A file named <code>data/aequivalenzliste.md</code> must exist and define the mapping.  </li>
+<li><strong>Dependencies</strong>: The <code>python-docx</code> package must be installed.  </li>
 </ul>
 <h2 id="usage">Usage</h2>
-<p>Run the script from the project's root directory:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>.<span class="w"> </span>python3<span class="w"> </span>scripts/create_equivalence_table_word.py
+<p>Run the script from the project's root directory. You can specify the IDs of the old and new study regulations via parameters:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>.<span class="w"> </span>python3<span class="w"> </span>scripts/create_equivalence_table_word.py<span class="w"> </span>--old-po<span class="w"> </span>inf_inf2<span class="w"> </span>--new-po<span class="w"> </span>inf_inf3
 </span></code></pre></div>
+<h3 id="parameters">Parameters</h3>
+<ul>
+<li><code>--old-po</code>: ID of the old study regulation (default: <code>inf_inf2</code>).</li>
+<li><code>--new-po</code>: ID of the new study regulation (default: <code>inf_inf3</code>).</li>
+</ul>
 <h2 id="how-it-works">How It Works</h2>
-<p>The script performs the following steps:
-1.  <strong>Data Acquisition</strong>: It loads all active modules of PO2 (<code>inf_inf2</code>) and all drafts of PO3 (<code>inf_inf3</code>) via the API.
-2.  <strong>Mapping</strong>: It reads the <code>data/aequivalenzliste.md</code> file. Modules are matched via their titles (case-insensitive).
-3.  <strong>Completion</strong>:
-    -   Modules from PO2 that have no equivalent in the list are added as a row with an empty PO3 column.
-    -   Modules from PO3 that are not in the list are added as a row with an empty PO2 column.
-4.  <strong>Sorting</strong>: The table is sorted primarily by the recommended semester and secondarily by the module title.
-5.  <strong>Formatting</strong>: A Word document is created with optimized page margins and centered ECTS columns.</p>
+<p>The script performs the following steps:<br />
+1.  <strong>Data Acquisition</strong>: It loads all active modules of the old PO and all drafts/modules of the new PO via the API.
+2.  <strong>Mapping</strong>: It reads the <code>data/aequivalenzliste.md</code> file. Modules are matched via their titles (case-insensitive).<br />
+3.  <strong>Completion</strong>:<br />
+    -   Mandatory modules from the old PO that have no equivalent in the list are added as a row with an empty new PO column.
+    -   Mandatory modules from the new PO that are not in the list are added as a row with an empty old PO column.
+4.  <strong>Sorting</strong>: The table is sorted primarily by the recommended semester of the <strong>new</strong> PO. If a module only exists in the old PO, its semester is used. Secondarily, sorting is alphabetical by the module title in the new PO.
+5.  <strong>Formatting</strong>: A Word document is created with optimized page margins and centered ECTS columns.  </p>
 <h2 id="output">Output</h2>
-<p>The script generates the file <code>aequivalenzliste_po2_po3.docx</code> in the current working directory.</p>
+<p>The script generates a file following the pattern <code>aequivalenzliste_{old_po}_{new_po}.docx</code> in the current working directory.</p>
 
 
 
