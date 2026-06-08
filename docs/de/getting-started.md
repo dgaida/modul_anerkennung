@@ -38,6 +38,6 @@ Die Anwendung ist dann standardmäßig unter `http://127.0.0.1:7860` erreichbar.
 ## Beispiel-Workflow
 
 1. **Externe Beschreibung kopieren**: Fügen Sie den Text eines externen Moduls in das Analyse-Feld ein.
-1. **Analyse starten**: Klicken Sie auf "Modul analysieren". Das LLM extrahiert ECTS und Suchbegriffe.
-1. **Suche & Vergleich**: Das Tool sucht in der Mocogi-Datenbank nach Treffern und vergleicht diese automatisch.
-1. **Ergebnis prüfen**: Sehen Sie sich die generierte Begründung an und entscheiden Sie über die Anerkennung.
+2. **Analyse starten**: Klicken Sie auf "Modul analysieren". Das LLM extrahiert ECTS und Suchbegriffe.
+3. **Suche & Vergleich**: Das Tool sucht in der Mocogi-Datenbank nach Treffern und vergleicht diese automatisch.
+4. **Ergebnis prüfen**: Sehen Sie sich die generierte Begründung an und entscheiden Sie über die Anerkennung.

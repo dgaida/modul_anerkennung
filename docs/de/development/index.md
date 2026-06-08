@@ -5,9 +5,9 @@ Anleitungen für Entwickler, die zum Projekt beitragen möchten.
 ## Lokale Entwicklungsumgebung
 
 1. Repository klonen
-1. Virtuelle Umgebung erstellen: `python -m venv venv`
-1. Abhängigkeiten installieren: `pip install -e .[test]`
-1. Pre-commit Hooks installieren (geplant)
+2. Virtuelle Umgebung erstellen: `python -m venv venv`
+3. Abhängigkeiten installieren: `pip install -e .[test]`
+4. Pre-commit Hooks installieren (geplant)
 
 ## Testen
 

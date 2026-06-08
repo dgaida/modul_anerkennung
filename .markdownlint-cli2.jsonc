@@ -3,7 +3,7 @@
     "MD004": { "style": "asterisk" },
     "MD007": { "indent": 2 },
     "MD013": false,
-    "MD029": { "style": "one" },
+    "MD029": false,
     "MD030": { "ul_multi": 1, "ol_multi": 1 },
     "MD033": false,
     "MD022": false,

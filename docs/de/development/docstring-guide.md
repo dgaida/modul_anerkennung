@@ -46,5 +46,5 @@ class RecognitionService:
 ## Best Practices
 
 1. **Klarheit**: Verwenden Sie präzise Sprache.
-1. **Typen**: Obwohl wir Python Type Hints verwenden, sollten die Typen im Docstring (optional) zur besseren Lesbarkeit wiederholt werden.
-1. **Aktualität**: Aktualisieren Sie Docstrings, wenn Sie die Signatur oder das Verhalten einer Funktion ändern.
+2. **Typen**: Obwohl wir Python Type Hints verwenden, sollten die Typen im Docstring (optional) zur besseren Lesbarkeit wiederholt werden.
+3. **Aktualität**: Aktualisieren Sie Docstrings, wenn Sie die Signatur oder das Verhalten einer Funktion ändern.

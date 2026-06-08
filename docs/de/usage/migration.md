@@ -34,9 +34,9 @@ Für den Schreibzugriff auf die Mocogi-API wird ein gültiger `MOCOGI_API_TOKEN`
 ### Token erhalten  
 
 1. Melden Sie sich im Browser bei [module.gm.th-koeln.de](https://module.gm.th-koeln.de) an.  
-1. Öffnen Sie die Entwicklertools (F12) -> Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".
-1. Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.
-1. Kopieren Sie den Wert des Tokens (meist `access_token` oder ähnlich).
+2. Öffnen Sie die Entwicklertools (F12) -> Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".
+3. Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.
+4. Kopieren Sie den Wert des Tokens (meist `access_token` oder ähnlich).
 
 ### Token speichern
 

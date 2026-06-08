@@ -38,6 +38,6 @@ The application is then reachable by default at `http://127.0.0.1:7860`.
 ## Example Workflow
 
 1. **Copy external description**: Paste the text of an external module into the analysis field.
-1. **Start analysis**: Click on "Analyze Module". The LLM extracts ECTS and search terms.
-1. **Search & Comparison**: The tool searches the Mocogi database for matches and compares them automatically.
-1. **Check result**: Look at the generated reasoning and decide on the recognition.
+2. **Start analysis**: Click on "Analyze Module". The LLM extracts ECTS and search terms.
+3. **Search & Comparison**: The tool searches the Mocogi database for matches and compares them automatically.
+4. **Check result**: Look at the generated reasoning and decide on the recognition.

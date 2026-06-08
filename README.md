@@ -58,9 +58,9 @@ python main.py
 ## ☁️ Deployment auf Render.com
 
 1. Erstelle einen Web Service auf Render.  
-1. Verbinde dieses Repository.
-1. Render nutzt automatisch die `render.yaml` und `requirements.txt`.
-1. Füge die Umgebungsvariablen (API Keys) im Render-Dashboard hinzu.
+2. Verbinde dieses Repository.
+3. Render nutzt automatisch die `render.yaml` und `requirements.txt`.
+4. Füge die Umgebungsvariablen (API Keys) im Render-Dashboard hinzu.
 
 ---
 
