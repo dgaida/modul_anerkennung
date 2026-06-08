@@ -13,15 +13,15 @@ Das Tool verwendet ein **LLM**, um Ähnlichkeiten zwischen externen Modulbeschre
 ![Last commit](https://img.shields.io/github/last-commit/dgaida/modul_anerkennung)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://dgaida.github.io/modul_anerkennung/)
 
-
 ---
 
-## 🚀 Funktionen  
-- **MCP-basierte Suche**: Greift direkt auf die Mocogi-API der TH Köln zu, um aktuelle Moduldaten abzufragen.  
-- **Automatisierte Analyse**: Extrahiert Modulname, ECTS und Suchbegriffe aus beliebigen Modulbeschreibungen.  
-- **Intelligenter Vergleich**: Vergleicht externe Module mit internen Treffern und erstellt detaillierte Begründungsberichte (Ja/Nein/Vielleicht).  
-- **Antrags-Generator**: Sammelt ausgewählte Anerkennungsvorschläge und generiert eine fertige Liste inkl. Begründungen für den Prüfungsausschuss.  
-- **Render.com Ready**: Vorkonfiguriert für das Deployment auf Render.  
+## 🚀 Funktionen
+
+* **MCP-basierte Suche**: Greift direkt auf die Mocogi-API der TH Köln zu, um aktuelle Moduldaten abzufragen.
+* **Automatisierte Analyse**: Extrahiert Modulname, ECTS und Suchbegriffe aus beliebigen Modulbeschreibungen.
+* **Intelligenter Vergleich**: Vergleicht externe Module mit internen Treffern und erstellt detaillierte Begründungsberichte (Ja/Nein/Vielleicht).
+* **Antrags-Generator**: Sammelt ausgewählte Anerkennungsvorschläge und generiert eine fertige Liste inkl. Begründungen für den Prüfungsausschuss.
+* **Render.com Ready**: Vorkonfiguriert für das Deployment auf Render.
 
 > **Hinweis zu RAG**: Die bisherige RAG-Funktionalität (Retrieval-Augmented Generation) ist weiterhin im Code vorhanden, wird aber in der aktuellen GUI zugunsten der direkten MCP-Abfrage nicht mehr primär genutzt.
 
@@ -58,9 +58,9 @@ python main.py
 ## ☁️ Deployment auf Render.com
 
 1. Erstelle einen Web Service auf Render.  
-2. Verbinde dieses Repository.  
-3. Render nutzt automatisch die `render.yaml` und `requirements.txt`.  
-4. Füge die Umgebungsvariablen (API Keys) im Render-Dashboard hinzu.  
+2. Verbinde dieses Repository.
+3. Render nutzt automatisch die `render.yaml` und `requirements.txt`.
+4. Füge die Umgebungsvariablen (API Keys) im Render-Dashboard hinzu.
 
 ---
 
@@ -68,8 +68,8 @@ python main.py
 
 Das Projekt nutzt einen **MCP Server**, um Daten der TH Köln (Mocogi API) direkt zu integrieren.
 
-- **MCP Server**: `modul_anerkennung/mocogi_mcp.py`  
-- **MCP Client**: `modul_anerkennung/mcp_client.py`  
+* **MCP Server**: `modul_anerkennung/mocogi_mcp.py`
+* **MCP Client**: `modul_anerkennung/mcp_client.py`
 
 ---
 

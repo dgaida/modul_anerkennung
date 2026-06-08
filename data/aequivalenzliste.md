@@ -4,6 +4,3 @@
 | Mathematik 2 | Mathe 2 | 2 |
 
 | Künstliche Intelligenz | Künstliche Intelligenz | 4 |
-
-
-

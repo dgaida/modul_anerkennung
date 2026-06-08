@@ -4,10 +4,10 @@ Anleitungen für Entwickler, die zum Projekt beitragen möchten.
 
 ## Lokale Entwicklungsumgebung
 
-1.  Repository klonen  
-2.  Virtuelle Umgebung erstellen: `python -m venv venv`  
-3.  Abhängigkeiten installieren: `pip install -e .[test]`  
-4.  Pre-commit Hooks installieren (geplant)  
+1. Repository klonen
+2. Virtuelle Umgebung erstellen: `python -m venv venv`
+3. Abhängigkeiten installieren: `pip install -e .[test]`
+4. Pre-commit Hooks installieren (geplant)
 
 ## Testen
 
@@ -19,9 +19,9 @@ PYTHONPATH=. pytest tests
 
 ## Code-Stil
 
-*   Wir folgen **PEP 8**.  
-*   Docstrings müssen dem **Google-Style** entsprechen (siehe [Docstring Guide](docstring-guide.md)).  
-*   Verwenden Sie **Conventional Commits** für Commit-Nachrichten.  
+* Wir folgen **PEP 8**.
+* Docstrings müssen dem **Google-Style** entsprechen (siehe [Docstring Guide](docstring-guide.md)).
+* Verwenden Sie **Conventional Commits** für Commit-Nachrichten.
 
 ## Dokumentation bauen
 

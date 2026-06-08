@@ -4,9 +4,9 @@ Diese Anleitung führt Sie durch die ersten Schritte mit dem Modul-Anerkennungst
 
 ## Voraussetzungen
 
-*   Python 3.10 oder höher  
-*   Ein API-Key für einen unterstützten LLM-Provider (OpenAI, Groq oder Gemini)  
-*   (Optional) Ein Mocogi API-Token der TH Köln  
+* Python 3.10 oder höher
+* Ein API-Key für einen unterstützten LLM-Provider (OpenAI, Groq oder Gemini)
+* (Optional) Ein Mocogi API-Token der TH Köln
 
 ## Installation
 
@@ -37,7 +37,7 @@ Die Anwendung ist dann standardmäßig unter `http://127.0.0.1:7860` erreichbar.
 
 ## Beispiel-Workflow
 
-1.  **Externe Beschreibung kopieren**: Fügen Sie den Text eines externen Moduls in das Analyse-Feld ein.  
-2.  **Analyse starten**: Klicken Sie auf "Modul analysieren". Das LLM extrahiert ECTS und Suchbegriffe.  
-3.  **Suche & Vergleich**: Das Tool sucht in der Mocogi-Datenbank nach Treffern und vergleicht diese automatisch.  
-4.  **Ergebnis prüfen**: Sehen Sie sich die generierte Begründung an und entscheiden Sie über die Anerkennung.  
+1. **Externe Beschreibung kopieren**: Fügen Sie den Text eines externen Moduls in das Analyse-Feld ein.
+2. **Analyse starten**: Klicken Sie auf "Modul analysieren". Das LLM extrahiert ECTS und Suchbegriffe.
+3. **Suche & Vergleich**: Das Tool sucht in der Mocogi-Datenbank nach Treffern und vergleicht diese automatisch.
+4. **Ergebnis prüfen**: Sehen Sie sich die generierte Begründung an und entscheiden Sie über die Anerkennung.
