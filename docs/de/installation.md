@@ -24,10 +24,10 @@ pip install -e .[test]
 
 Die wichtigsten Abhängigkeiten sind:
 
-* [`llm_client`](https://github.com/dgaida/llm_client): Schnittstelle zu LLM-Providern.
-* [`fastmcp`](https://github.com/jlowin/fastmcp): Framework für das Model Context Protocol.
-* [`gradio`](https://gradio.app): Framework für die Benutzeroberfläche.
-* [`raganything`](https://github.com/HKUDS/RAG-Anything): (Optional) Für RAG-Funktionalitäten.
+* [`llm_client`](https://github.com/dgaida/llm_client): Schnittstelle zu LLM-Providern.  
+* [`fastmcp`](https://github.com/jlowin/fastmcp): Framework für das Model Context Protocol.  
+* [`gradio`](https://gradio.app): Framework für die Benutzeroberfläche.  
+* [`raganything`](https://github.com/HKUDS/RAG-Anything): (Optional) Für RAG-Funktionalitäten.  
 
 ## Docker (Geplant)
 

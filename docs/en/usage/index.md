@@ -6,18 +6,18 @@ The tool provides an intuitive user interface for analyzing and comparing module
 
 Enter the text of an external module description. The system extracts:  
 
-* **Name**: The title of the external module.
-* **ECTS**: The number of credit points.
-* **Keywords**: Relevant search terms for the internal database.
+* **Name**: The title of the external module.  
+* **ECTS**: The number of credit points.  
+* **Keywords**: Relevant search terms for the internal database.  
 
 ## Search & Comparison
 
 Based on the extracted keywords, the system searches the Mocogi API for matching internal modules.
 For each hit, a comparison is performed:  
 
-* **Similarity**: Assessment of content agreement.
-* **Justification**: A detailed report on why recognition is recommended or not.
-* **Status**: Yes, No, or Maybe.
+* **Similarity**: Assessment of content agreement.  
+* **Justification**: A detailed report on why recognition is recommended or not.  
+* **Status**: Yes, No, or Maybe.  
 
 ## Application Creation
 

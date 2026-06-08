@@ -8,11 +8,11 @@ Ein Python-Tool, das Prüfungsausschussvorsitzende (PAV) bei der **Anerkennung e
 
 ## Hauptfunktionen
 
-* **🔌 MCP-basierte Suche**: Direkter Zugriff auf die Mocogi-API der TH Köln für aktuelle Moduldaten.
-* **🧠 Automatisierte Analyse**: Extraktion von Metadaten (ECTS, Keywords) aus Modulbeschreibungen.
-* **⚖️ Intelligenter Vergleich**: Detaillierte Begründungsberichte für Anerkennungsentscheidungen.
-* **📝 Antrags-Generator**: Erstellung von Listen für den Prüfungsausschuss.
-* **🌐 Bilingual**: Unterstützung für Dokumentation in Deutsch und Englisch.
+* **🔌 MCP-basierte Suche**: Direkter Zugriff auf die Mocogi-API der TH Köln für aktuelle Moduldaten.  
+* **🧠 Automatisierte Analyse**: Extraktion von Metadaten (ECTS, Keywords) aus Modulbeschreibungen.  
+* **⚖️ Intelligenter Vergleich**: Detaillierte Begründungsberichte für Anerkennungsentscheidungen.  
+* **📝 Antrags-Generator**: Erstellung von Listen für den Prüfungsausschuss.  
+* **🌐 Bilingual**: Unterstützung für Dokumentation in Deutsch und Englisch.  
 
 ## Schnellstart
 

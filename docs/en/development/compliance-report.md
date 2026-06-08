@@ -3,9 +3,9 @@
 This report lists the status of docstring coverage in the project.
 
 ## Summary  
-* **Current Coverage**: 100.0%
-* **Goal**: 95.0%
-* **Missing Docstrings**: 0
+* **Current Coverage**: 100.0%  
+* **Goal**: 95.0%  
+* **Missing Docstrings**: 0  
 
 ## Status
 

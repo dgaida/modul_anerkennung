@@ -16,13 +16,13 @@ Bitte strukturieren Sie Ihre Commit-Nachrichten nach folgendem Schema:
 
 ### Typen  
 
-* `feat`: Ein neues Feature
-* `fix`: Ein Bugfix
-* `docs`: Änderungen an der Dokumentation
-* `style`: Formatierung, fehlende Semikolons, etc.
-* `refactor`: Codeänderung, die weder einen Bug behebt noch ein Feature hinzufügt
-* `test`: Hinzufügen von fehlenden Tests
-* `chore`: Änderungen am Build-Prozess oder an Hilfsmitteln
+* `feat`: Ein neues Feature  
+* `fix`: Ein Bugfix  
+* `docs`: Änderungen an der Dokumentation  
+* `style`: Formatierung, fehlende Semikolons, etc.  
+* `refactor`: Codeänderung, die weder einen Bug behebt noch ein Feature hinzufügt  
+* `test`: Hinzufügen von fehlenden Tests  
+* `chore`: Änderungen am Build-Prozess oder an Hilfsmitteln  
 
 ## Automatisierung
 

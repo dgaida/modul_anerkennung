@@ -19,12 +19,12 @@ Configuration is primarily done via environment variables or a `.env` / `secrets
 
 A `MOCOGI_API_TOKEN` is required for write access to the Mocogi API (e.g., updating drafts) and for accessing your own module drafts. You can extract this from your browser after logging into Mocogi:
 
-1. Open [Mocogi](https://module.gm.th-koeln.de/) in your browser and log in.
-2. Open the **Developer Tools** (F12 or Right-click -> Inspect).
-3. Navigate to the **Application** or **Storage** tab.
-4. In the left sidebar under **Cookies**, select the address `https://module.gm.th-koeln.de`.
-5. Look for the cookie named `access_token` in the list.
-6. Copy the value of this cookie and enter it as `MOCOGI_API_TOKEN` in your configuration.
+1. Open [Mocogi](https://module.gm.th-koeln.de/) in your browser and log in.  
+2. Open the **Developer Tools** (F12 or Right-click -> Inspect).  
+3. Navigate to the **Application** or **Storage** tab.  
+4. In the left sidebar under **Cookies**, select the address `https://module.gm.th-koeln.de`.  
+5. Look for the cookie named `access_token` in the list.  
+6. Copy the value of this cookie and enter it as `MOCOGI_API_TOKEN` in your configuration.  
 
 ## Example .env File
 

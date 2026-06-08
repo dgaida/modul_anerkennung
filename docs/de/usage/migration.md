@@ -9,8 +9,8 @@ Das Ziel ist es, die mühsame manuelle Übertragung von Lehrinhalten zu vermeide
 ## Voraussetzungen und Abhängigkeiten
 
 Das Skript ist als Standalone-Werkzeug konzipiert, nutzt jedoch Logik aus anderen Skripten:  
-* **Abhängigkeit**: `scripts/standalone_restore_algo.py` (muss im selben Verzeichnis liegen, da Funktionen daraus importiert werden).
-* **Eingabedatei**: `data/aequivalenzliste.md` (enthält das Mapping).
+* **Abhängigkeit**: `scripts/standalone_restore_algo.py` (muss im selben Verzeichnis liegen, da Funktionen daraus importiert werden).  
+* **Eingabedatei**: `data/aequivalenzliste.md` (enthält das Mapping).  
 
 ## Vorbereitung der Äquivalenzliste
 
@@ -23,9 +23,9 @@ Die Liste muss als Markdown-Tabelle in `data/aequivalenzliste.md` vorliegen. Das
 | Mathematik 1 | Mathe 1 | 1 |
 ```
 
-* **Spalte 1**: Der exakte Titel des Quell-Moduls in der PO `inf_inf2`.
-* **Spalte 2**: Der exakte Titel des Ziel-Entwurfs in der PO `inf_inf3`.
-* **Spalte 3**: Das empfohlene Semester für das Ziel-Modul.
+* **Spalte 1**: Der exakte Titel des Quell-Moduls in der PO `inf_inf2`.  
+* **Spalte 2**: Der exakte Titel des Ziel-Entwurfs in der PO `inf_inf3`.  
+* **Spalte 3**: Das empfohlene Semester für das Ziel-Modul.  
 
 ## Authentifizierung (API-Token)
 
@@ -34,9 +34,9 @@ Für den Schreibzugriff auf die Mocogi-API wird ein gültiger `MOCOGI_API_TOKEN`
 ### Token erhalten  
 
 1. Melden Sie sich im Browser bei [module.gm.th-koeln.de](https://module.gm.th-koeln.de) an.  
-2. Öffnen Sie die Entwicklertools (F12) -> Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".
-3. Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.
-4. Kopieren Sie den Wert des Tokens (meist `access_token` oder ähnlich).
+2. Öffnen Sie die Entwicklertools (F12) -> Tab "Application" (Chromium) oder "Speicher" (Firefox) oder "Netzwerk".  
+3. Suchen Sie unter "Cookies" nach dem Eintrag für die Domain oder schauen Sie in die Request-Header eines API-Aufrufs.  
+4. Kopieren Sie den Wert des Tokens (meist `access_token` oder ähnlich).  
 
 ### Token speichern
 
