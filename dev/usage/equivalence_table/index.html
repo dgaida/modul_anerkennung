@@ -1428,16 +1428,18 @@
 <h1 id="erstellung-der-aquivalenzliste-word">Erstellung der Äquivalenzliste (Word)</h1>
 <p>Das Skript <code>scripts/create_equivalence_table_word.py</code> dient dazu, eine tabellarische Gegenüberstellung von Modulen zweier Prüfungsordnungen als Microsoft Word-Dokument (.docx) zu generieren. Diese Liste ist ein wesentlicher Bestandteil der Anlage für neue Prüfungsordnungen.</p>
 <h2 id="sinn-und-zweck">Sinn und Zweck</h2>
-<p>Bei der Einführung einer neuen Prüfungsordnung (PO) muss dokumentiert werden, welche Module der alten PO welchen Modulen der neuen PO entsprechen. Das Skript automatisiert diesen Prozess, indem es:<br />
-1.  Daten der bestehenden Module (alte PO) und der neuen Entwürfe (neue PO) direkt von der Mocogi-API abruft.
-2.  Eine manuelle Äquivalenzliste (<code>data/aequivalenzliste.md</code>) als Basis für das Mapping verwendet.<br />
-3.  Pflichtmodule, die nicht in der Liste stehen, aber in den POs vorhanden sind, ergänzt.
-4.  Das Ergebnis primär nach dem empfohlenen Semester der neuen PO sortiert in einer formatierten Word-Tabelle ausgibt.</p>
+<p>Bei der Einführung einer neuen Prüfungsordnung (PO) muss dokumentiert werden, welche Module der alten PO welchen Modulen der neuen PO entsprechen. Das Skript automatisiert diesen Prozess, indem es:  </p>
+<ol>
+<li>Daten der bestehenden Module (alte PO) und der neuen Entwürfe (neue PO) direkt von der Mocogi-API abruft.</li>
+<li>Eine manuelle Äquivalenzliste (<code>data/aequivalenzliste.md</code>) als Basis für das Mapping verwendet.</li>
+<li>Pflichtmodule, die nicht in der Liste stehen, aber in den POs vorhanden sind, ergänzt.</li>
+<li>Das Ergebnis primär nach dem empfohlenen Semester der neuen PO sortiert in einer formatierten Word-Tabelle ausgibt.</li>
+</ol>
 <h2 id="voraussetzungen">Voraussetzungen</h2>
 <ul>
-<li><strong>API-Token</strong>: Für den Zugriff auf die Mocogi-API (insbesondere die Entwürfe) ist ein <code>MOCOGI_API_TOKEN</code> in der <code>secrets.env</code> oder <code>.env</code> erforderlich.  </li>
-<li><strong>Äquivalenzliste</strong>: Eine Datei <code>data/aequivalenzliste.md</code> muss existieren und das Mapping definieren.  </li>
-<li><strong>Abhängigkeiten</strong>: Das Paket <code>python-docx</code> muss installiert sein.  </li>
+<li><strong>API-Token</strong>: Für den Zugriff auf die Mocogi-API (insbesondere die Entwürfe) ist ein <code>MOCOGI_API_TOKEN</code> in der <code>secrets.env</code> oder <code>.env</code> erforderlich.</li>
+<li><strong>Äquivalenzliste</strong>: Eine Datei <code>data/aequivalenzliste.md</code> muss existieren und das Mapping definieren.</li>
+<li><strong>Abhängigkeiten</strong>: Das Paket <code>python-docx</code> muss installiert sein.</li>
 </ul>
 <h2 id="nutzung">Nutzung</h2>
 <p>Führen Sie das Skript aus dem Hauptverzeichnis des Projekts aus. Sie können die IDs der alten und neuen Prüfungsordnung über Parameter angeben:</p>
@@ -1449,14 +1451,18 @@
 <li><code>--new-po</code>: ID der neuen Prüfungsordnung (Standard: <code>inf_inf3</code>).</li>
 </ul>
 <h2 id="funktionsweise">Funktionsweise</h2>
-<p>Das Skript führt folgende Schritte aus:<br />
-1.  <strong>Datenbeschaffung</strong>: Es lädt alle aktiven Module der alten PO und alle Entwürfe/Module der neuen PO über die API.
-2.  <strong>Mapping</strong>: Es liest die Datei <code>data/aequivalenzliste.md</code> ein. Module werden über ihren Titel (case-insensitive) zugeordnet.<br />
-3.  <strong>Vervollständigung</strong>:<br />
-    -   Pflichtmodule aus der alten PO, die kein Äquivalent in der Liste haben, werden als Zeile mit leerer neuer PO-Spalte hinzugefügt.
-    -   Pflichtmodule aus der neuen PO, die nicht in der Liste stehen, werden als Zeile mit leerer alter PO-Spalte hinzugefügt.
-4.  <strong>Sortierung</strong>: Die Tabelle wird primär nach dem empfohlenen Semester der <strong>neuen</strong> PO sortiert. Falls ein Modul nur in der alten PO existiert, wird dessen Semester verwendet. Sekundär erfolgt die Sortierung alphabetisch nach dem Titel des Moduls in der neuen PO.
-5.  <strong>Formatierung</strong>: Es wird ein Word-Dokument erstellt, in dem die Seitenränder optimiert sind und die ECTS-Spalten zentriert werden.  </p>
+<p>Das Skript führt folgende Schritte aus:  </p>
+<ol>
+<li><strong>Datenbeschaffung</strong>: Es lädt alle aktiven Module der alten PO und alle Entwürfe/Module der neuen PO über die API.</li>
+<li><strong>Mapping</strong>: Es liest die Datei <code>data/aequivalenzliste.md</code> ein. Module werden über ihren Titel (case-insensitive) zugeordnet.</li>
+<li><strong>Vervollständigung</strong>:<ul>
+<li>Pflichtmodule aus der alten PO, die kein Äquivalent in der Liste haben, werden als Zeile mit leerer neuer PO-Spalte hinzugefügt.</li>
+<li>Pflichtmodule aus der neuen PO, die nicht in der Liste stehen, werden als Zeile mit leerer alter PO-Spalte hinzugefügt.</li>
+</ul>
+</li>
+<li><strong>Sortierung</strong>: Die Tabelle wird primär nach dem empfohlenen Semester der <strong>neuen</strong> PO sortiert. Falls ein Modul nur in der alten PO existiert, wird dessen Semester verwendet. Sekundär erfolgt die Sortierung alphabetisch nach dem Titel des Moduls in der neuen PO.</li>
+<li><strong>Formatierung</strong>: Es wird ein Word-Dokument erstellt, in dem die Seitenränder optimiert sind und die ECTS-Spalten zentriert werden.</li>
+</ol>
 <h2 id="ausgabe">Ausgabe</h2>
 <p>Das Skript generiert eine Datei nach dem Muster <code>aequivalenzliste_{old_po}_{new_po}.docx</code> im aktuellen Arbeitsverzeichnis.</p>
 

@@ -674,18 +674,18 @@
 </div>
 <h2 id="datenfluss-anerkennungsprozess">Datenfluss: Anerkennungsprozess</h2>
 <ol>
-<li><strong>Eingabe</strong>: Der Benutzer gibt eine externe Modulbeschreibung ein.  </li>
-<li><strong>Extraktion</strong>: Das LLM analysiert den Text und extrahiert Metadaten (Name, ECTS, Keywords).  </li>
-<li><strong>Suche</strong>: Der <code>MocogiClient</code> nutzt das Model Context Protocol (MCP), um in der TH Köln Datenbank nach ähnlichen Modulen zu suchen.  </li>
-<li><strong>Vergleich</strong>: Für die Top-Treffer generiert das LLM einen detaillierten Vergleichsbericht.  </li>
-<li><strong>Entscheidung</strong>: Der Benutzer wählt Module für den Anerkennungsantrag aus.  </li>
+<li><strong>Eingabe</strong>: Der Benutzer gibt eine externe Modulbeschreibung ein.</li>
+<li><strong>Extraktion</strong>: Das LLM analysiert den Text und extrahiert Metadaten (Name, ECTS, Keywords).</li>
+<li><strong>Suche</strong>: Der <code>MocogiClient</code> nutzt das Model Context Protocol (MCP), um in der TH Köln Datenbank nach ähnlichen Modulen zu suchen.</li>
+<li><strong>Vergleich</strong>: Für die Top-Treffer generiert das LLM einen detaillierten Vergleichsbericht.</li>
+<li><strong>Entscheidung</strong>: Der Benutzer wählt Module für den Anerkennungsantrag aus.</li>
 </ol>
 <h2 id="kernkomponenten">Kernkomponenten</h2>
 <ul>
-<li><strong>RecognitionService</strong>: Orchestriert die Logik zwischen GUI, MCP und LLM.  </li>
-<li><strong>MocogiClient</strong>: Kommuniziert über MCP mit dem Mocogi-Server.  </li>
-<li><strong>LLMInterface</strong>: Abstraktionsschicht für verschiedene Sprachmodelle über <code>llm_client</code>.  </li>
-<li><strong>Models</strong>: Pydantic-Modelle zur Validierung und Typisierung der Daten.  </li>
+<li><strong>RecognitionService</strong>: Orchestriert die Logik zwischen GUI, MCP und LLM.</li>
+<li><strong>MocogiClient</strong>: Kommuniziert über MCP mit dem Mocogi-Server.</li>
+<li><strong>LLMInterface</strong>: Abstraktionsschicht für verschiedene Sprachmodelle über <code>llm_client</code>.</li>
+<li><strong>Models</strong>: Pydantic-Modelle zur Validierung und Typisierung der Daten.</li>
 </ul>
 </article>
 </div>

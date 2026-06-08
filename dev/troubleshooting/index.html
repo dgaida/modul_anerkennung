@@ -1370,14 +1370,14 @@
 <p>Häufig auftretende Probleme und deren Lösungen.</p>
 <h2 id="1-port-7860-already-in-use">1. "Port 7860 already in use"</h2>
 <p><strong>Problem</strong>: Die Gradio-GUI kann nicht starten, weil der Standard-Port belegt ist.
-<strong>Lösung</strong>: Beenden Sie laufende Prozesse oder ändern Sie den Port in der <code>main.py</code>.
+<strong>Lösung</strong>: Beenden Sie laufende Prozesse oder ändern Sie den Port in der <code>main.py</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>lsof<span class="w"> </span>-t<span class="w"> </span>-i<span class="w"> </span>:7860<span class="k">)</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <h2 id="2-authentifizierungsfehler-bei-mocogi">2. Authentifizierungsfehler bei Mocogi</h2>
 <p><strong>Problem</strong>: Die Suche liefert keine Ergebnisse oder Fehlermeldungen (401 Unauthorized / 403 Forbidden).
 <strong>Lösung</strong>:<br />
-- Überprüfen Sie, ob <code>MOCOGI_API_TOKEN</code> in Ihrer <code>.env</code> korrekt gesetzt ist und das Präfix <code>Bearer</code> nicht doppelt vorhanden ist.<br />
-- Der Token könnte abgelaufen sein. Loggen Sie sich im Browser bei Mocogi ein, kopieren Sie den aktuellen Token aus den Cookies (<code>access_token</code>) und aktualisieren Sie Ihre <code>.env</code> oder <code>secrets.env</code> Datei.  </p>
+* Überprüfen Sie, ob <code>MOCOGI_API_TOKEN</code> in Ihrer <code>.env</code> korrekt gesetzt ist und das Präfix <code>Bearer</code> nicht doppelt vorhanden ist.
+* Der Token könnte abgelaufen sein. Loggen Sie sich im Browser bei Mocogi ein, kopieren Sie den aktuellen Token aus den Cookies (<code>access_token</code>) und aktualisieren Sie Ihre <code>.env</code> oder <code>secrets.env</code> Datei.</p>
 <h2 id="3-llm-api-limit-erreicht">3. LLM API Limit erreicht</h2>
 <p><strong>Problem</strong>: Fehler <code>Rate limit reached</code> von OpenAI oder Groq.
 <strong>Lösung</strong>: Wechseln Sie den Provider in der Konfiguration oder warten Sie einige Minuten.</p>
