@@ -372,6 +372,76 @@ def main() -> None:
         row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         row_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+    # 9. Studiengang- und PO-Namen ermitteln
+    study_programs = api_call(f"{BASE_URL}/studyPrograms") or []
+
+    # Defaults/Fallbacks ermitteln
+    import re
+    def get_fallback_version(po_id: str) -> str:
+        match = re.search(r'(\d+)', po_id)
+        if match:
+            return f"PO {match.group(1)}"
+        return po_id.upper()
+
+    def get_fallback_studiengang(po_id: str) -> str:
+        if po_id.startswith("inf_wi"):
+            return "Wirtschaftsinformatik"
+        elif po_id.startswith("inf_mim"):
+            return "Medieninformatik"
+        elif po_id.startswith("inf_wsc"):
+            return "Web Science"
+        return "Informatik"
+
+    old_studiengang = get_fallback_studiengang(old_po)
+    old_po_version_str = get_fallback_version(old_po)
+    new_studiengang = get_fallback_studiengang(new_po)
+    new_po_version_str = get_fallback_version(new_po)
+
+    for program in study_programs:
+        prog_po = program.get("po", {})
+        prog_po_id = prog_po.get("id")
+        if prog_po_id == old_po:
+            old_studiengang = program.get("deLabel") or old_studiengang
+            version = prog_po.get("version")
+            if version is not None:
+                old_po_version_str = f"PO {version}"
+        if prog_po_id == new_po:
+            new_studiengang = program.get("deLabel") or new_studiengang
+            version = prog_po.get("version")
+            if version is not None:
+                new_po_version_str = f"PO {version}"
+
+    # ECTS-Summen berechnen
+    def sum_ects_for_po(by_title_dict: Dict[str, Any]) -> int:
+        total = 0
+        for m in by_title_dict.values():
+            ects_str = get_module_ects(m)
+            try:
+                if ects_str:
+                    total += int(float(ects_str))
+            except (ValueError, TypeError):
+                pass
+        return total
+
+    sum1 = sum_ects_for_po(old_by_title)
+    sum2 = sum_ects_for_po(new_by_title)
+
+    # Letzte Zeile für Summen hinzufügen
+    sum_row_cells = table.add_row().cells
+    sum_texts = [
+        f"Summe Studiengang {old_studiengang} ({old_po_version_str})",
+        str(sum1),
+        f"Summe Studiengang {new_studiengang} ({new_po_version_str})",
+        str(sum2)
+    ]
+
+    for i, text in enumerate(sum_texts):
+        p = sum_row_cells[i].paragraphs[0]
+        run = p.add_run(text)
+        run.bold = True
+        if i in [1, 3]:
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     output_file = f"aequivalenzliste_{old_po}_{new_po}.docx"
     doc.save(output_file)
     logger.info(f"Dokument erfolgreich unter '{output_file}' gespeichert.")
