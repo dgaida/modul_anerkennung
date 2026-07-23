@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -33,7 +33,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1430,16 +1430,16 @@
 <h2 id="sinn-und-zweck">Sinn und Zweck</h2>
 <p>Bei der Einführung einer neuen Prüfungsordnung (PO) muss dokumentiert werden, welche Module der alten PO welchen Modulen der neuen PO entsprechen. Das Skript automatisiert diesen Prozess, indem es:  </p>
 <ol>
-<li>Daten der bestehenden Module (alte PO) und der neuen Entwürfe (neue PO) direkt von der Mocogi-API abruft.</li>
-<li>Eine manuelle Äquivalenzliste (<code>data/aequivalenzliste.md</code>) als Basis für das Mapping verwendet.</li>
-<li>Pflichtmodule, die nicht in der Liste stehen, aber in den POs vorhanden sind, ergänzt.</li>
-<li>Das Ergebnis primär nach dem empfohlenen Semester der neuen PO sortiert in einer formatierten Word-Tabelle ausgibt.</li>
+<li>Daten der bestehenden Module (alte PO) und der neuen Entwürfe (neue PO) direkt von der Mocogi-API abruft.  </li>
+<li>Eine manuelle Äquivalenzliste (<code>data/aequivalenzliste.md</code>) als Basis für das Mapping verwendet.  </li>
+<li>Pflichtmodule, die nicht in der Liste stehen, aber in den POs vorhanden sind, ergänzt.  </li>
+<li>Das Ergebnis primär nach dem empfohlenen Semester der neuen PO sortiert in einer formatierten Word-Tabelle ausgibt.  </li>
 </ol>
 <h2 id="voraussetzungen">Voraussetzungen</h2>
 <ul>
-<li><strong>API-Token</strong>: Für den Zugriff auf die Mocogi-API (insbesondere die Entwürfe) ist ein <code>MOCOGI_API_TOKEN</code> in der <code>secrets.env</code> oder <code>.env</code> erforderlich.</li>
-<li><strong>Äquivalenzliste</strong>: Eine Datei <code>data/aequivalenzliste.md</code> muss existieren und das Mapping definieren.</li>
-<li><strong>Abhängigkeiten</strong>: Das Paket <code>python-docx</code> muss installiert sein.</li>
+<li><strong>API-Token</strong>: Für den Zugriff auf die Mocogi-API (insbesondere die Entwürfe) ist ein <code>MOCOGI_API_TOKEN</code> in der <code>secrets.env</code> oder <code>.env</code> erforderlich.  </li>
+<li><strong>Äquivalenzliste</strong>: Eine Datei <code>data/aequivalenzliste.md</code> muss existieren und das Mapping definieren.  </li>
+<li><strong>Abhängigkeiten</strong>: Das Paket <code>python-docx</code> muss installiert sein.  </li>
 </ul>
 <h2 id="nutzung">Nutzung</h2>
 <p>Führen Sie das Skript aus dem Hauptverzeichnis des Projekts aus. Sie können die IDs der alten und neuen Prüfungsordnung über Parameter angeben:</p>
@@ -1447,21 +1447,21 @@
 </span></code></pre></div>
 <h3 id="parameter">Parameter</h3>
 <ul>
-<li><code>--old-po</code>: ID der alten Prüfungsordnung (Standard: <code>inf_inf2</code>).</li>
-<li><code>--new-po</code>: ID der neuen Prüfungsordnung (Standard: <code>inf_inf3</code>).</li>
+<li><code>--old-po</code>: ID der alten Prüfungsordnung (Standard: <code>inf_inf2</code>).  </li>
+<li><code>--new-po</code>: ID der neuen Prüfungsordnung (Standard: <code>inf_inf3</code>).  </li>
 </ul>
 <h2 id="funktionsweise">Funktionsweise</h2>
 <p>Das Skript führt folgende Schritte aus:  </p>
 <ol>
-<li><strong>Datenbeschaffung</strong>: Es lädt alle aktiven Module der alten PO und alle Entwürfe/Module der neuen PO über die API.</li>
-<li><strong>Mapping</strong>: Es liest die Datei <code>data/aequivalenzliste.md</code> ein. Module werden über ihren Titel (case-insensitive) zugeordnet.</li>
-<li><strong>Vervollständigung</strong>:<ul>
-<li>Pflichtmodule aus der alten PO, die kein Äquivalent in der Liste haben, werden als Zeile mit leerer neuer PO-Spalte hinzugefügt.</li>
-<li>Pflichtmodule aus der neuen PO, die nicht in der Liste stehen, werden als Zeile mit leerer alter PO-Spalte hinzugefügt.</li>
+<li><strong>Datenbeschaffung</strong>: Es lädt alle aktiven Module der alten PO und alle Entwürfe/Module der neuen PO über die API.  </li>
+<li><strong>Mapping</strong>: Es liest die Datei <code>data/aequivalenzliste.md</code> ein. Module werden über ihren Titel (case-insensitive) zugeordnet.  </li>
+<li><strong>Vervollständigung</strong>:  <ul>
+<li>Pflichtmodule aus der alten PO, die kein Äquivalent in der Liste haben, werden als Zeile mit leerer neuer PO-Spalte hinzugefügt.  </li>
+<li>Pflichtmodule aus der neuen PO, die nicht in der Liste stehen, werden als Zeile mit leerer alter PO-Spalte hinzugefügt.  </li>
 </ul>
 </li>
-<li><strong>Sortierung</strong>: Die Tabelle wird primär nach dem empfohlenen Semester der <strong>neuen</strong> PO sortiert. Falls ein Modul nur in der alten PO existiert, wird dessen Semester verwendet. Sekundär erfolgt die Sortierung alphabetisch nach dem Titel des Moduls in der neuen PO.</li>
-<li><strong>Formatierung</strong>: Es wird ein Word-Dokument erstellt, in dem die Seitenränder optimiert sind und die ECTS-Spalten zentriert werden.</li>
+<li><strong>Sortierung</strong>: Die Tabelle wird primär nach dem empfohlenen Semester der <strong>neuen</strong> PO sortiert. Falls ein Modul nur in der alten PO existiert, wird dessen Semester verwendet. Sekundär erfolgt die Sortierung alphabetisch nach dem Titel des Moduls in der neuen PO.  </li>
+<li><strong>Formatierung</strong>: Es wird ein Word-Dokument erstellt, in dem die Seitenränder optimiert sind und die ECTS-Spalten zentriert werden.  </li>
 </ol>
 <h2 id="ausgabe">Ausgabe</h2>
 <p>Das Skript generiert eine Datei nach dem Muster <code>aequivalenzliste_{old_po}_{new_po}.docx</code> im aktuellen Arbeitsverzeichnis.</p>
@@ -1525,7 +1525,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "search.share", "content.tabs.link", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
